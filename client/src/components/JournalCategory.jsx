@@ -1,30 +1,61 @@
-import React from 'react'
+import { useState, useEffect, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { journalCategory } from '../../data'
+import axios from 'axios'
+import React from 'react'
+import { DNA } from 'react-loader-spinner'
+
 
 const JournalCategory = () => {
-    return (
-        <div className=" w-full h-auto bg-white p-4">
-            <div className='   md:grid md:grid-cols-4 sm:grid sm:grid-cols-1 gap-2 justify-center'>
+    const [journalCategory, setJournalCategory] = useState([])
+    const [loading, setLoading] = useState(true)
 
-                {journalCategory.map(data => (
-                    <React.Fragment key={data.id}>
-                        <Link to='/' className='relative md:border-4 border-black '>
-                            <img src={data.imgURL} className=' bg-slate-900 object-cover' />
-                            <div className={`absolute md:top-0 md:left-0 w-full h-full  opacity-60`} style={{backgroundColor:`${data.color}`}}></div>
-                            <p className='absolute top-2 left-10 z-1 text-xl font-bold'>
-                                {data.title}
-                            </p>
-                        </Link>
-                    </React.Fragment>
-                ))}
-                
-            </div>
-            <div className=" p-6 text-center">
+    useEffect(() => {
+        const fetchJournalCategory = async () => {
+            const resp = await axios('http://localhost:3001/api/journal')
+            setJournalCategory(resp.data)
+            setLoading(false)
+
+            console.log('child component fn called');
+        }
+        fetchJournalCategory()
+    }, [])
+    console.log(journalCategory);
+    return (
+        <div>
+           {!loading ? (<div className=" w-full h-auto bg-white p-4">
+                <div className='   md:grid md:grid-cols-4 sm:grid sm:grid-cols-1 gap-2 justify-center'>
+
+                    {journalCategory.map(data => (
+                        <Fragment key={data.id}>
+                            <Link to='/' className='relative md:border-4 border-black '>
+                                <img src={data.journalImageURL} className=' bg-slate-900 object-cover' />
+                                <div className={`absolute md:top-0 md:left-0 w-full h-full  opacity-60`} style={{ backgroundColor: `${data.color}` }}></div>
+                                <p className='absolute bottom-24 left-10 z-1 text-xl font-bold text-white '>
+                                    {data.journalTitle}
+                                </p>
+                            </Link>
+                        </Fragment>
+                    ))}
+
+                </div>
+                <div className=" p-6 text-center">
                     <Link to="/journal" className='font-bold text-lg  border-2 rounded p-3 border-green bg-green-400 '>
                         <button>View All Journals</button>
                     </Link>
                 </div>
+            </div>):
+            (<div className='flex justify-center items-center h-96'>
+                <DNA
+  visible={true}
+  height="80"
+  width="80"
+  ariaLabel="dna-loading"
+  wrapperStyle={{}}
+  wrapperClass="dna-wrapper"
+  />
+            </div>)
+            }
         </div>
     )
 }

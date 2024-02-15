@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
 import createError from '../utils/createError.js'
+import dotenv from 'dotenv'
+dotenv.config()
 
 const prisma = new PrismaClient();
 export const register = async (req, res, next) => {
@@ -53,12 +55,18 @@ export const login = async (req, res,next) => {
     if (!isCorrect) {
         return res.send('Wrong password or username')
     }
-    const token = jwt.sign({
-        id:finduser.id,
+    const token = jwt.sign(
+        {id:finduser.id},
+        process.env.SECRET,
+        {expiresIn: '1h'}
+        )
         
-    },"SECRET")
+    console.log(process.env.SECRET,'secret key');
+    const {password,...user} = finduser
+
+    res.cookie("accessToken" , token,{httpOnly:true,secure:true}).status(201).json(user);
     await prisma.$disconnect()
-    res.cookie("accessToken",token,{httpOnly:true,secure:true}).status(201).json(finduser)
+    console.log(token);
    }
    catch(err){
     console.log(err);
@@ -66,5 +74,5 @@ export const login = async (req, res,next) => {
    }
 }
 export const logout = async (req, res) => {
-
+    res.clearCookie("accessToken",{sameSite:'none',secure:true}).status(200).json({message:"User logged out"})
 }

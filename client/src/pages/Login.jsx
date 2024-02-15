@@ -1,6 +1,6 @@
 import axios from 'axios';
 import  {useState} from 'react'
-import { Link, redirect } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 // To stop the links being rendered (Replace the Link Component with MemoizedLinks) 
 
 // const MemoizedLink = memo(({ to, className, children }) => (
@@ -9,6 +9,7 @@ import { Link, redirect } from 'react-router-dom';
 //   </Link>
 // ));
 const Login = () => {
+    const navigate = useNavigate()
     const [formData, setFormData] = useState({
 
         email: '',
@@ -28,7 +29,11 @@ const Login = () => {
         try{
           const res = await axios.post('http://localhost:3001/api/auth/login',formData)
           console.log(res.data);
-           redirect("/");
+          if (res.status === 201){
+            console.log('User logged in');
+            localStorage.setItem('currentUser',JSON.stringify(res.data))
+            navigate("/");
+          }
         }
         catch(err){
           console.log(err);
@@ -73,7 +78,7 @@ const Login = () => {
                 </div>
 
                 <div className=""></div>
-                <button
+                <button 
                   type="submit"
                   className="bg-indigo-500 text-white px-4 py-2 rounded focus:outline-none hover:bg-indigo-600 w-full"
                 >

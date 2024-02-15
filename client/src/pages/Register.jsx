@@ -2,10 +2,11 @@ import  { useState,useMemo } from 'react'
 import axios from 'axios';
 import Select from 'react-select';
 import countryList from 'react-select-country-list'
-import { Link } from 'react-router-dom';
+import { Link,useNavigate } from 'react-router-dom';
 
 
 const Register = () => {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
 
     email: '',
@@ -40,7 +41,14 @@ const Register = () => {
     const mergeForm = Object.assign({},formData,value)
     try{
       const res = await axios.post('http://localhost:3001/api/auth/register',mergeForm)
-      console.log(res.data);
+      console.log(res);
+      if (res.status === 201){
+        navigate('/login')
+      }
+      else {
+        alert('Registration failed')
+      }
+
     }
     catch(err){
       console.log(err);

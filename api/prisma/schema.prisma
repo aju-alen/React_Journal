@@ -26,3 +26,36 @@ model User {
   createdAt DateTime @default(now())
 }
 
+model Jounral{
+  id     Int      @id @default(autoincrement())
+  journalTitle   String   @unique
+  journalImageURL String
+  journalAbbreviation String
+  journalLanguage String
+  journalISSN String
+  journalDOI String
+  journalStartYear Int
+  journalPublishedArticles Int @default(0)
+  articles Article[]
+  createdAt DateTime @default(now())
+}
+
+model Article{
+  id     Int      @id @default(autoincrement())
+  articleTitle   String   
+  journalId Int
+  articlePublishedJournal Jounral @relation(fields: [journalId], references: [id])
+  articleAuthor Author[]
+  articleReceivedDate DateTime
+  articleAcceptedDate DateTime
+  articlePublishedDate DateTime
+  createdAt DateTime @default(now())
+}
+
+model Author{
+  id     Int      @id @default(autoincrement())
+  authorSurname String
+  articleId Int
+  article Article @relation(fields: [articleId], references: [id])
+}
+

@@ -1,22 +1,21 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import HeaderImage from '../components/HeaderImage'
 import ServicesHome from '../components/ServicesHome'
 import JournalCategory from '../components/JournalCategory'
 import LatestJournalsHome from '../components/LatestJournalsHome'
-import Footer from '../components/Footer'
 
+import { Audio } from 'react-loader-spinner'
 const Home = () => {
+
   return (
-    <div>
-      <HeaderImage />
+       <div>
+        <HeaderImage />
 
-      <ServicesHome />
+        <ServicesHome />
 
-      <JournalCategory />
+        <JournalCategory />
 
-      {window.innerWidth >= 919 && <LatestJournalsHome />}
-      
+        {window.innerWidth >= 919 && <LatestJournalsHome />}
     </div>
   )
 }

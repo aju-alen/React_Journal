@@ -1,14 +1,16 @@
 
 export const sortJournalByAZ =(dataToSort)=>{
+  console.log(dataToSort,'dataToSort in helper fn');
     let alphabet={}
     const sortedArr = dataToSort.sort((a,b)=>{
 
-        if(a.title.toUpperCase() < b.title.toUpperCase()) return -1
-        if(a.title.toUpperCase() > b.title.toUpperCase()) return 1
+        if(a.journalTitle.toUpperCase() < b.journalTitle.toUpperCase()) return -1
+        if(a.journalTitle.toUpperCase() > b.journalTitle.toUpperCase()) return 1
         else return 0
       })
+      console.log(sortedArr,'sortedArr in helper');
       sortedArr.map(journal=>{
-        let letter = journal.title.charAt(0)  
+        let letter = journal.journalTitle.charAt(0)  
       
         if(alphabet[letter] === undefined) {  
       

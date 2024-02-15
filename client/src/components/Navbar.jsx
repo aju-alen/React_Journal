@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import NavLinksStatic from "./NavLinksStatic"
+import axios from "axios"
 
 const Navbar = () => {
+  const Navigate = useNavigate()
   const [userActive, setUserActive] = useState(false)
   const [openMobileNav, setOpenMobileNav] = useState(false)
 
@@ -15,7 +17,14 @@ const Navbar = () => {
   }
 
   // Dummy user Login
-  const currentUser = false;
+  const currentUser = JSON.parse(localStorage.getItem("currentUser"))
+  const handleLogout = async() => {
+    const resp = await axios.get('http://localhost:3001/api/auth/logout')
+    localStorage.removeItem("currentUser")
+    console.log(resp.data);
+    Navigate('/')
+  
+  }
 
   useEffect(() => {
     window.addEventListener("scroll", isActive);
@@ -54,7 +63,7 @@ const Navbar = () => {
                 <span className=" p-2 space-x-2">
                   <Link to="/" >Dashboard</Link>
                   <Link to="/" className="  text-lg font-bold border-2 rounded p-2 hover:bg-red-300">
-                    <button >
+                    <button onClick={handleLogout}>
                       Logout
                     </button>
                   </Link>
