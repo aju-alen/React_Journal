@@ -23,6 +23,7 @@ model User {
   affiliation String  
   value String
   label String
+  articles Article[]
   createdAt DateTime @default(now())
 }
 
@@ -40,22 +41,34 @@ model Jounral{
   createdAt DateTime @default(now())
 }
 
-model Article{
-  id     Int      @id @default(autoincrement())
-  articleTitle   String   
-  journalId Int
-  articlePublishedJournal Jounral @relation(fields: [journalId], references: [id])
-  articleAuthor Author[]
-  articleReceivedDate DateTime
-  articleAcceptedDate DateTime
-  articlePublishedDate DateTime
-  createdAt DateTime @default(now())
+
+
+
+model Article {
+  id                        Int      @id @default(autoincrement())
+  articleTitle              String
+  articleAbstract           String
+  articleKeywords           String
+  articleAuthor             Author[]
+  specialReview             Boolean
+  articleReceivedDate       DateTime @default(now())
+  articleAcceptedDate       DateTime @default(now())
+  articlePublishedDate      DateTime @default(now())
+  journalId                 Int
+  articlePublishedJournal   Jounral  @relation(fields: [journalId], references: [id])
+  userId                    Int
+  articlePublishedUser      User     @relation(fields: [userId], references: [id])
+  createdAt                 DateTime @default(now())
 }
 
-model Author{
-  id     Int      @id @default(autoincrement())
-  authorSurname String
-  articleId Int
-  article Article @relation(fields: [articleId], references: [id])
-}
+model Author {
+  id                        Int      @id @default(autoincrement())
+  authorTitle               String
+  authorGivenName           String
+  authorLastName            String
+  authorEmail               String
+  authorAffiliation         String
+  articleId                 Int 
 
+  article                   Article  @relation(fields: [articleId], references: [id])
+}

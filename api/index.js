@@ -18,7 +18,7 @@ app.use(cookieParser())
 app.use('/api/auth',authRoute)
 app.use('/api/users',userRoute)
 app.use('/api/journal',journalRoute)
-app.use('/api/journal',journalArticleRoute)
+app.use('/api/journalArticle',journalArticleRoute)
 
 app.use(errorHandler)
 const PORT = process.env.PORT || 3001

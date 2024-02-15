@@ -37,3 +37,21 @@ export const getAllJournal = async (req, res, next) => {
         return next(createError(400, 'An error occoured'))
     }
 }
+
+export const getAllJournalCategoryName = async (req, res, next) => {
+    try {
+        const journal = await prisma.jounral.findMany({
+            select: {
+                id: true,
+                journalTitle: true
+            }
+        })
+        await prisma.$disconnect();
+        res.status(200).json( journal )
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occoured'))
+    }
+}
+
