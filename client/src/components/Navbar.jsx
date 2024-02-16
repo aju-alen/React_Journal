@@ -16,14 +16,12 @@ const Navbar = () => {
     setOpenMobileNav(prev => !prev)
   }
 
-  // Dummy user Login
   const currentUser = JSON.parse(localStorage.getItem("currentUser"))
   const handleLogout = async() => {
     const resp = await axios.get('http://localhost:3001/api/auth/logout')
     localStorage.removeItem("currentUser")
     console.log(resp.data);
     Navigate('/')
-  
   }
 
   useEffect(() => {
@@ -32,6 +30,7 @@ const Navbar = () => {
       window.removeEventListener("scroll", isActive)
     }
   }, [])
+
 
   return (
     <div >
@@ -61,7 +60,7 @@ const Navbar = () => {
               :
               (
                 <span className=" p-2 space-x-2">
-                  <Link to="/" >Dashboard</Link>
+                  <Link to={`/dashboard/${currentUser.id}`} >Dashboard</Link>
                   <Link to="/" className="  text-lg font-bold border-2 rounded p-2 hover:bg-red-300">
                     <button onClick={handleLogout}>
                       Logout
@@ -111,7 +110,7 @@ const Navbar = () => {
                   (
                     <div className=" flex flex-col gap-6 items-center">
                       <div>
-                        <Link to="/" >Dashboard</Link>
+                        <Link to={`/dashboard/${currentUser.id}`} >Dashboard</Link>
                       </div>
                       <div>
                         <Link to="/" className="  text-lg font-bold border-2 rounded p-2 hover:bg-red-300">

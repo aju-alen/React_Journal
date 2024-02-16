@@ -20,7 +20,7 @@ const JournalCategory = () => {
         }
         fetchJournalCategory()
     }, [])
-    console.log(journalCategory);
+    console.log(journalCategory,'journal category data called');
     return (
         <div>
            {!loading ? (<div className=" w-full h-auto bg-white p-4">
@@ -31,7 +31,7 @@ const JournalCategory = () => {
                             <Link to='/' className='relative md:border-4 border-black '>
                                 <img src={data.journalImageURL} className=' bg-slate-900 object-cover' />
                                 <div className={`absolute md:top-0 md:left-0 w-full h-full  opacity-60`} style={{ backgroundColor: `${data.color}` }}></div>
-                                <p className='absolute bottom-24 left-10 z-1 text-xl font-bold text-white '>
+                                <p className='absolute bottom-24 left-10 z-1 text-xl font-bold text-gray-900 '>
                                     {data.journalTitle}
                                 </p>
                             </Link>

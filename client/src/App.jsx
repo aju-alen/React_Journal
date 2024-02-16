@@ -11,6 +11,7 @@ import Journal from './pages/Journal'
 import Proceedings from './pages/Proceedings'
 import JournalCards from './pages/JournalCards'
 import Article from './pages/Article'
+import ProfileDashboard from './pages/ProfileDashboard'
 
 
 
@@ -59,6 +60,10 @@ function App() {
       {
         path: '/journal/:catId/:articleId',
         element: <Article />,
+      },
+      {
+        path: '/dashboard/:profileId',
+        element: <ProfileDashboard />,
       },
     ]
   }]);
