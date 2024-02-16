@@ -7,44 +7,52 @@ export const createJournalArticle = async (req, res, next) => {
     console.log(req.body.authors);
     try {
         const journalArticle = await prisma.article.create({
-            data: {
-              articleTitle: req.body.articleTitle,
-                articleAbstract: req.body.articleAbstract,
-                articleKeywords: req.body.articleKeywords,
-                specialReview: req.body.specialReview,
-                journalId: req.body.journalId,
-                userId: req.body.userId,
-                articleAuthor: req.body.authors
-
-            }
-
-        })
-        // const articleAuthor = await prisma.author.create({
-        //     data: req.body.authors,articleId:1
-        // })
-
+          data: {
+            articleTitle: req.body.articleTitle,
+            articleAbstract: req.body.articleAbstract,
+            articleKeywords: req.body.articleKeywords,
+            specialReview: req.body.specialReview,
+            journalId: req.body.journalId,
+            userId: req.body.userId,
+            articleAuthors: req.body.authors,
+          },
+        });
+      
+        const updatedJournal = await prisma.journal.update({
+          where: { id: req.body.journalId },
+          data: {
+            articles: {
+              connect: { id: journalArticle.id },
+            },
+          },
+        });
+        const updatedUser = await prisma.user.update({
+          where: { id: req.body.userId },
+          data: {
+            articles: {
+              connect: { id: journalArticle.id },
+            },
+          },
+        });
+      
         await prisma.$disconnect();
-        res.status(201).json({ message: 'Journal Article created successfully', journalArticle, articleAuthor})
-    }
-    catch (err) {
-        console.log(err);
-        return next(createError(400, 'An error occoured'))
-    }
+        res.status(201).json({ message: 'Journal Article created successfully', journalArticle, updatedJournal });
+      } catch (err) {
+        console.error(err);
+        await prisma.$disconnect();
+        return next(createError(400, 'An error occurred'));
+      }
 
 }
 
 export const getAllJournalArticle = async (req, res, next) => {
     try {
-        const journalArticle = await prisma.article.findUnique({
+        const journalArticle = await prisma.user.findUnique({
             where: { id: 1 },
-            include: {
-                userId: true,
-                journalId: true,
-                authors: true
-            }
+            include: { articles: true }
         });
         console.log(journalArticle);
-        return journalArticle;
+        res.status(200).json(journalArticle);
     }
     catch (err) {
         console.log(err);

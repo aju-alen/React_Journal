@@ -20,8 +20,19 @@ export const getOneUser = async (req, res, next) => {
        res.status(400).send('An error occoured')
    }
 }
-export const deleteUser = async (req, res, next) => {
-   
+export const getUserWithArticles = async (req, res, next) => {
+   try {
+      const journalArticle = await prisma.user.findUnique({
+          where: { id: 1 },
+          include: { articles: true }
+      });
+      console.log(journalArticle);
+      res.status(200).json(journalArticle);
+  }
+  catch (err) {
+      console.log(err);
+      return next(createError(400, 'An error occurred')); 
+  }
 }
 
    

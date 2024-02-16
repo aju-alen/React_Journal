@@ -19,6 +19,7 @@ export const register = async (req, res, next) => {
         if (finduser) {
             return next(createError(400, 'User already exists'))
         }
+        console.log('this is the req from the client',req.body);
         const hash = await bcrypt.hash(req.body.password, 10);
         const user = await prisma.user.create({
             data: {
@@ -29,7 +30,7 @@ export const register = async (req, res, next) => {
                 otherName: req.body.otherName,
                 affiliation: req.body.affiliation,
                 label: req.body.label,
-                value: req.body.value
+                value: req.body.value,
             }
         })
         await prisma.$disconnect()
@@ -62,6 +63,7 @@ export const login = async (req, res,next) => {
         )
         
     console.log(process.env.SECRET,'secret key');
+    console.log(finduser,'userDetails in the backend');
     const {password,...user} = finduser
 
     res.cookie("accessToken" , token,{httpOnly:true,secure:true}).status(201).json(user);

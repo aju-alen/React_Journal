@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 export const createJournal = async (req, res, next) => {
     try {
-        const journal = await prisma.jounral.create({
+        const journal = await prisma.journal.create({
             data: {
                 journalTitle: req.body.journalTitle,
                 journalImageURL: req.body.journalImageURL,
@@ -28,7 +28,7 @@ export const createJournal = async (req, res, next) => {
 
 export const getAllJournal = async (req, res, next) => {
     try {
-        const journal = await prisma.jounral.findMany()
+        const journal = await prisma.journal.findMany()
         await prisma.$disconnect();
         res.status(200).json(  journal )
     }
@@ -40,7 +40,7 @@ export const getAllJournal = async (req, res, next) => {
 
 export const getAllJournalCategoryName = async (req, res, next) => {
     try {
-        const journal = await prisma.jounral.findMany({
+        const journal = await prisma.journal.findMany({
             select: {
                 id: true,
                 journalTitle: true

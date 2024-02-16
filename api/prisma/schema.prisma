@@ -21,13 +21,14 @@ model User {
   surname  String
   otherName String
   affiliation String  
+  isAdmin  Boolean  @default(false)
   value String
   label String
   articles Article[]
   createdAt DateTime @default(now())
 }
 
-model Jounral{
+model Journal{
   id     Int      @id @default(autoincrement())
   journalTitle   String   @unique
   journalImageURL String
@@ -49,26 +50,17 @@ model Article {
   articleTitle              String
   articleAbstract           String
   articleKeywords           String
-  articleAuthor             Author[]
+  articleAuthors            Json
   specialReview             Boolean
+  isReview                  Boolean @default(true)
+  isPublished               Boolean @default(false)
   articleReceivedDate       DateTime @default(now())
   articleAcceptedDate       DateTime @default(now())
   articlePublishedDate      DateTime @default(now())
   journalId                 Int
-  articlePublishedJournal   Jounral  @relation(fields: [journalId], references: [id])
+  articlePublishedJournal   Journal @relation(fields: [journalId], references: [id])
   userId                    Int
   articlePublishedUser      User     @relation(fields: [userId], references: [id])
   createdAt                 DateTime @default(now())
 }
 
-model Author {
-  id                        Int      @id @default(autoincrement())
-  authorTitle               String
-  authorGivenName           String
-  authorLastName            String
-  authorEmail               String
-  authorAffiliation         String
-  articleId                 Int 
-
-  article                   Article  @relation(fields: [articleId], references: [id])
-}
