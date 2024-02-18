@@ -6,9 +6,10 @@ export const getOneUser = async (req, res, next) => {
    try{
          const profileId = req.params.profileId
          const user = await prisma.user.findUnique({
-            where:{
-                  id:Number(profileId)
-            }
+
+            where:{id:Number(profileId)},
+            include:{articles:true}
+            
          })
          if(!user){
             res.status(404).send('User not found')

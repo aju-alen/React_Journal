@@ -10,16 +10,14 @@ const JournalCards = () => {
     
   
     
-
+console.log(journals,'journals');
   return (
     <div className="h-auto w-auto bg-slate-200 ">
         <ImageHeader/>
     <h1 className='text-center font-bold text-4xl mt-6'>Journals</h1>
       <div className=" md:w-4/6 mx-auto  ">
-                {journals.filter(journal => journal.category[0].slug === catId ).map(journal => (
+                {journals.map(journal => (
                     <div key={journal.id} className=" bg-white rounded-md flex flex-col gap-2 mt-8 h-auto  ">
-                        
-                       
                         <h3 className=' font-medium mx-6 mt-10 '>{journal.title}</h3>
                         <p className=' mx-6 text-sm text-justify'>{journal.publishedDate}</p>
                         <p className=' mx-6 text-sm'>Authors: {journal.authors.map((author,idx) => (

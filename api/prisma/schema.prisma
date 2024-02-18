@@ -54,6 +54,7 @@ model Article {
   specialReview             Boolean
   isReview                  Boolean @default(true)
   isPublished               Boolean @default(false)
+  articleStatus             String @default("In Review")
   articleReceivedDate       DateTime @default(now())
   articleAcceptedDate       DateTime @default(now())
   articlePublishedDate      DateTime @default(now())
