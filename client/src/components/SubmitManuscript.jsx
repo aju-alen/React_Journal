@@ -1,14 +1,17 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { styled } from '@mui/material/styles';
 
 
 import axios from 'axios';
-const SubmitManuscript = ({user}) => {
+const SubmitManuscript = ({ user }) => {
     const [authors, setAuthors] = useState([]) //collection of authors
     const [journalCategory, setJournalCategory] = useState([]);
     const [checked, setChecked] = useState(true);
@@ -26,12 +29,18 @@ const SubmitManuscript = ({user}) => {
         articleAbstract: '',
         articleKeywords: '',
     })
-    
+
+    const [files, setFiles] = useState([])
+
     const handleAuthorChange = (event) => {
         const { name, value } = event.target
         setAuthorData((prevData) => ({ ...prevData, [name]: value }));
     }
 
+
+    const handleFileChange = (event) => {
+        setFiles(event.target.files);
+      };
 
     const handleChange = (event) => {
         const { name, value } = event.target
@@ -45,7 +54,7 @@ const SubmitManuscript = ({user}) => {
     }
 
     const handleAddMoreAuthor = () => {
-        try{
+        try {
             setAuthors([...authors, authorData])
             setAuthorData({
                 authorTitle: '',
@@ -57,18 +66,30 @@ const SubmitManuscript = ({user}) => {
             setAlert('success')
             setTimeout(() => {
                 setAlert('')
-            },3000)
+            }, 3000)
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
 
 
     }
-    const handleSubmit =async  () => {
-        const mergeForm = Object.assign({}, formData, { authors: authors },{specialReview:checked},{userId:user.id})
+    const handleSubmit = async () => {
+        const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id })
         console.log(mergeForm, 'final form data');
-        const resp = await axios.post('http://localhost:3001/api/journalArticle/create', mergeForm)
+        // const resp = await axios.post('http://localhost:3001/api/journalArticle/create', mergeForm)
+
+        const fileData = new FormData();
+        for(const file of files){
+            console.log(file, 'file in submit');
+            fileData.append('s3Files', file)
+        }
+        console.log(fileData, 'file data');
+
+        const fileResp = await axios.post('http://localhost:3001/api/s3/upload', fileData)
+        console.log(fileResp, 'file response');
+        const fileGet = await axios.get('http://localhost:3001/api/s3')
+        console.log(fileGet, 'file get data');
     }
     useEffect(() => {
         const getJournalCategory = async () => {
@@ -77,9 +98,7 @@ const SubmitManuscript = ({user}) => {
         }
         getJournalCategory()
     }, [])
-    console.log(formData, 'form data');
-    console.log(authorData, 'author data');
-    console.log(authors, 'final author data');
+    console.log(files, 'files');
     return (
         <div className='h-auto w-full'>
             {/* Step 1 */}
@@ -132,13 +151,13 @@ const SubmitManuscript = ({user}) => {
                                     onChange={handleChange}
                                 />
                             </div>
-                            <TextField id="outlined-basic" 
-                            label="Add Key Words"
-                             variant="outlined"
-                             value={formData.articleKeywords}
-                                    name='articleKeywords'
-                                    onChange={handleChange} 
-                                    />
+                            <TextField id="outlined-basic"
+                                label="Add Key Words"
+                                variant="outlined"
+                                value={formData.articleKeywords}
+                                name='articleKeywords'
+                                onChange={handleChange}
+                            />
                         </Box>
                     </div>
                 </div>
@@ -165,27 +184,40 @@ const SubmitManuscript = ({user}) => {
                         </Select>
                     </FormControl>
 
-                    <TextField id="outlined-basic" label="Given Name" variant="outlined"  name='authorGivenName'
-                            value={authorData.authorGivenName}
-                            onChange={handleAuthorChange}/>
-                    <TextField id="outlined-basic" label="Last Name" variant="outlined" 
-                    name='authorLastName'
-                    value={authorData.authorLastName}
-                    onChange={handleAuthorChange}
+                    <TextField id="outlined-basic" label="Given Name" variant="outlined" name='authorGivenName'
+                        value={authorData.authorGivenName}
+                        onChange={handleAuthorChange} />
+                    <TextField id="outlined-basic" label="Last Name" variant="outlined"
+                        name='authorLastName'
+                        value={authorData.authorLastName}
+                        onChange={handleAuthorChange}
                     />
                     <TextField id="outlined-basic" label="Email Address" variant="outlined"
-                    name='authorEmail'
-                    value={authorData.authorEmail}
-                    onChange={handleAuthorChange}
+                        name='authorEmail'
+                        value={authorData.authorEmail}
+                        onChange={handleAuthorChange}
                     />
                     <TextField id="outlined-basic" label="Affiliaiton" variant="outlined"
-                    name='authorAffiliation'
-                    value={authorData.authorAffiliation}
-                    onChange={handleAuthorChange}
+                        name='authorAffiliation'
+                        value={authorData.authorAffiliation}
+                        onChange={handleAuthorChange}
                     />
+                    <Button
+
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        Upload file
+                        <VisuallyHiddenInput type="file" />
+                    </Button>
                     {alert === 'success' && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-                  Author Added Successfully. Keep Adding More..
-                </Alert>}
+                        Author Added Successfully. Keep Adding More..
+                    </Alert>}
                 </Box>
                 <button onClick={handleAddMoreAuthor}>Add More Author</button>
             </div>
@@ -193,5 +225,18 @@ const SubmitManuscript = ({user}) => {
         </div>
     )
 }
+
+const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+});
+
 
 export default SubmitManuscript

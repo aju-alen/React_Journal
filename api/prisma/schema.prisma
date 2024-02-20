@@ -63,5 +63,6 @@ model Article {
   userId                    Int
   articlePublishedUser      User     @relation(fields: [userId], references: [id])
   createdAt                 DateTime @default(now())
+  manuscriptFile            String
 }
 

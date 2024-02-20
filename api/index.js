@@ -7,6 +7,7 @@ import authRoute from './routes/auth.route.js'
 import userRoute from './routes/user.route.js'
 import journalRoute from './routes/journal.route.js'
 import journalArticleRoute from './routes/journalArticle.route.js'
+import s3Route from './routes/s3.route.js'
 
 const app = express()
 dotenv.config()
@@ -19,6 +20,7 @@ app.use('/api/auth',authRoute)
 app.use('/api/users',userRoute)
 app.use('/api/journal',journalRoute)
 app.use('/api/journalArticle',journalArticleRoute)
+app.use('/api/s3',s3Route)
 
 app.use(errorHandler)
 const PORT = process.env.PORT || 3001

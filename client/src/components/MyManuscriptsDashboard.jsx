@@ -19,6 +19,7 @@ import Paper from '@mui/material/Paper';
           <TableRow>
             <TableCell>Manuscript Id</TableCell>
             <TableCell align="center">Article/Paper</TableCell>
+            <TableCell align="center">Message History</TableCell>
             <TableCell align="center">Status</TableCell>
           </TableRow>
         </TableHead>
