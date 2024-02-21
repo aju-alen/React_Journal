@@ -19,7 +19,7 @@ const s3 = new S3({
     region: REGION
 });
 
- const uploadWithMulter = () => multer({
+ const uploadWithMulter = (awsId) => multer({
     storage: mutlerS3({
         s3: s3,
         bucket: BUCKET_NAME,
@@ -28,23 +28,48 @@ const s3 = new S3({
         },
         key: function (req, file, cb) {
             const userId = req.userId;
-            const fileName = `${userId}/${file.originalname}`
+            const fileName = `${userId}/${awsId}/${file.originalname}`
             cb(null, fileName)
         }
     })
 }).array('s3Files', 3);
 
-export const uploadToAWS = (req, res) => {
-    const upload = uploadWithMulter();
-    upload(req, res, (err) => {
-        if (err) {
-            res.status(500).json({ message: 'An error occoured', error: err })
+export const uploadToAWS = async (req, res) => {
+    const { awsId } = req.params;
+    const userId = req.userId;
+
+    try {
+        // Delete all objects in the existing folder
+        const listObjectsParams = {
+            Bucket: BUCKET_NAME,
+            Prefix: `${userId}/${awsId}/`
+        };
+        const existingObjects = await s3.listObjectsV2(listObjectsParams);
+        console.log(existingObjects, 'existing objects');
+        if (  existingObjects.Contents?.length > 0 ) {
+            const deleteParams = {
+                Bucket: BUCKET_NAME,
+                Delete: {
+                    Objects: existingObjects.Contents.map(obj => ({ Key: obj.Key }))
+                }
+            };
+            await s3.deleteObjects(deleteParams);
         }
-        else {
-            res.status(200).json({ message: 'File uploaded successfully', files: req.files})
-        }
-    })
-}
+
+        // Upload new files
+        const upload = uploadWithMulter(awsId);
+        upload(req, res, (err) => {
+            if (err) {
+                res.status(500).json({ message: 'An error occurred', error: err });
+            } else {
+                res.status(200).json({ message: 'Files uploaded successfully', files: req.files });
+            }
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'An error occurred', error: err });
+    }
+};
 
 export const fetchAllFiles = async (req, res) => {
     try {
@@ -54,17 +79,14 @@ export const fetchAllFiles = async (req, res) => {
         let baseUrl = `https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/`
         let urlArr = []
         console.log(data,'data from s3');
+        const filteredData = data.Contents.filter((file) => file.Key.includes(`${req.userId}/${req.params.awsId}`))
 
-
-       
-
-        data.Contents.map((file) => {
+        filteredData.map((file) => {
            
             urlArr.push(baseUrl + file.Key)
         })
      
         res.status(200).json({ message: 'Files fetched successfully', files: urlArr })
-
     }
     catch (err) {
         res.status(500).json({ message: 'An error occoured', error: err })

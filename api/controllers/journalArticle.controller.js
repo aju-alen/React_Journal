@@ -16,6 +16,7 @@ export const createJournalArticle = async (req, res, next) => {
             userId: req.body.userId,
             articleAuthors: req.body.authors,
             filesURL: req.body.filesUrl,
+            awsId: req.body.awsId,
           },
         });
       
@@ -130,6 +131,29 @@ export const updateJournalArticle = async (req, res, next) => {
                 isReview: true,
                 articleStatus: 'In Review',
                 rejectionText: '',
+            }
+        });
+        console.log(journalArticle);
+        res.status(200).json(journalArticle);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
+}
+
+export const acceptManuscript = async (req, res, next) => {
+    try {
+        if(req.isAdmin === false) {
+            return next(createError(401, 'Not authorized to accept article'));
+        }
+        const journalArticle = await prisma.article.update({
+            where: { id: req.body.articleId },
+            data: {
+                isPublished: true,
+                articleStatus: 'Published',
+                isReview: false,
             }
         });
         console.log(journalArticle);

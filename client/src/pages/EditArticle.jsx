@@ -60,10 +60,10 @@ const EditArticle = () => {
             }
             console.log(fileData, 'file data');
 
-            const fileResp = await axios.post('http://localhost:3001/api/s3/upload', fileData)
+            const fileResp = await axios.post(`http://localhost:3001/api/s3/upload/${articleData.awsId}`, fileData)
             console.log(fileResp, 'file response');
 
-            const fileGet = await axios.get('http://localhost:3001/api/s3')
+            const fileGet = await axios.get(`http://localhost:3001/api/s3/${articleData.awsId}`)
             console.log(fileGet, 'file get data');
 
             const filesUrl = fileGet.data.files
@@ -81,6 +81,7 @@ const EditArticle = () => {
     }
     console.log(formData, 'formData');
     console.log(files, 'files');
+    console.log(articleData, 'articleData');
     return (
         <div className="h-auto w-auto bg-slate-200 ">
             <ImageHeader />

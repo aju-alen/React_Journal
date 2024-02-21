@@ -9,6 +9,8 @@ import Alert from '@mui/material/Alert';
 import CheckIcon from '@mui/icons-material/Check';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
+import { v4 as uuidv4 } from 'uuid';
+
 
 
 import axios from 'axios';
@@ -82,7 +84,7 @@ const SubmitManuscript = ({ user }) => {
             return
         }
         try{
-
+            const awsId = uuidv4();
             const fileData = new FormData();
             for(const file of files){
                 console.log(file, 'file in submit');
@@ -90,14 +92,14 @@ const SubmitManuscript = ({ user }) => {
             }
             console.log(fileData, 'file data');
     
-            const fileResp = await axios.post('http://localhost:3001/api/s3/upload', fileData)
+            const fileResp = await axios.post(`http://localhost:3001/api/s3/upload/${awsId}`, fileData)
             console.log(fileResp, 'file response');
-            const fileGet = await axios.get('http://localhost:3001/api/s3')
+            const fileGet = await axios.get(`http://localhost:3001/api/s3/${awsId}`)
             console.log(fileGet, 'file get data');
             const filesUrl = fileGet.data.files
     
     
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id },{filesUrl})
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id },{filesUrl},{awsId})
             console.log(mergeForm, 'final form data');
             const resp = await axios.post('http://localhost:3001/api/journalArticle/create', mergeForm)
             navigate(`/dashboard/${user.id}?tab=0`)

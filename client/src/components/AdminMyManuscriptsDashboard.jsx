@@ -20,15 +20,38 @@ import { axiosTokenHeader } from '../helperFunctions';
 
 const AdminMyManuscriptsDashboard = ({ user }) => {
   const [open, setOpen] = React.useState(false);
+  const [successOpen, setSuccessOpen] = React.useState(false);
+  const [articleId, setArticleId] = React.useState();
   const [rejectionText, setRejectionText] = useState('');
 
-  const handleClickOpen = () => {
+  const handleClickOpen = (articleId) => {
+    setArticleId(articleId);
+    console.log(articleId, 'articleId');
     setOpen(true);
   };
 
-  const handleClose = () => {
+  const handleClose = (id) => {
+ 
     setOpen(false);
   };
+  const handleClicSuccessOpen = () => {
+    setSuccessOpen(true);
+  };
+
+  const handleSuccessClose = () => {
+    setSuccessOpen(false);
+  };
+
+  const handleAcceptManuscript = async (articleId) => {
+    try {
+      axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+      await axios.put(`http://localhost:3001/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
+    }
+    catch (err) {
+      console.log(err);
+    }
+    handleSuccessClose();
+  }
 
   console.log(user, 'verify details');
   if (!Array.isArray(user) || user.length === 0) {
@@ -78,53 +101,79 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
                 </TableCell>
 
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button variant='outlined' >
+                  <Button variant='outlined' onClick={handleClicSuccessOpen} >
                     ✅
                   </Button>
-                  <Button variant="outlined" onClick={handleClickOpen}>
+
+                  <Dialog
+                    open={successOpen}
+                    onClose={handleSuccessClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      {"Accept This Manuscript ?"}
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Accepting this manuscript will make it available for the public to view. This action cannot be undone.
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={() => handleAcceptManuscript(row.id)}>Accept</Button>
+                      <Button onClick={handleSuccessClose} autoFocus>
+                        Discard
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+
+
+
+                  <Button variant="outlined" onClick={() => handleClickOpen(row.id)}>
                     ❌
                   </Button>
                   <Dialog
-        open={open}
-        onClose={handleClose}
-        PaperProps={{
-          component: 'form',
-          onSubmit: async (event) => {
-            event.preventDefault();
-            try{
-              axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-              await axios.post(`http://localhost:3001/api/journalArticle/verifyArticles/sendRejectionText`,{rejectionText:event.target[0].value,articleId:row.id})
-            }
-            catch(err){
-              console.log(err);
-            }
-            handleClose();
-          },
-        }}
-      >
-        <DialogTitle>Rejection Message</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-           Write here a message to the user on why the article was rejected.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="text"
-            name="text"
-            label="Rejection Text Message Here"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button type="submit">Send Rejection Message</Button>
-        </DialogActions>
-      </Dialog>
-      
+                    open={open}
+                    onClose={()=>handleClose(articleId)}
+                    PaperProps={{
+                      component: 'form',
+                      onSubmit: async (event) => {
+                        event.preventDefault();
+                        console.log(event.target[0].value, articleId, 'rejection text and article Id');
+                        try {
+                          axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                          await axios.post(`http://localhost:3001/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId })
+                        }
+                        catch (err) {
+                          console.log(err);
+                        }
+                        handleClose(row.id);
+                      },
+                    }}
+                  >
+                    <DialogTitle>Rejection Message</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText>
+                        Write here a message to the user on why the article was rejected.
+                      </DialogContentText>
+                      <TextField
+                        autoFocus
+                        required
+                        margin="dense"
+                        id="text"
+                        name="text"
+                        label="Rejection Text Message Here"
+                        type="text"
+                        fullWidth
+                        variant="standard"
+                      />
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={()=>handleClose(row.id)}>Cancel</Button>
+                      <Button type="submit">Send Rejection Message</Button>
+                    </DialogActions>
+                  </Dialog>
+
                 </TableCell>
 
               </TableRow>

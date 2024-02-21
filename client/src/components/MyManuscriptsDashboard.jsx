@@ -41,7 +41,7 @@ import { Link } from 'react-router-dom';
                 <TableCell align="center">{row.articleTitle}</TableCell>
                 <TableCell sx={{fontWeight:'bold'}} align="center">{row.rejectionText}</TableCell>
                 <TableCell sx={{fontWeight:'bold'}} align="center">{row.articleStatus}</TableCell>
-               {!row.isReview && <TableCell sx={{fontWeight:'bold'}} align="center">
+               {!row.isReview && !row.isPublished&& <TableCell sx={{fontWeight:'bold'}} align="center">
                   <Link to={`/editManuscript/${row.userId}/${row.id}`}>
                   <Button variant="contained" color="primary">
                     Edit
