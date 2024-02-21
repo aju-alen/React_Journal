@@ -51,6 +51,8 @@ model Article {
   articleAbstract           String
   articleKeywords           String
   articleAuthors            Json
+  filesURL                   Json
+  rejectionText             String @default("")
   specialReview             Boolean
   isReview                  Boolean @default(true)
   isPublished               Boolean @default(false)
@@ -63,6 +65,5 @@ model Article {
   userId                    Int
   articlePublishedUser      User     @relation(fields: [userId], references: [id])
   createdAt                 DateTime @default(now())
-  manuscriptFile            String
 }
 

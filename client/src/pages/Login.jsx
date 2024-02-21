@@ -29,8 +29,8 @@ const Login = () => {
         try{
           const res = await axios.post('http://localhost:3001/api/auth/login',formData)
           console.log(res.data);
-          if (res.status === 201){
-            console.log('User logged in');
+          if (res.status === 200){
+            console.log('User logged in',res.data);
             localStorage.setItem('currentUser',JSON.stringify(res.data))
             navigate("/");
           }

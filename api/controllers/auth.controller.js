@@ -58,15 +58,15 @@ export const login = async (req, res,next) => {
     }
     const token = jwt.sign(
         {id:finduser.id},
-        'SECRET_KEY',
+        process.env.SECRET,
         )
         
     console.log(process.env.SECRET,'secret key');
     console.log(finduser,'userDetails in the backend');
     const {password,...user} = finduser
 
-    res.cookie("accessToken" , token,{httpOnly:true,secure:true}).status(201).json(user);
     await prisma.$disconnect()
+    res.status(200).json({ message: "Login successful", token, user});
     console.log(token);
    }
    catch(err){

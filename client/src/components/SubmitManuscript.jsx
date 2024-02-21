@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -12,6 +13,7 @@ import { styled } from '@mui/material/styles';
 
 import axios from 'axios';
 const SubmitManuscript = ({ user }) => {
+    const navigate = useNavigate()
     const [authors, setAuthors] = useState([]) //collection of authors
     const [journalCategory, setJournalCategory] = useState([]);
     const [checked, setChecked] = useState(true);
@@ -39,7 +41,7 @@ const SubmitManuscript = ({ user }) => {
 
 
     const handleFileChange = (event) => {
-        setFiles(event.target.files);
+        setFiles([...files,event.target.files[0]]);
       };
 
     const handleChange = (event) => {
@@ -75,30 +77,47 @@ const SubmitManuscript = ({ user }) => {
 
     }
     const handleSubmit = async () => {
-        const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id })
-        console.log(mergeForm, 'final form data');
-        // const resp = await axios.post('http://localhost:3001/api/journalArticle/create', mergeForm)
-
-        const fileData = new FormData();
-        for(const file of files){
-            console.log(file, 'file in submit');
-            fileData.append('s3Files', file)
+        if (files.length !== 3) {
+            console.log('Please add all the required files before uploading the manuscript.')
+            return
         }
-        console.log(fileData, 'file data');
+        try{
 
-        const fileResp = await axios.post('http://localhost:3001/api/s3/upload', fileData)
-        console.log(fileResp, 'file response');
-        const fileGet = await axios.get('http://localhost:3001/api/s3')
-        console.log(fileGet, 'file get data');
+            const fileData = new FormData();
+            for(const file of files){
+                console.log(file, 'file in submit');
+                fileData.append('s3Files', file)
+            }
+            console.log(fileData, 'file data');
+    
+            const fileResp = await axios.post('http://localhost:3001/api/s3/upload', fileData)
+            console.log(fileResp, 'file response');
+            const fileGet = await axios.get('http://localhost:3001/api/s3')
+            console.log(fileGet, 'file get data');
+            const filesUrl = fileGet.data.files
+    
+    
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id },{filesUrl})
+            console.log(mergeForm, 'final form data');
+            const resp = await axios.post('http://localhost:3001/api/journalArticle/create', mergeForm)
+            navigate(`/dashboard/${user.id}?tab=0`)
+        }
+        catch(err){
+            console.log(err);
+        }
+
     }
     useEffect(() => {
+        const token = JSON.parse(localStorage.getItem('currentUser')).token
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
         const getJournalCategory = async () => {
-            const resp = await axios('http://localhost:3001/api/journal/categories')
+            const resp = await axios.get('http://localhost:3001/api/journal/categories')
             setJournalCategory(resp.data)
         }
         getJournalCategory()
     }, [])
     console.log(files, 'files');
+    console.log(user, 'userId');
     return (
         <div className='h-auto w-full'>
             {/* Step 1 */}
@@ -212,7 +231,33 @@ const SubmitManuscript = ({ user }) => {
                         onChange={handleFileChange}
                         startIcon={<CloudUploadIcon />}
                     >
-                        Upload file
+                        Cover Letter
+                        <VisuallyHiddenInput type="file" />
+                    </Button>
+                    <Button
+
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        Manuscript File
+                        <VisuallyHiddenInput type="file" />
+                    </Button>
+                    <Button
+
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        Supplementary File
                         <VisuallyHiddenInput type="file" />
                     </Button>
                     {alert === 'success' && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">

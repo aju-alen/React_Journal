@@ -1,16 +1,19 @@
-import {useEffect} from 'react';
+import {useEffect,useState} from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
+import Button from '@mui/material/Button';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Link } from 'react-router-dom';
 
  const MyManuscriptsDashboard=({user})=> {
+  const [articles, setArticles] = useState(false);
     useEffect(() => {
-
-    }, []);
+      setArticles(prev=>!prev)
+    }, [user]);
     console.log(user,'user details');
   return (
     <TableContainer component={Paper}>
@@ -18,13 +21,14 @@ import Paper from '@mui/material/Paper';
         <TableHead>
           <TableRow>
             <TableCell>Manuscript Id</TableCell>
-            <TableCell align="center">Article/Paper</TableCell>
+            <TableCell align="center">Article Title</TableCell>
             <TableCell align="center">Message History</TableCell>
             <TableCell align="center">Status</TableCell>
+            <TableCell align="center">Edit</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {user.articles.map((row) =>{
+          {user?.articles?.map((row) =>{
             console.log(row,'rowData');
             return(
               <TableRow
@@ -35,7 +39,15 @@ import Paper from '@mui/material/Paper';
                   {row.id}
                 </TableCell>
                 <TableCell align="center">{row.articleTitle}</TableCell>
+                <TableCell sx={{fontWeight:'bold'}} align="center">{row.rejectionText}</TableCell>
                 <TableCell sx={{fontWeight:'bold'}} align="center">{row.articleStatus}</TableCell>
+               {!row.isReview && <TableCell sx={{fontWeight:'bold'}} align="center">
+                  <Link to={`/editManuscript/${row.userId}/${row.id}`}>
+                  <Button variant="contained" color="primary">
+                    Edit
+                  </Button>
+                  </Link>
+                </TableCell>}
               </TableRow>
               
             )

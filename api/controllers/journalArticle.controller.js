@@ -15,6 +15,7 @@ export const createJournalArticle = async (req, res, next) => {
             journalId: req.body.journalId,
             userId: req.body.userId,
             articleAuthors: req.body.authors,
+            filesURL: req.body.filesUrl,
           },
         });
       
@@ -61,4 +62,82 @@ export const getAllJournalArticle = async (req, res, next) => {
     }
     
    
+}
+
+export const getAllArticlesToVerify = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.findMany({
+            where: {
+                isReview: true,
+                isPublished: false
+            }
+        });
+        console.log(journalArticle);
+        res.status(200).json(journalArticle);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
+}
+
+export const postRejectionText = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.update({
+            where: { id: req.body.articleId },
+            data: {
+                rejectionText: req.body.rejectionText,
+                articleStatus: 'Rejected, waiting for user to edit and resend',
+                isReview: false,
+            }
+        });
+        console.log(journalArticle);
+        res.status(200).json(journalArticle);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
+
+}
+
+export const getSingleArticle = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.findUnique({
+            where: { id: Number(req.params.articleId) }
+        });
+        console.log(journalArticle);
+        res.status(200).json(journalArticle);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
+}
+
+export const updateJournalArticle = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.update({
+            where: { id: Number(req.params.articleId) },
+            data: {
+                articleTitle: req.body.articleTitle,
+                articleAbstract: req.body.articleAbstract,
+                articleKeywords: req.body.articleKeywords,
+                filesURL: req.body.filesUrl,
+                isReview: true,
+                articleStatus: 'In Review',
+                rejectionText: '',
+            }
+        });
+        console.log(journalArticle);
+        res.status(200).json(journalArticle);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
 }

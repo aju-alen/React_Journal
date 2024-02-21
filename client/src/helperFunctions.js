@@ -39,3 +39,8 @@ export const wordLimit = (journalAbstract) => {
   else return string
   
 }
+
+export const axiosTokenHeader =() => {
+  const token = JSON.parse(localStorage.getItem('currentUser')).token
+       return  `Bearer ${token}`
+}

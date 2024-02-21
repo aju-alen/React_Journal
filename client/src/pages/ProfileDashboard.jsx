@@ -1,5 +1,5 @@
 import { useEffect,useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import SubmitManuscript from '../components/SubmitManuscript';
 import MyManuscriptsDashboard from '../components/MyManuscriptsDashboard';
+import AdminMyManuscriptsDashboard from '../components/AdminMyManuscriptsDashboard';
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,18 +47,33 @@ function a11yProps(index) {
 
 const ProfileDashboard = () => {
 const {profileId} = useParams()
+const [userDetails, setUserDetails] = useState({})
 const [user, setUser] = useState({})
-const [value, setValue] = useState(0);
+let [searchParams, setSearchParams] = useSearchParams();
+const value = Number(searchParams.get("tab") || 0);
 
 const handleChange = (event, newValue) => {
-  setValue(newValue);
+  setSearchParams((params) => {
+    params.set("tab", newValue);
+    return params;
+  });
 };
 
 useEffect(() => {
  const getUser = async () => {
+  const getUser = await JSON.parse(localStorage.getItem('currentUser'))
+  setUserDetails(getUser)
+  axios.defaults.headers.common['Authorization'] = `Bearer ${getUser.token}`
   try{
-    const resp =await axios.get(`http://localhost:3001/api/users/${profileId}`)
-    setUser(resp.data)
+   
+    if(!getUser.user.isAdmin){
+      const resp =await axios.get(`http://localhost:3001/api/users/${profileId}`)
+      setUser(resp.data)
+    }
+    else{
+      const resp =await axios.get(`http://localhost:3001/api/journalArticle/verifyArticles/${profileId}`)
+      setUser(resp.data)
+    }
   }
   catch(err){
     console.log(err)
@@ -66,28 +82,30 @@ useEffect(() => {
  
   getUser()
 }, [])
-  console.log(user,'zzzzzz');
+  console.log(userDetails,'zzzzzz');
   
   return (
     <div>
        <img src="./images/cloud-main-img.jpg" alt="cloud" className=' w-full md:h-auto' />
-       <h1 className=' text-3xl font-semibold mb-6 text-center p-4'>Welcome {`${user?.title} ${user?.surname}`}</h1>
+       <h1 className=' text-3xl font-semibold mb-6 text-center p-4'>Welcome {`${userDetails?.user?.title} ${userDetails?.user?.surname}`}</h1>
        <Box sx={{ width: '100%' }} >
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                        <Tab label="Submit Manuscript" {...a11yProps(0)} />
-                        <Tab label="My Manuscripts" {...a11yProps(1)} />
+                        <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts":"My Manuscripts"} {...a11yProps(0)} />
+                        {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />}
                         <Tab label="Item Three" {...a11yProps(2)} />
                     </Tabs>
+                    
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-
-                  <SubmitManuscript user={user}/>
+                  {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={user}/>}
+                 {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user}/>}
 
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
 
-                  <MyManuscriptsDashboard user={user}/>
+                <SubmitManuscript user={user}/>
+                 
 
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={2}>

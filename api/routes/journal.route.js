@@ -5,7 +5,7 @@ import {createJournal,getAllJournal,getAllJournalCategoryName} from '../controll
 
 
 router.get('/',getAllJournal)
-router.get('/categories',getAllJournalCategoryName)
+router.get('/categories',verifyToken,getAllJournalCategoryName)
 router.post('/create',createJournal)
 
 

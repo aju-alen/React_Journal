@@ -60,7 +60,7 @@ const Navbar = () => {
               :
               (
                 <span className=" p-2 space-x-2">
-                  <Link to={`/dashboard/${currentUser.id}`} >Dashboard</Link>
+                  <Link to={`/dashboard/${currentUser.user.id}`} >Dashboard</Link>
                   <Link to="/" className="  text-lg font-bold border-2 rounded p-2 hover:bg-red-300">
                     <button onClick={handleLogout}>
                       Logout

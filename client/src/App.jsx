@@ -12,7 +12,7 @@ import Proceedings from './pages/Proceedings'
 import JournalCards from './pages/JournalCards'
 import Article from './pages/Article'
 import ProfileDashboard from './pages/ProfileDashboard'
-
+import EditArticle from './pages/EditArticle'
 
 
 function App() {
@@ -64,6 +64,10 @@ function App() {
       {
         path: '/dashboard/:profileId',
         element: <ProfileDashboard />,
+      },
+      {
+        path: '/editManuscript/:userId/:articleId',
+        element: <EditArticle />,
       },
     ]
   }]);
