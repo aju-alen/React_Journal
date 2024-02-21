@@ -165,3 +165,20 @@ export const acceptManuscript = async (req, res, next) => {
         
     }
 }
+
+export const getPublsihedJournalArticle = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.findMany({
+            where: {
+                isPublished: true
+            }
+        });
+        console.log(journalArticle);
+        res.status(200).json(journalArticle);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
+}

@@ -1,9 +1,10 @@
 import express  from "express";
 import {verifyToken} from '../middleware/jwt.js'
 const router = express.Router()
-import {createJournalArticle,getAllJournalArticle,getAllArticlesToVerify,postRejectionText,getSingleArticle,updateJournalArticle,acceptManuscript} from '../controllers/journalArticle.controller.js'
+import {createJournalArticle,getAllJournalArticle,getAllArticlesToVerify,postRejectionText,getSingleArticle,updateJournalArticle,acceptManuscript,getPublsihedJournalArticle} from '../controllers/journalArticle.controller.js'
 
 router.get('/',getAllJournalArticle)
+router.get('/publishedArticle',getPublsihedJournalArticle)
 router.post('/create',createJournalArticle)
 router.post('/updateArticle/:articleId',updateJournalArticle)
 router.get('/singleArticle/:articleId',getSingleArticle)

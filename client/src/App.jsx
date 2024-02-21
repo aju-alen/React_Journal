@@ -13,6 +13,7 @@ import JournalCards from './pages/JournalCards'
 import Article from './pages/Article'
 import ProfileDashboard from './pages/ProfileDashboard'
 import EditArticle from './pages/EditArticle'
+import Payment from './pages/Payment'
 
 
 function App() {
@@ -68,6 +69,10 @@ function App() {
       {
         path: '/editManuscript/:userId/:articleId',
         element: <EditArticle />,
+      },
+      {
+        path: '/payment',
+        element: <Payment/>,
       },
     ]
   }]);
