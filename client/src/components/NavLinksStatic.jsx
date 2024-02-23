@@ -5,7 +5,7 @@ const NavLinksStatic = () => {
     return (
         <>
             <Link to="/">Home</Link>
-            <Link to="/journal" >Journals</Link>
+            <Link to="/journal/EIJOER" >Journals</Link>
             <Link to="/proceedings" >Proceedings</Link>
             <Link to="/" >Conferences</Link>
             

@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom';
             <TableCell align="center">Message History</TableCell>
             <TableCell align="center">Status</TableCell>
             <TableCell align="center">Edit</TableCell>
+            <TableCell align="center">Payment</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -41,13 +42,21 @@ import { Link } from 'react-router-dom';
                 <TableCell align="center">{row.articleTitle}</TableCell>
                 <TableCell sx={{fontWeight:'bold'}} align="center">{row.rejectionText}</TableCell>
                 <TableCell sx={{fontWeight:'bold'}} align="center">{row.articleStatus}</TableCell>
-               {!row.isReview && !row.isPublished&& <TableCell sx={{fontWeight:'bold'}} align="center">
+               {!row.isReview && !row.isPublished ? <TableCell sx={{fontWeight:'bold'}} align="center">
                   <Link to={`/editManuscript/${row.userId}/${row.id}`}>
                   <Button variant="contained" color="primary">
                     Edit
                   </Button>
                   </Link>
-                </TableCell>}
+                </TableCell> : <TableCell></TableCell>}
+
+                <TableCell sx={{fontWeight:'bold'}} align="center">
+                  <Link to={`/checkout/${row.id}`}>
+                  <Button variant="contained" color="primary">
+                    Payment
+                  </Button>
+                  </Link>
+                </TableCell>
               </TableRow>
               
             )

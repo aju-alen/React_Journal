@@ -5,8 +5,8 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import ImageHeader from '../components/ImageHeader';
-import { journals } from '../../data';
 import { Link, useParams } from 'react-router-dom';
+import axios from 'axios';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -43,7 +43,7 @@ function a11yProps(index) {
 }
 
 export default function Article() {
-    const [journal,setJournal] = useState(['a'])
+    const [journal,setJournal] = useState()
     const [value, setValue] = React.useState(0);
     console.log(journal);
 
@@ -54,14 +54,13 @@ export default function Article() {
     };
     
     useEffect(()=>{
-        const newJournal = journals.filter(journal=>{
-            console.log(journal.category[0].slug == catId , journal.category[0])
-            console.log(journal.id == articleId , journal.id,articleId)
+       const getSinglePublishedArticle = async () => {
+        const resp = await axios.get(`http://localhost:3001/api/journalArticle/singlePublishedArticle/${articleId}`)
+        console.log(resp.data, 'resp in single article');
+        setJournal(journal)
+       }
 
-           return journal.category[0].slug == catId && journal.id == articleId
-         })
-
-        setJournal(newJournal)
+       getSinglePublishedArticle()
     },[])
 
     return (

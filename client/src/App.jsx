@@ -13,7 +13,10 @@ import JournalCards from './pages/JournalCards'
 import Article from './pages/Article'
 import ProfileDashboard from './pages/ProfileDashboard'
 import EditArticle from './pages/EditArticle'
-import Payment from './pages/Payment'
+import CheckoutForm from './pages/CheckoutForm'
+import ReturnAfterStripe from './pages/ReturnAfterStripe'
+import ProductDisplay from './pages/ProductDisplay'
+
 
 
 function App() {
@@ -71,9 +74,17 @@ function App() {
         element: <EditArticle />,
       },
       {
-        path: '/payment',
-        element: <Payment/>,
+        path: '/checkout/:articleId',
+        element: <CheckoutForm />,
       },
+        {
+          path: '/returnPayment',
+          element: <ReturnAfterStripe />,
+        },
+        {
+          path: '/productDisplay',
+          element: <ProductDisplay />,
+        },
     ]
   }]);
   return <RouterProvider router={router} />;

@@ -119,6 +119,21 @@ export const getSingleArticle = async (req, res, next) => {
     }
 }
 
+export const getSinglePublishedArticle = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.findUnique({
+            where: { id: Number(req.params.articleId),isPublished:true }
+        });
+        console.log(journalArticle,"journal Article in api");
+        res.status(200).json([journalArticle]);
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+        
+    }
+}
+
 export const updateJournalArticle = async (req, res, next) => {
     try {
         const journalArticle = await prisma.article.update({

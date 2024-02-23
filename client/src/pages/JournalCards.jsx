@@ -38,7 +38,7 @@ if (!Array.isArray(articles) || articles.length === 0) {
                 {articles?.map(journal => {
                 return (
                     <div key={journal.id} className=" bg-white rounded-md flex flex-col gap-2 mt-8 h-auto  ">
-                        <h3 className=' font-medium mx-6 mt-10 '>{journal.articleTitle}</h3>
+                        <h3 className=' font-medium mx-6 mt-10 '>{journal?.articleTitle}</h3>
                         <p className=' mx-6 text-sm text-justify'>{journal.articlePublishedDate}</p>
                         <p className=' mx-6 text-sm'>Authors: {journal.articleAuthors.map((author,idx) => (
                             <React.Fragment key={idx}>{author.authorGivenName} | </React.Fragment>
@@ -50,9 +50,9 @@ if (!Array.isArray(articles) || articles.length === 0) {
                             <span> Article Number: {journal.id}</span>
                             </p>
 
-                        {/* <Link to={`/journal/${journal.category[0].slug}/${journal.id}`} className='font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4  '> */}
-                            <button className='font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4' >View Article</button>
-                        {/* </Link> */}
+                        <Link to={`/journal/EIJOER/${journal.id}`} >
+                            <button className='font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4'  >View Article</button>
+                        </Link>
                     </div>
                 )})}
             </div>
