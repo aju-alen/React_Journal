@@ -362,3 +362,166 @@ export const journals = [
     }
     ,
 ]
+
+export const EthicsOfPublicationdata =[
+    {
+        EthicsOfPublicationTitle: "Ethical Practice",
+        EthicsOfPublicationContent: "The adherence to ethical standards in publishing is essential for maintaining the integrity and credibility of scientific articles.",
+        link : "/ethicalpractice"
+    }
+    ,
+    {
+        EthicsOfPublicationTitle: "Authorship",
+        EthicsOfPublicationContent: "An author is a person who has made a noteworthy contribution to the creation of a manuscript. The conventional standards of authorship should be determined based on four criteria.",
+        link : "/authorship"
+    }
+    ,
+    {
+        EthicsOfPublicationTitle:"Submission of Manuscript",
+        EthicsOfPublicationContent:"Authors are advised to familiarise themselves with the guidelines provided in the “Instruction for Authors” section on the journal’s website before submitting their manuscript.",
+        link : "/submission"
+    }
+]
+
+export const ethicalpractice = [
+    {
+        title: "Ethical Practice",
+        content: "The adherence to ethical standards in publishing is essential for maintaining the integrity and credibility of scientific articles. Consequently, Scientific Journals require all authors to comply with ethical guidelines when preparing their manuscripts."
+    },
+    {
+        title: "Plagiarism",
+        content: "According to the Merriam Webster Online dictionary, plagiarising is defined as the act of stealing and presenting someone else’s ideas or words as one’s own, using another person’s work without giving credit, committing literary theft, or presenting an idea or product derived from an existing source as new and original. Scientific Journals Portal views plagiarism as a grave offence and is dedicated to removing manuscripts that potentially involve plagiarism from its review and publication process. To identify possible cases of plagiarism, Scientific Journals Portal employs the iThenticate plagiarism detection application. The initial step in the manuscript review process is conducting a plagiarism check. Manuscripts that exhibit an unacceptable level of similarity with previously published works are promptly rejected. Please refer to the review process outlined below. Authors are required to submit original works, and in cases where plagiarism is suspected, Scientific Journals Portal will adhere to the COPE guideline."
+    },
+    {
+        title: "Duplicate Submissions",
+        content: "Duplicate submission refers to the act of an author submitting identical or similar manuscripts to two or separate journals simultaneously, whether they belong to Scientific Journals Portal or any other publishing entity. This encompasses the submission of manuscripts that are derived from the same data, with no significant variations between them. Additionally, duplicate submission encompasses the act of submitting the same or similar manuscript in different languages to distinct journals."
+    },
+    {
+        title: "Fabrication and falsification of data",
+        content: "The act of creating, altering, or misrepresenting data in a written work is considered unethical. Scientific Journals Portal adheres to the COPE guidelines when addressing instances of suspected data fabrication and falsification."
+    },
+    {
+        title: "Citations manipulation",
+        content: "An academic document ought to solely incorporate pertinent references. The act of including citations that are unrelated to the subject matter is highly discouraged. Likewise, engaging in self-citation with the intention of artificially inflating one’s citation count is considered unethical."
+    },
+]
+
+export const authorship =[
+    {
+        title: "Authorship",
+        content: "An author is a person who has made a noteworthy contribution to the creation of a manuscript. The conventional standards of authorship should be determined based on four criteria. These criteria include making significant contributions to the conception or design of the work, acquiring, analysing, or interpreting data for the work, drafting or critically revising the work for important intellectual content, giving final approval of the version to be published, and agreeing to be responsible for all aspects of the work to ensure that any questions related to the accuracy or integrity of any part of the work are appropriately investigated and resolved."
+    },
+    {
+        title: "Acknowledgement",
+        content:"Recognition should be extended to individuals who have made contributions to the creation of a written work but do not fulfil the requirements for being listed as authors. Likewise, institutions that have provided financial support and/or other forms of assistance should also be acknowledged."
+    },
+    {
+        title:"Changes in authorship",
+        content:"In instances where it becomes necessary to modify the authorship of a manuscript or a published article, the alterations will be carried out in accordance with the guidelines set forth by the Committee on Publication Ethics (COPE). Only the corresponding authors are permitted to submit requests for changes in authorship, which should be made by completing the Changes in Authorship Form and submitting it to the editor. For additional information on this topic, interested readers may refer to the International Committee of Medical Journal Editors (ICMJE) guidelines, which provide a clear definition of the roles of authors and contributors, as well as the flowcharts provided by COPE that outline the process for making changes in authorship."
+    }
+]
+
+export const submission = [
+    {
+        title:"Submission of Manuscript",
+        content:"Authors are advised to familiarise themselves with the guidelines provided in the “Instruction for Authors” section on the journal’s website before submitting their manuscript.(See More) The manuscript should be prepared in accordance with the journal’s style and specifications as outlined in its policy. The authors listed on the manuscript should have fulfilled the criteria for authorship as specified above. Whenever possible, the contribution of each author should be clearly indicated. Prior to submission, all authors must review and approve the final version of the manuscript. By submitting the manuscript, it is understood that all authors have read it and have given their consent for its submission. The contact information of all authors, including their usernames, other names, affiliations, email addresses, and phone/fax numbers, should be provided in the manuscript. Manuscripts should be submitted online through the following website link: https://ms.scientificjournalsportal.com",
+    },
+    {
+        title:"Conflict of Interest",
+        content:"The existence of a conflict of interest (COI) arises when an individual’s private interests, which are in competition with their responsibilities to scientific and publishing activities, create a divergence. This divergence may lead a reasonable observer to question whether the individual’s behaviour or judgement was influenced by their competing interests. In accordance with the guidelines set forth by the World Association of Medical Editors (WAME), authors are required to disclose all financial or relevant interests that may have influenced the development of their manuscript. Reviewers are also expected to disclose any conflicts of interest and, if necessary, decline to review any manuscript that may have a conflict of interest, and such manuscripts will be reassigned to other editors. Additional resources on the topic of conflict of interest can also be found in the flowcharts provided by the Committee on Publication Ethics (COPE), the Conflicts of Interest guidelines established by the International Committee of Medical Journal Editors (ICMJE), and the International Ethical Principles for Scholarly Publication developed by the International Association of Scientific, Technical, and Medical Publishers (STM)."
+    },
+    {
+        title:"Confidentiality",
+        content:"The submitted manuscript is considered confidential and will not be disclosed by Scientific Journals Portal, except to those involved in the processing and preparation of the manuscript for potential publication. This includes the editorial staff, corresponding authors, potential reviewers, actual reviewers, and editors. However, in cases where misconduct is suspected, the manuscript may be shared with members of Scientific Journals Portal’s ethics committee and relevant institutions or organisations involved in resolving the misconduct. Scientific Journals Portal will adhere to the appropriate COPE flowcharts as necessary. For further information, please refer to the ICMJE’s “Responsibilities in the Submission and Peer-Review Process” and STM’s “International Ethical Principles for Scholarly Publication."
+    },
+    {
+        title:"Misconduct",
+        content:"The act of misconduct involves the breach of editorial policy, journal policies, ethics of publication, or any relevant guidelines/policies outlined by COPE, WAME, ICMJE, and STM. Any other actions that jeopardise the integrity of the research/publication process are considered potential misconduct. COPE guidelines will be followed in the investigation of suspected cases of misconduct."
+    },
+    {
+        title:"Correction and retraction of articles",
+        content:"With the permission of the journal editor, published articles may be amended. The extent of the amendments will be determined by the editors, with minor corrections being made directly to the original article. However, in the case of major corrections, the original article will remain unaltered, while the corrected version will be published alongside it. The two versions will be linked, and a statement explaining the reason for the major change will be included. Retraction of articles will be carried out in accordance with the COPE retraction guidelines when necessary. For further information on scientific misconduct, expressions of concern, and retraction, readers may refer to the ICMJE guidelines. Additionally, the COPE guidelines and flowcharts, as well as the WAME and STM ethical principles for scholarly publication, provide useful resources on ethics of publication policies for medical journals."
+    }
+]
+
+export const authorFAQ = [
+    {
+        title:"How do I submit a manuscript?",
+        content:"To submit a manuscript, access the website http://ms.scientificjournalsportal.com. After successfully logging in, select the “Submit Manuscript” link. This action will direct you to a page containing three wizard pages that need to be filled out. It is important to ensure that the information and data provided are precise and reliable."
+    },
+    {
+        title:"How do I incorporate co-authors?",
+        content:"To incorporate co-authors into your manuscript, navigate to the “Submit Manuscript” page and select the option labelled “add author,” which is visually indicated in the accompanying image."
+    },
+    {
+        title:"How do I check the progress of a manuscript?",
+        content:"To enquire about the progress of a manuscript, one can navigate to the “My Manuscripts” button. This action will prompt the system to present a comprehensive list of the individual’s manuscripts along with their respective statuses. For a visual representation, please refer to the accompanying image."
+    },
+    {
+        title:"How do I send a message to the Accounts Unit?",
+        content:"Send a message to accounts@scientificjournalsportal.com"
+    },
+    {
+        title:"How do I read or download Reviewers Comments?",
+        content:"To access the feedback provided by reviewers, authors will receive corresponding comments via email."
+    },
+    {
+        title:"How do I make payment online?",
+        content:"To initiate an online payment, navigate to the Author’s Page and locate the “Make Payment” button in the Left side menu.By clicking on this button, a comprehensive list of outstanding payments will be displayed, provided that there are any pending payments associated with your account."
+    },
+    {
+        title:"How do I modify my password or update my profile?",
+        content:"To update your profile, please click on the “View/Edit Profile” option.Refer to the provided image below for visual guidance:In the designated Password field, input your desired new password. In the event that you are unable to access your account due to a forgotten password, there is no need to be concerned. Simply visit this page for assistance."
+    },
+]
+
+export const reviewerFAQ =[
+    {
+        title:"How do I join the Editorial Board?",
+        content:"To become a member of the Editorial Board, please access the designated webpage and fill out the provided form. Once your request has been approved, you will receive a notification."
+    },
+    {
+        title:"I have been invited to review a manuscript, how do I login to the system?",
+        content:"To login as a Reviewer, visit this link."
+    },
+    {
+        title:"How do I download a manuscript?",
+        content:"To access the manuscript assigned to you, please navigate to the left sidebar and select “Assigned Manuscript”. This will provide you with a list of manuscripts that have been assigned to you. To download a specific manuscript, click on the “View details” link associated with that manuscript. Please note that the number of download buttons available may differ depending on the manuscript file. Once you have located the appropriate download button, click it to initiate the download process. "
+    },
+    {
+        title:"I cannot find information about the author(s)?",
+        content:"The manuscript files contain information regarding the author(s) at the top."
+    },
+    {
+        title:"How do I submit my evaluation of a manuscript?",
+        content:"Access the designated manuscripts by navigating to the appropriate section.Select the “view details” option for the manuscript you wish to evaluate.To provide feedback, select the “upload comments” option. It is important to thoroughly read the manuscript prior to evaluation.Refer to the sample evaluation page provided below for guidance."
+    },
+    {
+        title:"How can I send a message to the editorial office?",
+        content:"Please click on the provided link to access a compilation of email addresses for all editorial offices."
+    },
+    {
+        title:"How do I change my password or update my profile?",
+        content:"To update your profile, please click on the “View/Edit Profile” option."
+    },
+    
+]
+
+export const editorFAQ =[
+    {
+        title:"How do I become an editor?",
+        content:"To apply for the position of Editor, kindly express your interest by sending a message to the email address: editorial@scientificjournalsportal.com"
+    },
+    {
+        title:"How do I login to the system?",
+        content:"Please navigate to this webpage to gain access to the login portal for Editors."
+    },
+    {
+        title:"How do I download Original Manuscript, Revised Manuscript, and Reviewers Comments?",
+        content:"Please access the “Assigned Manuscripts” tab to view a list of manuscripts that have been assigned to you.Once you have located the manuscript you wish to view, click on the “view details” button to access a page containing relevant information."
+    },
+    {
+        title:"How do I make a decision on a manuscript?",
+        content:"Please navigate to the “Assigned Manuscripts” section in the menu. A comprehensive list of manuscripts that have been assigned to you will be presented.Proceed by selecting the “”view details” button.A page resembling the one shown below will appear: Next, click on the “Post Comments and Decision” hyperlink. This action will direct you to a page similar to the one depicted below:"
+    },
+]

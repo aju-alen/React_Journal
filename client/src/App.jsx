@@ -2,7 +2,7 @@
 import './App.css'
 import Navbar from './components/Navbar'
 
-import { createBrowserRouter,Outlet,RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom'
 import Home from './pages/Home'
 import Footer from './components/Footer'
 import Register from './pages/Register'
@@ -16,6 +16,19 @@ import EditArticle from './pages/EditArticle'
 import CheckoutForm from './pages/CheckoutForm'
 import ReturnAfterStripe from './pages/ReturnAfterStripe'
 import ProductDisplay from './pages/ProductDisplay'
+import EthicalPractice from './pages/EthicalPractice'
+import FeeForPublication from './pages/FeeForPublication'
+import PolicyWaiver from './pages/PolicyWaiver'
+import AuthorFAQ from './components/AuthorFAQ'
+import ReviewerFAQ from './components/ReviewerFAQ'
+import EditorFAQ from './components/EditorFAQ'
+import ReviewersGuidelines from './pages/ReviewersGuidelines'
+import PeerReview from './pages/PeerReview'
+import Editors from './pages/Editors'
+import Policies from './pages/Policies'
+import Contact from './pages/Contact'
+import TermsAndCondPage from './pages/TermsAndCondPage'
+
 
 
 
@@ -24,17 +37,17 @@ function App() {
   const Layout = () => {
     return (
       <div className="">
-          <Navbar />
-          <Outlet />
-          <Footer />
+        <Navbar />
+        <Outlet />
+        <Footer />
       </div>
     );
   };
 
   const router = createBrowserRouter([{
     path: "/",
-    element:<Layout/>,
-    children:[
+    element: <Layout />,
+    children: [
       {
         path: "/",
         element: <Home />,
@@ -77,18 +90,66 @@ function App() {
         path: '/checkout/:articleId',
         element: <CheckoutForm />,
       },
-        {
-          path: '/returnPayment',
-          element: <ReturnAfterStripe />,
-        },
-        {
-          path: '/productDisplay',
-          element: <ProductDisplay />,
-        },
+      {
+        path: '/returnPayment',
+        element: <ReturnAfterStripe />,
+      },
+      {
+        path: '/productDisplay',
+        element: <ProductDisplay />,
+      },
+      {
+        path: 'ethics/:ethicalSlug',
+        element: <EthicalPractice />,
+      },
+      {
+        path: '/mansucript_handling_fee',
+        element: <FeeForPublication />,
+      },
+      {
+        path: '/waiver_policy',
+        element: <PolicyWaiver />,
+      },
+      {
+        path: 'faq/authorFAQ',
+        element: <AuthorFAQ />,
+      },
+      {
+        path: 'faq/reviewFAQ',
+        element: <ReviewerFAQ />,
+      },
+      {
+        path: 'faq/editorFAQ',
+        element: <EditorFAQ />,
+      },
+      {
+        path: '/reviewers_guidelines',
+        element: <ReviewersGuidelines/>,
+      },
+      {
+        path: '/peer_review',
+        element: <PeerReview/>,
+      },
+      {
+        path: '/for_editors',
+        element: <Editors/>,
+      },
+      {
+        path: '/policies',
+        element: <Policies/>,
+      },
+      {
+        path: '/contact',
+        element: <Contact/>,
+      },
+      {
+        path: '/terms',
+        element: <TermsAndCondPage/>,
+      },
     ]
   }]);
   return <RouterProvider router={router} />;
- 
+
 }
 
 
