@@ -60,7 +60,7 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
       <div>No Manuscripts To Verify</div>
     );
   }
-
+  
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">

@@ -17,6 +17,7 @@ const Navbar = () => {
   }
 
   const currentUser = JSON.parse(localStorage.getItem("currentUser"))
+  console.log(currentUser,'in navbar');
   const handleLogout = async() => {
     const resp = await axios.get('http://localhost:3001/api/auth/logout')
     localStorage.removeItem("currentUser")
@@ -35,16 +36,16 @@ const Navbar = () => {
   return (
     <div >
       <div className=" hidden md:block">
-        <nav className={` h-28 p-4 flex justify-between items-center fixed z-50 w-full transition-all duration-500 ease-in-out ${userActive ? ' bg-cyan-200' : ''} `}>
+        <nav className={` h-28 p-4 flex justify-between items-center fixed z-50 w-full transition-all duration-500 ease-in-out ${userActive ? ' bg-[#f1ded7]' : ''} `}>
           {/* Logo on the left */}
-          <Link className="text-black text-lg font-bold" to="/">
+          <Link className="text-black text-lg font-light" to="/">
             Logo
           </Link>
 
           {/* Navigation links on the right */}
-          <div className="flex justify-around items-center space-x-4 text-black font-bold">
+          <div className="flex justify-around items-center space-x-4 text-black font-light">
             <NavLinksStatic />
-            {currentUser ? <Link to="/" >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
+            {currentUser ? <Link to={`/dashboard/${currentUser.user.id}`} >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
             {!currentUser ?
               (<span className=" p-2 space-x-2">
                 <Link to="/login" className="  text-lg font-bold border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
@@ -61,7 +62,7 @@ const Navbar = () => {
               (
                 <span className=" p-2 space-x-2">
                   <Link to={`/dashboard/${currentUser.user.id}`} >Dashboard</Link>
-                  <Link to="/" className="  text-lg font-bold border-2 rounded p-2 hover:bg-red-300">
+                  <Link to="/" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
                     <button onClick={handleLogout}>
                       Logout
                     </button>
@@ -93,14 +94,14 @@ const Navbar = () => {
                 {!currentUser ?
                   (<div className=" flex flex-col gap-6 items-center">
                     <div>
-                      <Link to="/" className="  text-lg font-bold border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
+                      <Link to="/" className="  text-lg font-light border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
                         <button >
                           Login
                         </button>
                       </Link>
                     </div>
                     <div>
-                      <Link to="/" className=" text-lg font-bold border-2 rounded p-2 border-blue-500">
+                      <Link to="/" className=" text-lg font-light border-2 rounded p-2 border-blue-500">
                         <button > Register
                         </button>
                       </Link>
@@ -113,7 +114,7 @@ const Navbar = () => {
                         <Link to={`/dashboard/${currentUser.id}`} >Dashboard</Link>
                       </div>
                       <div>
-                        <Link to="/" className="  text-lg font-bold border-2 rounded p-2 hover:bg-red-300">
+                        <Link to="/" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
                           <button >
                             Logout
                           </button>

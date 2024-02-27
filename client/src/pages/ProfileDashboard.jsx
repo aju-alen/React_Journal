@@ -9,6 +9,10 @@ import Box from '@mui/material/Box';
 import SubmitManuscript from '../components/SubmitManuscript';
 import MyManuscriptsDashboard from '../components/MyManuscriptsDashboard';
 import AdminMyManuscriptsDashboard from '../components/AdminMyManuscriptsDashboard';
+import HeaderImage from '../components/HeaderImage';
+import ImageHeader from '../components/ImageHeader';
+import { DNA } from 'react-loader-spinner'
+
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -83,11 +87,13 @@ useEffect(() => {
   getUser()
 }, [])
   console.log(userDetails,'zzzzzz');
+ 
+  console.log(user,'userDetails');
   
   return (
     <div>
-       <img src="./images/cloud-main-img.jpg" alt="cloud" className=' w-full md:h-auto' />
-       <h1 className=' text-3xl font-semibold mb-6 text-center p-4'>Welcome {`${userDetails?.user?.title} ${userDetails?.user?.surname}`}</h1>
+      <ImageHeader/>
+       <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${userDetails?.user?.title} ${userDetails?.user?.surname}`}</h1>
        <Box sx={{ width: '100%' }} >
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">

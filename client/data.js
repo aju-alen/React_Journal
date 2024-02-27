@@ -367,19 +367,25 @@ export const EthicsOfPublicationdata =[
     {
         EthicsOfPublicationTitle: "Ethical Practice",
         EthicsOfPublicationContent: "The adherence to ethical standards in publishing is essential for maintaining the integrity and credibility of scientific articles.",
-        link : "/ethicalpractice"
+        link : "/ethicalpractice",
+        img: "./images/card1.jpg",
+        title: "Ethical Practice"
     }
     ,
     {
         EthicsOfPublicationTitle: "Authorship",
         EthicsOfPublicationContent: "An author is a person who has made a noteworthy contribution to the creation of a manuscript. The conventional standards of authorship should be determined based on four criteria.",
-        link : "/authorship"
+        link : "/authorship",
+        img: "./images/card2.jpg",
+        title: "Authorship"
     }
     ,
     {
         EthicsOfPublicationTitle:"Submission of Manuscript",
         EthicsOfPublicationContent:"Authors are advised to familiarise themselves with the guidelines provided in the “Instruction for Authors” section on the journal’s website before submitting their manuscript.",
-        link : "/submission"
+        link : "/submission",
+        img: "./images/card3.jpg",
+        title: "Submission of Manuscript"
     }
 ]
 

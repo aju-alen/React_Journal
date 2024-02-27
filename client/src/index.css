@@ -15,4 +15,10 @@ body,
   .service-class {
     @apply flex flex-col gap-6 items-center;
   }
+  .h2-class {
+    @apply font-bold text-3xl text-center my-4 p-3;
+  }
+  .p-class {
+    @apply text-justify mx-10;
+  }
 }

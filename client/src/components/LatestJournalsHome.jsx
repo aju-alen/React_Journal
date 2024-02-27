@@ -4,13 +4,13 @@ import { journals } from '../../data';
 import { Carousel } from 'react-responsive-carousel';
 import { Link } from 'react-router-dom';
 
-const LatestJournalsHome = () => {
+const LatestJournalsHome = ({width}) => {
     
     return (
         <div className=' h-auto w-auto '>
-            <h1 className=' text-center font-bold text-3xl'>View Latest Journal</h1>
+            <h2 className=' text-center font-bold text-3xl my-4'>View Latest Journal</h2>
             <div className=' flex justify-center h-auto'>
-                 <Carousel className='' width="1200px" showThumbs={false}  showArrows={true} infiniteLoop="true">
+                 <Carousel className='' width={width} showThumbs={false}  showArrows={true} infiniteLoop="true">
                     {journals.map(journal => (
                         <React.Fragment key={journal.id}>
                             <div className=' max-h-auto overflow-y-auto border-2 border-black h-2/3 '>

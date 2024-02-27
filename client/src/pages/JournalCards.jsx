@@ -3,7 +3,7 @@ import ImageHeader from '../components/ImageHeader'
 import { Link,useParams } from 'react-router-dom'
 import { journals } from '../../data'
 import axios from 'axios'
-
+import { DNA } from 'react-loader-spinner'
 
 
 const JournalCards = () => {
@@ -27,7 +27,16 @@ console.log(articles,'articles');
 if (!Array.isArray(articles) || articles.length === 0) {
     // Handle empty or non-array user prop
     return (
-      <div>No Published Articles Avaialable</div>
+      <div className='  min-h-screen flex items-center justify-center '>
+          <DNA
+  visible={true}
+  height="80"
+  width="80"
+  ariaLabel="dna-loading"
+  wrapperStyle={{}}
+  wrapperClass="dna-wrapper"
+  />
+      </div>
     );
   }
   return (

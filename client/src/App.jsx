@@ -28,6 +28,8 @@ import Editors from './pages/Editors'
 import Policies from './pages/Policies'
 import Contact from './pages/Contact'
 import TermsAndCondPage from './pages/TermsAndCondPage'
+import ComingSoon from './components/ComingSoon'
+import ConferencesPage from './pages/ConferencesPage'
 
 
 
@@ -36,11 +38,13 @@ function App() {
 
   const Layout = () => {
     return (
-      <div className="">
-        <Navbar />
-        <Outlet />
-        <Footer />
+      <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <Navbar />
+      <div style={{ flex: 1 }}>
+        <Outlet className='' />
       </div>
+      <Footer />
+    </div>
     );
   };
 
@@ -67,6 +71,10 @@ function App() {
       {
         path: "/proceedings",
         element: <Proceedings />,
+      },
+      {
+        path: "/conferences",
+        element: <ConferencesPage/>,
       },
       ,
       {
@@ -146,6 +154,7 @@ function App() {
         path: '/terms',
         element: <TermsAndCondPage/>,
       },
+     
     ]
   }]);
   return <RouterProvider router={router} />;

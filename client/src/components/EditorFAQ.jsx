@@ -18,7 +18,7 @@ const EditorFAQ = () => {
     <ImageHeader />
 <Accordion>
    {editorFAQ.map(data => (
-       <AccordionItem>
+       <AccordionItem key={data.title}>
        <AccordionItemHeading>
            <AccordionItemButton>
               {data.title}

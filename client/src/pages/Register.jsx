@@ -3,6 +3,7 @@ import axios from 'axios';
 import Select from 'react-select';
 import countryList from 'react-select-country-list'
 import { Link,useNavigate } from 'react-router-dom';
+import ImageHeader from '../components/ImageHeader';
 
 
 const Register = () => {
@@ -57,7 +58,7 @@ const Register = () => {
   };
   return (
     <div className="h-auto w-auto">
-      <img src="./images/cloud-main-img.jpg" alt="cloud" className=' w-full md:h-auto' />
+      <ImageHeader/>
       <div className="min-h-screen flex md:items-center justify-center bg-gray-100 md:p-10">
         <div className="bg-white p-8 rounded shadow-md w-full md:w-5/6">
           <h2 className="text-2xl font-semibold mb-6 text-center">Please enter your details to create your account and submit articles</h2>

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import  {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import ImageHeader from '../components/ImageHeader';
 // To stop the links being rendered (Replace the Link Component with MemoizedLinks) 
 
 // const MemoizedLink = memo(({ to, className, children }) => (
@@ -41,7 +42,7 @@ const Login = () => {
       };
       return (
         <div className="h-auto w-auto">
-          <img src="./images/cloud-main-img.jpg" alt="cloud" className=' w-full md:h-auto' />
+          <ImageHeader/>
           <div className="min-h-screen flex md:items-center justify-center bg-gray-100 md:p-10">
             <div className="bg-white p-8 rounded shadow-md w-full md:w-5/6">
               <h2 className="text-2xl font-semibold mb-6 text-center">Login Here to submit articles</h2>

@@ -12,14 +12,15 @@ const Home = () => {
 
         <ServicesHome />
         <div>
-            <h2 className="text-center">About Us
-      <p>Scientific Journals Portal serves as a publisher for a wide range of open access journals that undergo rigorous peer review. With a diverse collection of over 100 journals, we cover various disciplines including art and humanities, engineering, medical science, social sciences, biological sciences, physical sciences, and agricultural sciences. Our primary objective is to expedite the sharing of knowledge by publishing research articles of exceptional quality, while adhering to the principles of open access.</p>
-</h2>
+            <h2 className=" text-center font-bold text-3xl">About Us</h2>
+      <p className=' text-justify mx-16'>Scientific Journals Portal serves as a publisher for a wide range of open access journals that undergo rigorous peer review. With a diverse collection of over 100 journals, we cover various disciplines including art and humanities, engineering, medical science, social sciences, biological sciences, physical sciences, and agricultural sciences. Our primary objective is to expedite the sharing of knowledge by publishing research articles of exceptional quality, while adhering to the principles of open access.</p>
         </div>
 
         <EthicsOfPublicationCards />
 
-        {window.innerWidth >= 919 && <LatestJournalsHome />}
+        {window.innerWidth >=  1536   && <LatestJournalsHome width={'1400px'} />}
+        {window.innerWidth >= 919 && window.innerWidth <= 1535 && <LatestJournalsHome width={'950px'} />}
+        {window.innerWidth <= 919 && <LatestJournalsHome width={'350px'} />}
     </div>
   )
 }
