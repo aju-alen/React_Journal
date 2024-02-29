@@ -48,15 +48,17 @@ model Journal{
 model Article {
   id                        Int      @id @default(autoincrement())
   articleTitle              String
-  articleAbstract           String
+  articleAbstract           String @db.VarChar(1000)
   articleKeywords           String
   articleAuthors            Json
   filesURL                  Json
+  rejectionFilesURL         Json
   awsId                     String
   rejectionText             String @default("")
   specialReview             Boolean
   isReview                  Boolean @default(true)
   isPublished               Boolean @default(false)
+  isAccepted                Boolean @default(false)
   articleStatus             String @default("In Review")
   articleReceivedDate       DateTime @default(now())
   articleAcceptedDate       DateTime @updatedAt

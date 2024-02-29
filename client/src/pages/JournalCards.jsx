@@ -4,6 +4,7 @@ import { Link,useParams } from 'react-router-dom'
 import { journals } from '../../data'
 import axios from 'axios'
 import { DNA } from 'react-loader-spinner'
+import { getDates } from '../helperFunctions'
 
 
 const JournalCards = () => {
@@ -48,19 +49,22 @@ if (!Array.isArray(articles) || articles.length === 0) {
                 return (
                     <div key={journal.id} className=" bg-white rounded-md flex flex-col gap-2 mt-8 h-auto  ">
                         <h3 className=' font-medium mx-6 mt-10 '>{journal?.articleTitle}</h3>
-                        <p className=' mx-6 text-sm text-justify'>{journal.articlePublishedDate}</p>
-                        <p className=' mx-6 text-sm'>Authors: {journal.articleAuthors.map((author,idx) => (
+                        <div className=" flex flex-col justify-center items-center">
+                        <p className=' mx-6 text-sm text-justify'> Published on: {getDates(journal.articlePublishedDate)}</p>
+                        <p className=' mx-6 p-2 text-sm'>Authors: {journal.articleAuthors.map((author,idx) => (
                             <React.Fragment key={idx}>{author.authorGivenName} | </React.Fragment>
-
                         ))}</p>
                         
                         <p className='  mx-6'>
-                            <span>doi: lkmlkmlkm</span> |
-                            <span> Article Number: {journal.id}</span>
+                            <span>doi: testlive.com</span> |
+                            <span> Article Number - A000{journal.id}</span>
                             </p>
-
+                            </div>
                         <Link to={`/journal/EIJOER/${journal.id}`} >
-                            <button className='font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4'  >View Article</button>
+                            <div className="flex justify-center items-center">
+
+                            <button className='  font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4'  >View Article</button>
+                            </div>
                         </Link>
                     </div>
                 )})}

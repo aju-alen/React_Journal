@@ -1,7 +1,7 @@
 import React from 'react'
 import { ethicalpractice, authorship, submission } from '../../data'
 import { useParams } from 'react-router-dom';
-import AuthorFAQ from './AuthorFAQ';
+import AuthorFaq from './AuthorFaq';
 
 const EthicsOfPublicationContent = () => {
   const { ethicalSlug } = useParams()
@@ -30,8 +30,8 @@ const EthicsOfPublicationContent = () => {
       ))}
       {ethicalSlug === 'authorship' && (
         <div>
-        Authors FAQ
-        <AuthorFAQ/>
+        <h2 className='h2-class'>Authors FAQ</h2>
+        <AuthorFaq/>
         </div>
       )}
     </div>

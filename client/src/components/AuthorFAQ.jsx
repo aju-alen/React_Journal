@@ -1,39 +1,36 @@
 import React from 'react'
-import {
-    Accordion,
-    AccordionItem,
-    AccordionItemHeading,
-    AccordionItemButton,
-    AccordionItemPanel,
-} from 'react-accessible-accordion';
 
-import 'react-accessible-accordion/dist/fancy-example.css';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { authorFAQ } from '../../data';
-import ImageHeader from './ImageHeader';
 
-const AuthorFAQ = () => {
-    return (
-        <div>
-             <ImageHeader />
-        <Accordion>
-            {authorFAQ.map(data => (
-                <AccordionItem>
-                <AccordionItemHeading>
-                    <AccordionItemButton>
-                       {data.title}
-                    </AccordionItemButton>
-                </AccordionItemHeading>
-                <AccordionItemPanel>
-                    <p>
-                        {data.content}
-                    </p>
-                </AccordionItemPanel>
-            </AccordionItem>
-            ))}
-             
-        </Accordion>
-        </div>
-    );
+const AuthorFaq = () => {
+  return (
+    <div className=' mx-10 p-14'>
+        
+            {authorFAQ.map((faq,idx) =>(
+        <Accordion className='p-4 m-2'>
+                <AccordionSummary
+                expandIcon={<ArrowDropDownIcon />}
+                aria-controls="panel1-content"
+                id={`panel${idx}-header`}
+              >
+                <Typography>{faq.title}</Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>
+                 {faq.content}
+                </Typography>
+              </AccordionDetails>
+      </Accordion>
+            )) }
+        
+      
+    </div>
+  )
 }
 
-export default AuthorFAQ
+export default AuthorFaq

@@ -25,6 +25,7 @@ import { Link } from 'react-router-dom';
             <TableCell align="center">Message History</TableCell>
             <TableCell align="center">Status</TableCell>
             <TableCell align="center">Edit</TableCell>
+            <TableCell align="center">Correction Files</TableCell>
             <TableCell align="center">Payment</TableCell>
           </TableRow>
         </TableHead>
@@ -49,6 +50,18 @@ import { Link } from 'react-router-dom';
                   </Button>
                   </Link>
                 </TableCell> : <TableCell></TableCell>}
+
+                {row.rejectionFilesURL.length >0 ?<TableCell sx={{ fontWeight: 'bold', color: 'blue' }} align="center">
+                  <Link to={row.rejectionFilesURL[0]} target="_blank" rel="noopener noreferrer">
+                    📄 Rejection File 1
+                  </Link>
+                  <Link to={row.rejectionFilesURL[1]} target="_blank" rel="noopener noreferrer">
+                    📄 Rejection File 2
+                  </Link>
+                  <Link to={row.rejectionFilesURL[2]} target="_blank" rel="noopener noreferrer">
+                    📄 Rejection File 3
+                  </Link>
+                </TableCell>:<TableCell></TableCell>}
 
                 <TableCell sx={{fontWeight:'bold'}} align="center">
                   <Link to={`/checkout/${row.id}`}>

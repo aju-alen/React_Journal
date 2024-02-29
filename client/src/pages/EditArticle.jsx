@@ -5,13 +5,15 @@ import TextField from '@mui/material/TextField'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import styled from '@mui/system/styled'
 import Button from '@mui/material/Button'
-import{useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import Box from '@mui/material/Box'
+import FormControl from '@mui/material/FormControl'
 
 import { axiosTokenHeader } from '../helperFunctions'
 import axios from 'axios'
 const EditArticle = () => {
     const navigate = useNavigate()
-    const { articleId,userId } = useParams()
+    const { articleId, userId } = useParams()
     const [articleData, setArticleData] = useState([])
     const [files, setFiles] = useState([]);
     const [formData, setFormData] = useState({
@@ -21,7 +23,7 @@ const EditArticle = () => {
     })
     const handleChange = (e) => {
         setFormData((prev) => {
-            console.log(e.target.name,e.target.value);
+            console.log(e.target.name, e.target.value);
             return {
                 ...prev,
                 [e.target.name]: e.target.value,
@@ -52,9 +54,9 @@ const EditArticle = () => {
             console.log('Please add all the required files before uploading the manuscript.')
             return
         }
-        try{
+        try {
             const fileData = new FormData();
-            for(const file of files){
+            for (const file of files) {
                 console.log(file, 'file in submit');
                 fileData.append('s3Files', file)
             }
@@ -68,13 +70,13 @@ const EditArticle = () => {
 
             const filesUrl = fileGet.data.files
 
-            const mergeForm = Object.assign({},formData, {filesUrl})
+            const mergeForm = Object.assign({}, formData, { filesUrl })
             console.log(mergeForm, 'final form data');
             const resp = await axios.post(`http://localhost:3001/api/journalArticle/updateArticle/${articleId}`, mergeForm)
             console.log(userId, 'userId');
             navigate(`/dashboard/${userId}?tab=0`)
         }
-        catch(err){
+        catch (err) {
             console.log(err);
         }
 
@@ -85,72 +87,76 @@ const EditArticle = () => {
     return (
         <div className="h-auto w-auto bg-slate-200 ">
             <ImageHeader />
-            <div>EditArticle Your Article</div>
+            <h2 className='h2-class' >EditArticle Your Article</h2 >
             <div>
-                <div>
-                <TextField
-                    id="outlined-controlled"
-                    label="Edit Your Article Title"
-                    value={formData.articleTitle}
-                    name='articleTitle'
-                    onChange={handleChange}
-                />
-                </div>
-                <TextField
-                    id="outlined-controlled"
-                    label="Edit Your Article Abstract"
-                    value={formData.articleAbstract}
-                    name='articleAbstract'
-                    onChange={handleChange}
-                />
-                <TextField
-                    id="outlined-controlled"
-                    label="Edit Your Article Keywords"
-                    value={formData.articleKeywords}
-                    name='articleKeywords'
-                    onChange={handleChange}
-                />
-               
-                
-               
-                <Button
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    startIcon={<CloudUploadIcon />}
-                >
-                    Cover Letter
-                    <VisuallyHiddenInput type="file" />
-                </Button>
-                <Button
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    startIcon={<CloudUploadIcon />}
-                >
-                    Manuscript File
-                    <VisuallyHiddenInput type="file" />
-                </Button>
-                <Button
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    accept=".pdf,.doc,.docx"
-                    onChange={handleFileChange}
-                    startIcon={<CloudUploadIcon />}
-                >
-                     Supplementary File
-                    <VisuallyHiddenInput type="file" />
-                </Button>
-                <button onClick={handleSubmit}>Submit Manuscript For Verification</button>
+                <Box sx={{ minWidth: 300 }}>
+                    <FormControl fullWidth>
+                        
 
+                            <TextField sx={{ mb: 4 }}
+                                id="outlined-basic"
+                                label="Edit Your Article Title"
+                                value={formData.articleTitle}
+                                name='articleTitle'
+                                onChange={handleChange}
+                            />
+                        <TextField sx={{ mb: 4 }}
+                            id="outlined-textarea"
+                            label="Edit Your Article Abstract"
+                            value={formData.articleAbstract}
+                            name='articleAbstract'
+                            onChange={handleChange}
+                            multiline
+                        />
+                        <TextField sx={{ mb: 4 }}
+                            id="outlined-controlled"
+                            label="Edit Your Article Keywords"
+                            value={formData.articleKeywords}
+                            name='articleKeywords'
+                            onChange={handleChange}
+                        />
+
+
+
+                        <Button sx={{ mb: 4,mx:80 }}
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileChange}
+                            startIcon={<CloudUploadIcon />}
+                        >
+                            Cover Letter
+                            <VisuallyHiddenInput type="file" />
+                        </Button>
+                        <Button sx={{ mb: 4,mx:80 }}
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileChange}
+                            startIcon={<CloudUploadIcon />}
+                        >
+                            Manuscript File
+                            <VisuallyHiddenInput type="file" />
+                        </Button>
+                        <Button sx={{ mb: 4,mx:80 }}
+                            component="label"
+                            role={undefined}
+                            variant="contained"
+                            tabIndex={-1}
+                            accept=".pdf,.doc,.docx"
+                            onChange={handleFileChange}
+                            startIcon={<CloudUploadIcon />}
+                        >
+                            Supplementary File
+                            <VisuallyHiddenInput type="file" />
+                        </Button>
+                        <Button variant='contained' onClick={handleSubmit} sx={{m:3}}>Submit Manuscript For Verification</Button>
+                    </FormControl>
+                </Box>
             </div>
 
         </div>

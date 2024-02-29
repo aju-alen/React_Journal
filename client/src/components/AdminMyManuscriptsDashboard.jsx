@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import Article from '../pages/Article';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -17,32 +18,39 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
 import { axiosTokenHeader } from '../helperFunctions';
+import { styled } from '@mui/material/styles';
+
 
 const AdminMyManuscriptsDashboard = ({ user }) => {
   const [open, setOpen] = React.useState(false);
   const [successOpen, setSuccessOpen] = React.useState(false);
   const [articleId, setArticleId] = React.useState();
   const [rejectionText, setRejectionText] = useState('');
+  const [files, setFiles] = useState([]);
 
   const handleClickOpen = (articleId) => {
     setArticleId(articleId);
-    console.log(articleId, 'articleId');
     setOpen(true);
   };
-
+console.log(articleId, 'articleId state');
   const handleClose = (id) => {
- 
+
     setOpen(false);
   };
-  const handleClicSuccessOpen = () => {
+  const handleClicSuccessOpen = (articleId) => {
+    setArticleId(articleId);
     setSuccessOpen(true);
   };
 
   const handleSuccessClose = () => {
     setSuccessOpen(false);
   };
+  const handleFileChange = (event) => {
+    setFiles([...files, event.target.files[0]]);
+};
 
   const handleAcceptManuscript = async (articleId) => {
+    console.log(articleId, 'articleId inside handleAcceptManuscript state');
     try {
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
       await axios.put(`http://localhost:3001/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
@@ -60,7 +68,7 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
       <div>No Manuscripts To Verify</div>
     );
   }
-  
+
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -101,7 +109,7 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
                 </TableCell>
 
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button variant='outlined' onClick={handleClicSuccessOpen} >
+                  <Button variant='outlined' onClick={()=>handleClicSuccessOpen(row.id)} >
                     ✅
                   </Button>
 
@@ -116,11 +124,11 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        Accepting this manuscript will make it available for the public to view. This action cannot be undone.
+                        Accepting this manuscript will make it available for the public to view. This action cannot be undone.{articleId}
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                      <Button onClick={() => handleAcceptManuscript(row.id)}>Accept</Button>
+                      <Button onClick={() => handleAcceptManuscript(articleId)}>Accept</Button>
                       <Button onClick={handleSuccessClose} autoFocus>
                         Discard
                       </Button>
@@ -134,15 +142,30 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
                   </Button>
                   <Dialog
                     open={open}
-                    onClose={()=>handleClose(articleId)}
+                    onClose={() => handleClose(articleId)}
                     PaperProps={{
                       component: 'form',
                       onSubmit: async (event) => {
                         event.preventDefault();
                         console.log(event.target[0].value, articleId, 'rejection text and article Id');
                         try {
+                          const fileData = new FormData();
+                          for(const file of files){
+                              console.log(file, 'file in submit');
+                              fileData.append('s3Files', file)
+                          }
+                          console.log(fileData, 'file data');
+              
+                          const fileResp = await axios.post(`http://localhost:3001/api/s3/rejection/upload/${row.awsId}/${row.userId}`, fileData)
+                          console.log(fileResp, 'file response');
+              
+                          const fileGet = await axios.get(`http://localhost:3001/api/s3/rejection/${row.awsId}/${row.userId}`)
+                          console.log(fileGet, 'file get data');
+              
+                          const filesUrl = fileGet.data.files
+              
                           axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-                          await axios.post(`http://localhost:3001/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId })
+                          await axios.post(`http://localhost:3001/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl})
                         }
                         catch (err) {
                           console.log(err);
@@ -167,9 +190,48 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
                         fullWidth
                         variant="standard"
                       />
+                      <Button fullWidth sx={{ mb: 3 }}
+
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        startIcon={<CloudUploadIcon />}
+                      >
+                        Cover Letter
+                        <VisuallyHiddenInput type="file" />
+                      </Button>
+                      <Button fullWidth sx={{ mb: 3 }}
+
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        startIcon={<CloudUploadIcon />}
+                      >
+                        Manuscript File
+                        <VisuallyHiddenInput type="file" />
+                      </Button>
+                      <Button fullWidth sx={{ mb: 3 }}
+
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
+                        startIcon={<CloudUploadIcon />}
+                      >
+                        Supplementary File
+                        <VisuallyHiddenInput type="file" />
+                      </Button>
                     </DialogContent>
                     <DialogActions>
-                      <Button onClick={()=>handleClose(row.id)}>Cancel</Button>
+                      <Button onClick={() => handleClose(row.id)}>Cancel</Button>
                       <Button type="submit">Send Rejection Message</Button>
                     </DialogActions>
                   </Dialog>
@@ -185,4 +247,16 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
     </TableContainer>
   );
 }
+
+const VisuallyHiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 export default AdminMyManuscriptsDashboard

@@ -45,7 +45,7 @@ const Navbar = () => {
           {/* Navigation links on the right */}
           <div className="flex justify-around items-center space-x-4 text-black font-light">
             <NavLinksStatic />
-            {currentUser ? <Link to={`/dashboard/${currentUser.user.id}`} >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
+            {currentUser ? <Link to={`/dashboard/${currentUser.user.id}?tab=1`} >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
             {!currentUser ?
               (<span className=" p-2 space-x-2">
                 <Link to="/login" className="  text-lg font-bold border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
@@ -89,19 +89,19 @@ const Navbar = () => {
 
             <div className=' mt-28 flex flex-col items-center text-2xl gap-3 '>
               <NavLinksStatic />
-              {currentUser ? <Link to="/" >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
+              {currentUser ? <Link to={`/dashboard/${currentUser.user.id}?tab=1`}>Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
               <div>
                 {!currentUser ?
                   (<div className=" flex flex-col gap-6 items-center">
                     <div>
-                      <Link to="/" className="  text-lg font-light border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
+                      <Link to="/login" className="  text-lg font-light border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
                         <button >
                           Login
                         </button>
                       </Link>
                     </div>
                     <div>
-                      <Link to="/" className=" text-lg font-light border-2 rounded p-2 border-blue-500">
+                      <Link to="/register" className=" text-lg font-light border-2 rounded p-2 border-blue-500">
                         <button > Register
                         </button>
                       </Link>
@@ -111,10 +111,10 @@ const Navbar = () => {
                   (
                     <div className=" flex flex-col gap-6 items-center">
                       <div>
-                        <Link to={`/dashboard/${currentUser.id}`} >Dashboard</Link>
+                        <Link to={`/dashboard/${currentUser.user.id}`}>Dashboard</Link>
                       </div>
                       <div>
-                        <Link to="/" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
+                        <Link to="/logout" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
                           <button >
                             Logout
                           </button>

@@ -2,8 +2,8 @@ import React from 'react'
 
 const ImageHeader = () => {
   return (
-    <div className="h-auto w-auto ">
-    <img src="./images/desert.jpg" alt="cloud" className=' w-full md:h-auto' />
+<div className=" w-auto ">
+    <img src="./images/desert.jpg" alt="cloud" className=' w-full h-80 relative object-cover' />
     </div>
   )
 }

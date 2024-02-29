@@ -104,7 +104,7 @@ useEffect(() => {
                     
                 </Box>
                 <CustomTabPanel value={value} index={0}>
-                  {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={user}/>}
+                  {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={user} />}
                  {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user}/>}
 
                 </CustomTabPanel>

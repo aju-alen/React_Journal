@@ -44,3 +44,22 @@ export const axiosTokenHeader =() => {
   const token = JSON.parse(localStorage.getItem('currentUser')).token
        return  `Bearer ${token}`
 }
+
+export const getDates = (dateString) => {
+  const date = new Date(dateString);
+  
+  // Array of month names
+  const monthNames = [
+    "January", "February", "March",
+    "April", "May", "June", "July",
+    "August", "September", "October",
+    "November", "December"
+  ];
+  
+  // Get month and year
+  const month = monthNames[date.getMonth()];
+  const year = date.getFullYear();
+  const dates = date.getDate();
+  console.log(`${month} ${year} ${dates}`);
+  return `${dates} ${month} ${year}`
+}
