@@ -5,18 +5,18 @@ const ReviewersGuidelines = () => {
     return (
         <div className="h-auto w-auto bg-slate-200 ">
             <ImageHeader />
-            <div className="">
-            <h2 className='font-bold text-3xl text-center my-4'>Reviewers Guidelines</h2>
-            <p className='text-justify mx-10'>The evaluation procedure or review is a significant component of the article publication process. It assists the editor in deciding on the suitability of an article and also provides the author with an opportunity to enhance the manuscript. Scientific Journals Portal employs a blind peer review system. Prior to agreeing to review a manuscript, reviewers should verify that:
-                <p>• The manuscript pertains to their field of expertise.</p>
-                <p>• They can allocate sufficient time to conduct a thorough evaluation of the manuscript.</p>
+            <div className="my-4">
+                <h2 className='font-bold text-3xl text-center my-4'>Reviewers Guidelines</h2>
+                <p className='text-justify mx-10'>The evaluation procedure or review is a significant component of the article publication process. It assists the editor in deciding on the suitability of an article and also provides the author with an opportunity to enhance the manuscript. Scientific Journals Portal employs a blind peer review system. Prior to agreeing to review a manuscript, reviewers should verify that:
+                    <p>• The manuscript pertains to their field of expertise.</p>
+                    <p>• They can allocate sufficient time to conduct a thorough evaluation of the manuscript.</p>
                 </p>
 
-            </div>
+            
             <div className="">
-            <h2 className='h2-class'>Conflict of Interest</h2>
-            <p className='p-class'>The existence of a conflict of interest (COI) arises when an individual’s private interests, which are in competition with their responsibilities to scientific and publishing activities, create a divergence. This divergence may lead a reasonable observer to question whether the individual’s behaviour or judgement was influenced by their competing interests.
-            The International Committee of Medical Journal Editors (ICMJE) recommends that reviewers disclose any potential conflicts of interest and abstain from participating in the peer-review process if such conflicts exist.</p>
+                <h2 className='h2-class'>Conflict of Interest</h2>
+                <p className='p-class'>The existence of a conflict of interest (COI) arises when an individual’s private interests, which are in competition with their responsibilities to scientific and publishing activities, create a divergence. This divergence may lead a reasonable observer to question whether the individual’s behaviour or judgement was influenced by their competing interests.
+                    The International Committee of Medical Journal Editors (ICMJE) recommends that reviewers disclose any potential conflicts of interest and abstain from participating in the peer-review process if such conflicts exist.</p>
             </div>
             <div className="">
                 <h2 className='h2-class'>Confidentiality</h2>
@@ -57,13 +57,14 @@ const ReviewersGuidelines = () => {
             <div className="">
                 <h2 className='h2-class'>Recommendations</h2>
                 <p className='p-class'> The reviewers assessment should fall into one of the following categories:
-                <p>•Acceptance</p>
-                <p>•Necessitates minor modifications</p>
-                <p>•Unsuitable for publication in this journal. Suggest submission to an alternative publication, such as (provide a journal name)</p>
-                <p>•Rejection</p>
-                <p>The recommendation must be supported by constructive reasoning and evidence derived from the manuscript’s content.
-</p>
-</p>
+                    <p>•Acceptance</p>
+                    <p>•Necessitates minor modifications</p>
+                    <p>•Unsuitable for publication in this journal. Suggest submission to an alternative publication, such as (provide a journal name)</p>
+                    <p>•Rejection</p>
+                    <p>The recommendation must be supported by constructive reasoning and evidence derived from the manuscript’s content.
+                    </p>
+                </p>
+                </div>
             </div>
         </div>
     )

@@ -1,12 +1,12 @@
 import React from 'react'
-import HeaderImage from '../components/HeaderImage'
 import ServicesHome from '../components/ServicesHome'
 import LatestJournalComponent from '../components/LatestJournalComponent'
+import ImageHeader from '../components/ImageHeader'
 
 const FeeForPublication = () => {
     return (
         <div>
-         <HeaderImage />
+         <ImageHeader />
  
          <ServicesHome />
 

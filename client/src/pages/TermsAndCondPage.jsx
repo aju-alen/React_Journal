@@ -5,7 +5,7 @@ const TermsAndCondPage = () => {
   return (
     <div>
       <ImageHeader />
-      <div>
+      <div className='my-4'>
         <h2 className='h2-class'>
           Terms and Conditions
         </h2>
@@ -13,7 +13,7 @@ const TermsAndCondPage = () => {
           The utilisation of this website is subject to the terms and conditions outlined herein. By accessing and using this website, you acknowledge and agree to be bound by these terms and conditions in their entirety. In the event that you do not agree with any aspect of these terms and conditions, it is imperative that you refrain from using this website.
 
         </p>
-      </div>
+      
       <div>
         <h2 className='h2-class'>
           Licence to use website
@@ -138,6 +138,7 @@ Furthermore, you acknowledge and agree that the limitations of warranties and li
         SCIENTIFIC JOURNALS PORTAL has the authority to modify these terms and conditions periodically. The revised terms and conditions will be applicable to the usage of this website starting from the date of their publication on this platform. It is advised to frequently visit this page in order to stay updated with the latest version.
         </p>
       </div>
+    </div>
     </div>
   )
 }

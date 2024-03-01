@@ -14,10 +14,10 @@ const EditorFAQ = () => {
   return (
     <div className="">
     <ImageHeader />
-    <div className=' mx-10 p-14'>
-        
+    <div className=' p-2 md:mx-10 md:p-14'>
+        <h2 className='h2-class'>FAQ for Editors</h2>
     {editorFAQ.map((faq,idx) =>(
-<Accordion className='p-4 m-2'>
+<Accordion className='p-4 m-2' key={idx}>
         <AccordionSummary
         expandIcon={<ArrowDropDownIcon />}
         aria-controls="panel1-content"

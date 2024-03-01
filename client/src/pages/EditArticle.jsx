@@ -57,8 +57,9 @@ const EditArticle = () => {
         try {
             const fileData = new FormData();
             for (const file of files) {
-                console.log(file, 'file in submit');
+                console.log(file, 'file');
                 fileData.append('s3Files', file)
+                console.log(fileData, 'file data');
             }
             console.log(fileData, 'file data');
 

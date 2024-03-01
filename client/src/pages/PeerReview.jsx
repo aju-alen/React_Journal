@@ -5,11 +5,11 @@ const PeerReview = () => {
     return (
         <div>
             <ImageHeader />
-            <div className="">
+            <div className="my-4">
                 <h2 className='h2-class'>Peer Review Process</h2>
                 <p className='p-class'>TThe effectiveness of a peer review system guarantees the excellence of a research article. Scientific Journals Portal implements a meticulous peer review system. Every submitted manuscript undergoes a thorough peer review process prior to its publication.
                 </p>
-            </div>
+            
             <div className="">
                 <h2 className='h2-class '>Double Blind Peer Review</h2>
                 <p className='p-class'>
@@ -60,7 +60,7 @@ const PeerReview = () => {
                     <p>Manuscripts that require revisions are returned to the author(s) for correction, and the editor reviews the revised version before making a final decision on publication. In some cases, the editor may request additional revisions or send the revised manuscript to a specific reviewer for further evaluation before making a final decision on publication.</p>
                 </p>
             </div>
-
+            </div>
         </div>
     )
 }
