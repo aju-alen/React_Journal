@@ -1,6 +1,5 @@
 import React from 'react'
-import AuthorFaq from '../components/AuthorFaq';
-
+import AuthorFaqComponent from '../components/AuthorFaqComponent';
 import 'react-accessible-accordion/dist/fancy-example.css';
 import ImageHeader from '../components/ImageHeader';
 
@@ -8,7 +7,7 @@ const AuthorFAQ = () => {
     return (
         <div>
              <ImageHeader />
-            <AuthorFaq/>
+            <AuthorFaqComponent/>
         </div>
     );
 }
