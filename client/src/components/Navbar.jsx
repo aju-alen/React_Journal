@@ -45,7 +45,7 @@ const Navbar = () => {
           {/* Navigation links on the right */}
           <div className="flex justify-around items-center space-x-4 text-black font-light">
             <NavLinksStatic />
-            {currentUser ? <Link to={`/dashboard/${currentUser.user.id}?tab=1`} >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
+            {currentUser ? <Link to={`/dashboard/${currentUser?.user?.id}?tab=1`} >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
             {!currentUser ?
               (<span className=" p-2 space-x-2">
                 <Link to="/login" className="  text-lg font-bold border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
@@ -61,7 +61,7 @@ const Navbar = () => {
               :
               (
                 <span className=" p-2 space-x-2">
-                  <Link to={`/dashboard/${currentUser.user.id}`} >Dashboard</Link>
+                  <Link to={`/dashboard/${currentUser?.user?.id}`} >Dashboard</Link>
                   <Link to="/" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
                     <button onClick={handleLogout}>
                       Logout

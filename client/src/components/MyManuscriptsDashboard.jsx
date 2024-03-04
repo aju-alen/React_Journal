@@ -51,7 +51,7 @@ import { Link } from 'react-router-dom';
                   </Link>
                 </TableCell> : <TableCell></TableCell>}
 
-                {row.rejectionFilesURL.length >0 ?<TableCell sx={{ fontWeight: 'bold', color: 'blue' }} align="center">
+                {row.rejectionFilesURL ?<TableCell sx={{ fontWeight: 'bold', color: 'blue' }} align="center">
                   <Link to={row.rejectionFilesURL[0]} target="_blank" rel="noopener noreferrer">
                     📄 Rejection File 1
                   </Link>
