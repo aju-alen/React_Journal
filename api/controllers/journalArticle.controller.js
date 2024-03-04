@@ -5,7 +5,7 @@ const prisma = new PrismaClient()
 
 export const createJournalArticle = async (req, res, next) => {
     
-    console.log(req.body.articleAbstract);
+    console.log(req.body.publicPdfName,"public pdf name");
     try {
         const journalArticle = await prisma.article.create({
           data: {
@@ -19,6 +19,7 @@ export const createJournalArticle = async (req, res, next) => {
             filesURL: req.body.filesUrl,
             awsId: req.body.awsId,
             rejectionFilesURL:[],
+            publicPdfName: req.body.publicPdfName,
           },
         });
       
@@ -149,6 +150,7 @@ export const updateJournalArticle = async (req, res, next) => {
                 isReview: true,
                 articleStatus: 'In Review',
                 rejectionText: '',
+                publicPdfName: req.body.publicPdfName,
             }
         });
         console.log(journalArticle);

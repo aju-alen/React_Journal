@@ -48,11 +48,12 @@ model Journal{
 model Article {
   id                        Int      @id @default(autoincrement())
   articleTitle              String
-  articleAbstract           String @db.VarChar(1000)
+  articleAbstract           String @db.VarChar(3000)
   articleKeywords           String
   articleAuthors            Json
   filesURL                  Json
   rejectionFilesURL         Json
+  publicPdfName             String
   awsId                     String
   rejectionText             String @default("")
   specialReview             Boolean
