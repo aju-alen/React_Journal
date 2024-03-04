@@ -46,7 +46,7 @@ console.log(awsId,userId,'awsId and userId');
         };
         const existingObjects = await s3.listObjectsV2(listObjectsParams);
         console.log(existingObjects, 'existing objects');
-        console.log( existingObjects.Contents.filter(obj => !obj.Key.startsWith(`${userId}/${awsId}/RejectionFiles/`)), 'filtered data' );
+       
         if (  existingObjects.Contents?.length > 0 ) {
             const deleteParams = {
                 Bucket: BUCKET_NAME,

@@ -44,8 +44,12 @@ const SubmitManuscript = ({ user }) => {
     let publicPdfName =''
     const handleFileChange = (event,id) => {
         console.log(event);
-        setFiles([...files, event.target.files[0]]);
-        if(id === 2 ){
+      
+        const duplicate = files.filter(file => file.id !== id)
+        setFiles([...duplicate,{id,file:event.target.files[0]}])
+
+       
+        if(id === 1 ){
             publicPdfName = event.target.files[0].name
         }
     };
@@ -90,7 +94,7 @@ const SubmitManuscript = ({ user }) => {
         try {
             const awsId = uuidv4();
             const fileData = new FormData();
-            for (const file of files) {
+            for (const file of files.file) {
                 console.log(file, 'file in submit');
                 fileData.append('s3Files', file)
             }
@@ -259,7 +263,7 @@ const SubmitManuscript = ({ user }) => {
                         variant="contained"
                         tabIndex={-1}
                         accept=".pdf,.doc,.docx"
-                        onChange={(event)=>handleFileChange(event,1)}
+                        onChange={(event)=>handleFileChange(event,0)}
                         startIcon={<CloudUploadIcon />}
                     >
                         Cover Letter
@@ -275,7 +279,7 @@ const SubmitManuscript = ({ user }) => {
                     variant="contained"
                     tabIndex={-1}
                     accept=".pdf,.doc,.docx"
-                    onChange={(event)=>handleFileChange(event,2)}
+                    onChange={(event)=>handleFileChange(event,1)}
                     startIcon={<CloudUploadIcon />}
                 >
                     Manuscript File
@@ -291,7 +295,7 @@ const SubmitManuscript = ({ user }) => {
                     variant="contained"
                     tabIndex={-1}
                     accept=".pdf,.doc,.docx"
-                    onChange={(event)=>handleFileChange(event,3)}
+                    onChange={(event)=>handleFileChange(event,2)}
                     startIcon={<CloudUploadIcon />}
                 >
                     Supplementary File
