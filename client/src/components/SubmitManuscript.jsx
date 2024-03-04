@@ -41,10 +41,13 @@ const SubmitManuscript = ({ user }) => {
         setAuthorData((prevData) => ({ ...prevData, [name]: value }));
     }
 
-
+    let publicPdfName =''
     const handleFileChange = (event,id) => {
         console.log(event);
         setFiles([...files, event.target.files[0]]);
+        if(id === 2 ){
+            publicPdfName = event.target.files[0].name
+        }
     };
 
     const handleChange = (event) => {

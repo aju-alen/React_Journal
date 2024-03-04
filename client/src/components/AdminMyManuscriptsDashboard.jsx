@@ -19,7 +19,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
 import { axiosTokenHeader } from '../helperFunctions';
 import { styled } from '@mui/material/styles';
-
+import { getPdfName } from '../helperFunctions';
 
 const AdminMyManuscriptsDashboard = ({ user }) => {
   const [open, setOpen] = React.useState(false);
@@ -96,15 +96,17 @@ console.log(articleId, 'articleId state');
                 <TableCell align="center">{row.articleTitle}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleAbstract}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleKeywords}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'blue' }} align="center">
-                  <Link to={row.filesURL[0]} target="_blank" rel="noopener noreferrer">
-                    📄 Article File 1
+                <TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize:10, display:'flex', flexDirection:"column",justifyContent:"center" }} align="center">
+                  <Link to={row.filesURL[0]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                  {row.filesURL[0] ? `📄${getPdfName(row.filesURL[0])} `:'' }
                   </Link>
-                  <Link to={row.filesURL[1]} target="_blank" rel="noopener noreferrer">
-                    📄 Article File 2
+                  <br />
+                  <Link to={row.filesURL[1]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                  {row.filesURL[1] ? `📄${getPdfName(row.filesURL[1])} `:'' }
                   </Link>
-                  <Link to={row.filesURL[2]} target="_blank" rel="noopener noreferrer">
-                    📄 Article File 3
+                  <br />
+                  <Link to={row.filesURL[2]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                    {row.filesURL[2] ? `📄${getPdfName(row.filesURL[2])} `:'' }
                   </Link>
                 </TableCell>
 

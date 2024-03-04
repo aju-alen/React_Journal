@@ -8,6 +8,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Link } from 'react-router-dom';
+import { getPdfName } from '../helperFunctions';
 
  const MyManuscriptsDashboard=({user})=> {
   const [articles, setArticles] = useState(false);
@@ -51,15 +52,19 @@ import { Link } from 'react-router-dom';
                   </Link>
                 </TableCell> : <TableCell></TableCell>}
 
-                {row.rejectionFilesURL ?<TableCell sx={{ fontWeight: 'bold', color: 'blue' }} align="center">
-                  <Link to={row.rejectionFilesURL[0]} target="_blank" rel="noopener noreferrer">
-                    📄 Rejection File 1
+                {row.rejectionFilesURL.length !== 0 ?<TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize:10, display:'flex', flexDirection:"column",justifyContent:"center" }} align="center">
+                  <Link to={row.rejectionFilesURL[0]} className='mx-2 bg-indigo-100 rounded-md'
+                  target="_blank" rel="noopener noreferrer">
+                  {row.rejectionFilesURL[0] ? `📄${getPdfName(row.rejectionFilesURL[0])} `:'' }
                   </Link>
-                  <Link to={row.rejectionFilesURL[1]} target="_blank" rel="noopener noreferrer">
-                    📄 Rejection File 2
+                  <br></br>
+                  <Link to={row.rejectionFilesURL[1]} className='mx-2 bg-indigo-100 rounded-md'
+                  target="_blank" rel="noopener noreferrer">
+                  {row.rejectionFilesURL[1] ? `📄${getPdfName(row.rejectionFilesURL[1])} `:'' }
                   </Link>
-                  <Link to={row.rejectionFilesURL[2]} target="_blank" rel="noopener noreferrer">
-                    📄 Rejection File 3
+                  <br />
+                  <Link to={row.rejectionFilesURL[2]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                     {row.rejectionFilesURL[2] ? `📄${getPdfName(row.rejectionFilesURL[2])} `:'' }
                   </Link>
                 </TableCell>:<TableCell></TableCell>}
 

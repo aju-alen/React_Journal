@@ -63,3 +63,14 @@ export const getDates = (dateString) => {
   console.log(`${month} ${year} ${dates}`);
   return `${dates} ${month} ${year}`
 }
+
+export const getPdfName = (url)=>{
+  const pattern = /\/([^/]+)\.pdf$/;
+const match = url.match(pattern);
+
+if (match && match[1]) {
+  // Extracted string
+  return match[1];
+}
+
+}

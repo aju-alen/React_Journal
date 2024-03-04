@@ -37,7 +37,7 @@ const s3 = new S3({
 export const uploadToAWS = async (req, res) => {
     const { awsId } = req.params;
     const userId = req.userId;
-
+console.log(awsId,userId,'awsId and userId');
     try {
         // Delete all objects in the existing folder
         const listObjectsParams = {
@@ -46,14 +46,18 @@ export const uploadToAWS = async (req, res) => {
         };
         const existingObjects = await s3.listObjectsV2(listObjectsParams);
         console.log(existingObjects, 'existing objects');
+        console.log( existingObjects.Contents.filter(obj => !obj.Key.startsWith(`${userId}/${awsId}/RejectionFiles/`)), 'filtered data' );
         if (  existingObjects.Contents?.length > 0 ) {
             const deleteParams = {
                 Bucket: BUCKET_NAME,
                 Delete: {
-                    Objects: existingObjects.Contents.filter(obj => !obj.Key.startsWith(`${userId}/${awsId}/RejectionFiles/`) && obj.Key === `${userId}/${awsId}/`)
+                    Objects: existingObjects.Contents.filter(obj => !obj.Key.startsWith(`${userId}/${awsId}/RejectionFiles/`))
+                    
                 }
+                
             };
-            await s3.deleteObjects(deleteParams);
+           const resp = await s3.deleteObjects(deleteParams);
+            console.log(resp,'deleted files');
         }
 
         // Upload new files
