@@ -3,6 +3,8 @@ import  {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import ImageHeader from '../components/ImageHeader';
 import { httpRoute } from '../helperFunctions.js';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 // To stop the links being rendered (Replace the Link Component with MemoizedLinks) 
 
 // const MemoizedLink = memo(({ to, className, children }) => (
@@ -12,6 +14,8 @@ import { httpRoute } from '../helperFunctions.js';
 // ));
 const Login = () => {
     const navigate = useNavigate()
+    const [open, setOpen] = useState(false);
+
     const [formData, setFormData] = useState({
 
         email: '',
@@ -34,13 +38,23 @@ const Login = () => {
           if (res.status === 200){
             console.log('User logged in',res.data);
             localStorage.setItem('currentUser',JSON.stringify(res.data))
+
             navigate("/");
           }
         }
         catch(err){
           console.log(err);
+          setOpen(true);
         }
       };
+      const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+          return;
+        }
+    
+        setOpen(false);
+      };
+    
       return (
         <div className="h-auto w-auto">
           <ImageHeader/>
@@ -87,11 +101,21 @@ const Login = () => {
                   Login
                 </button>
               </form>
+              <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity="error"
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+         Login Failed, either email or password is incorrect or credentials does not exist
+        </Alert>
+      </Snackbar>
               <div className=" text-center p-4 flex justify-around">
                 <div className="">
                 <span>Forgot Password?</span>
                 <span>
-                    <Link to='/' className=' text-blue-600'> CLICK HERE </Link>
+                    <Link to='/forget-password' className=' text-blue-600'> CLICK HERE </Link>
                 </span>
                 </div>
                  <div className="">

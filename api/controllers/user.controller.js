@@ -36,4 +36,25 @@ export const getUserWithArticles = async (req, res, next) => {
   }
 }
 
+export const editUserDetails = async (req, res, next) => {
+   try {
+      const profileId = req.params.profileId
+      const user = await prisma.user.update({
+          where: { id: Number(profileId) },
+          data: {
+             
+               affiliation: req.body.affiliation,
+               email: req.body.email,
+               otherName: req.body.otherName,
+               surname: req.body.surname,
+             
+          }
+      });
+      res.status(200).json(user);
+  }
+  catch (err) {
+      console.log(err);
+      return next(createError(400, 'An error occurred')); 
+  }
+}
    

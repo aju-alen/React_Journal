@@ -14,14 +14,14 @@ const LatestJournalsHome = ({width}) => {
                     {journals.map(journal => (
                         <React.Fragment key={journal.id}>
                             <div className=' max-h-auto overflow-y-auto border-2 border-black h-2/3 '>
-                                <div className=" flex flex-col justify-between gap-4">
+                                <div className=" flex flex-col justify-between gap-4 p-10">
                                     <h2 className=' uppercase text-yellow-400 font-bold w-5/6 text-left p-2'>
                                         {journal.title}
                                     </h2>
                                     <p className=' text-left p-2'>
                                         {journal.acceptedDate} | {journal.volNo}
                                     </p>
-                                    <p className=' text-justify'>
+                                    <p className=' text-justify font-light'>
                                         {journal.abstract}
                                     </p>
                                     <Link to="/" className='font-bold text-lg  border-2 rounded p-3 border-green bg-green-400'>

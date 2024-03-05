@@ -30,6 +30,7 @@ import Contact from './pages/Contact'
 import TermsAndCondPage from './pages/TermsAndCondPage'
 import ComingSoon from './components/ComingSoon'
 import ConferencesPage from './pages/ConferencesPage'
+import ForgetPassword from './pages/ForgetPassword'
 
 
 
@@ -153,6 +154,10 @@ function App() {
       {
         path: '/terms',
         element: <TermsAndCondPage/>,
+      },
+      {
+        path: '/forget-password',
+        element: <ForgetPassword/>,
       },
      
     ]

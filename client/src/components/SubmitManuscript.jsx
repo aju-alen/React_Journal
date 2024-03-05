@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef} from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import Box from '@mui/material/Box';
@@ -11,16 +11,19 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import { v4 as uuidv4 } from 'uuid';
 import { httpRoute } from '../helperFunctions.js';
+import Snackbar from '@mui/material/Snackbar';
 
 
 
 import axios from 'axios';
 const SubmitManuscript = ({ user }) => {
+    const [open, setOpen] = useState(false);
+    const [alertStatus, setAlertStatus] = useState('success');
+    const [alertText, setAlertText] = useState('');
     const navigate = useNavigate()
     const [authors, setAuthors] = useState([]) //collection of authors
     const [journalCategory, setJournalCategory] = useState([]);
     const [checked, setChecked] = useState(true);
-    const [alert, setAlert] = useState('');
     const [authorData, setAuthorData] = useState({
         authorTitle: '',
         authorGivenName: '',
@@ -42,16 +45,16 @@ const SubmitManuscript = ({ user }) => {
         setAuthorData((prevData) => ({ ...prevData, [name]: value }));
     }
 
-    
-    const publicPdfName = useRef('');
-    const handleFileChange = (event,id) => {
-        console.log(event);
-      
-        const duplicate = files.filter(file => file.id !== id)
-        setFiles([...duplicate,{id,file:event.target.files[0]}])
 
-       
-        if(id === 1 ){
+    const publicPdfName = useRef('');
+    const handleFileChange = (event, id) => {
+        console.log(event);
+
+        const duplicate = files.filter(file => file.id !== id)
+        setFiles([...duplicate, { id, file: event.target.files[0] }])
+
+
+        if (id === 1) {
             publicPdfName.current = event.target.files[0].name
         }
     };
@@ -68,7 +71,14 @@ const SubmitManuscript = ({ user }) => {
     }
 
     const handleAddMoreAuthor = () => {
+
         try {
+            if (authorData.authorTitle === '' || authorData.authorGivenName === '' || authorData.authorLastName === '' || authorData.authorEmail === '' || authorData.authorAffiliation === '') {
+                setAlertStatus('error')
+                setAlertText('Please fill all the fields to add an author')
+                setOpen(true);
+                return
+            }
             setAuthors([...authors, authorData])
             setAuthorData({
                 authorTitle: '',
@@ -77,13 +87,15 @@ const SubmitManuscript = ({ user }) => {
                 authorEmail: '',
                 authorAffiliation: ''
             })
-            setAlert('success')
-            setTimeout(() => {
-                setAlert('')
-            }, 3000)
+            setAlertStatus('success')
+            setAlertText('Author Added, If you want to add more authors, please fill the form again')
+            setOpen(true);
         }
         catch (err) {
             console.log(err);
+            setAlertStatus('error')
+            setAlertText('Author could not be added, please check the form and try again')
+            setOpen(true);
         }
 
 
@@ -91,6 +103,10 @@ const SubmitManuscript = ({ user }) => {
     const handleSubmit = async () => {
         if (files.length !== 3) {
             console.log('Please add all the required files before uploading the manuscript.')
+            setAlertStatus('error')
+            setAlertText('Please add all the required files before uploading the manuscript.')
+            setOpen(true);
+
             return
         }
         try {
@@ -109,16 +125,32 @@ const SubmitManuscript = ({ user }) => {
             const filesUrl = fileGet.data.files
 
 
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId },{publicPdfName:publicPdfName.current})
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId }, { publicPdfName: publicPdfName.current })
             console.log(mergeForm, 'final form data');
             const resp = await axios.post(`${httpRoute}/api/journalArticle/create`, mergeForm) //create publicPdfurl deets
-            navigate(`/dashboard/${user.id}?tab=0`)
+
+            setOpen(true);
+            setTimeout(() => {
+                navigate(`/dashboard/${user.id}?tab=0`)
+            }, 3000)
+
         }
         catch (err) {
             console.log(err);
+            setAlertStatus('error')
+            setAlertText('Error submitting manuscript. Please see if all fields are filled')
+            setOpen(true);
+
         }
 
     }
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpen(false);
+    };
     useEffect(() => {
         const token = JSON.parse(localStorage.getItem('currentUser')).token
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
@@ -245,9 +277,7 @@ const SubmitManuscript = ({ user }) => {
                                 onChange={handleAuthorChange}
                             />
                         </div>
-                        {alert === 'success' && <Alert icon={<CheckIcon fontSize="inherit" />} severity="success">
-                            Author Added Successfully. Keep Adding More..
-                        </Alert>}
+
                         <Button variant="contained" onClick={handleAddMoreAuthor}>Add Author</Button>
                     </FormControl>
                 </Box>
@@ -256,57 +286,67 @@ const SubmitManuscript = ({ user }) => {
 
             <div className="">
                 <h2 className="flex justify-center font-bold text-xl mb-5 ">Upload Files</h2>
-               
-                    <h2 className=' text-center' >Upload Your Cover Letter</h2>
-                    <div className=" md:mx-96">
+
+                <h2 className=' text-center' >Upload Your Cover Letter</h2>
+                <div className=" md:mx-96">
                     <Button fullWidth sx={{ mb: 3 }}
                         component="label"
                         role={undefined}
                         variant="contained"
                         tabIndex={-1}
                         accept=".pdf,.doc,.docx"
-                        onChange={(event)=>handleFileChange(event,0)}
+                        onChange={(event) => handleFileChange(event, 0)}
                         startIcon={<CloudUploadIcon />}
                     >
                         Cover Letter
                         <VisuallyHiddenInput type="file" />
                     </Button>
-                    </div>
-                    <h2 className=' text-center'>Upload Your Manuscript File</h2>
-                    <div className=" md:mx-96">
+                </div>
+                <h2 className=' text-center'>Upload Your Manuscript File</h2>
+                <div className=" md:mx-96">
                     <Button fullWidth sx={{ mb: 3 }}
 
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    accept=".pdf,.doc,.docx"
-                    onChange={(event)=>handleFileChange(event,1)}
-                    startIcon={<CloudUploadIcon />}
-                >
-                    Manuscript File
-                    <VisuallyHiddenInput type="file" />
-                </Button>
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={(event) => handleFileChange(event, 1)}
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        Manuscript File
+                        <VisuallyHiddenInput type="file" />
+                    </Button>
                 </div>
                 <h2 className=' text-center'>Upload Your Supplementary File</h2>
                 <div className=" md:mx-96">
-                <Button fullWidth sx={{ mb: 3 }}
+                    <Button fullWidth sx={{ mb: 3 }}
 
-                    component="label"
-                    role={undefined}
-                    variant="contained"
-                    tabIndex={-1}
-                    accept=".pdf,.doc,.docx"
-                    onChange={(event)=>handleFileChange(event,2)}
-                    startIcon={<CloudUploadIcon />}
-                >
-                    Supplementary File
-                    <VisuallyHiddenInput type="file" />
-                </Button>
+                        component="label"
+                        role={undefined}
+                        variant="contained"
+                        tabIndex={-1}
+                        accept=".pdf,.doc,.docx"
+                        onChange={(event) => handleFileChange(event, 2)}
+                        startIcon={<CloudUploadIcon />}
+                    >
+                        Supplementary File
+                        <VisuallyHiddenInput type="file" />
+                    </Button>
                 </div>
                 <div className=" flex justify-center items-center">
-                <Button sx={{p:2}} variant="contained" onClick={handleSubmit}>Submit Manuscript For Verification</Button>
+                    <Button sx={{ p: 2 }} variant="contained" onClick={handleSubmit}>Submit Manuscript For Verification</Button>
                 </div>
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert
+                        onClose={handleClose}
+                        severity={alertStatus}
+                        variant="filled"
+                        sx={{ width: '100%' }}
+                    >
+                        {alertText}
+                    </Alert>
+                </Snackbar>
             </div>
         </div>
     )

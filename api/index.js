@@ -17,7 +17,7 @@ dotenv.config()
 const app = express()
 dotenv.config()
 app.use(cors({
-  origin: 'https://react-journal-xm1y.vercel.app',
+  origin: 'http://localhost:5173',
 }));
 const endpointSecret = 'whsec_3c0176b917592f6c6c3832fc71c85a6ad2c8ae41df0f27ae8f8e9e3a37d4c123';
 

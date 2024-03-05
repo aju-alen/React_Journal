@@ -13,6 +13,7 @@ import HeaderImage from '../components/HeaderImage';
 import ImageHeader from '../components/ImageHeader';
 import { DNA } from 'react-loader-spinner'
 import { httpRoute } from '../helperFunctions';
+import EditProfile from '../components/EditProfile';
 
 
 function CustomTabPanel(props) {
@@ -94,13 +95,13 @@ useEffect(() => {
   return (
     <div>
       <ImageHeader/>
-       <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${userDetails?.user?.title} ${userDetails?.user?.surname}`}</h1>
+       <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${user?.title} ${user?.surname}`}</h1>
        <Box sx={{ width: '100%' }} >
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                         <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts":"My Manuscripts"} {...a11yProps(0)} />
                         {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />}
-                        <Tab label="Item Three" {...a11yProps(2)} />
+                        <Tab label="Edit Profile" {...a11yProps(2)} />
                     </Tabs>
                     
                 </Box>
@@ -111,14 +112,13 @@ useEffect(() => {
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={1}>
 
-                <SubmitManuscript user={user}/>
+                {!userDetails?.user?.isAdmin &&<SubmitManuscript user={user}/>}
                  
 
                 </CustomTabPanel>
                 <CustomTabPanel value={value} index={2}>
                   
-                    Item Three
-
+              <EditProfile userDetails={userDetails}/>
                 </CustomTabPanel>
             </Box>
 
