@@ -10,27 +10,28 @@ const EthicsOfPublicationContent = () => {
     <div>
 
       {ethicalSlug === 'ethicalpractice' && ethicalpractice.map(data => (
-        <div key={data.title} className=' flex flex-col'>
-          <h3 className=' text-lg font-bold'>{data.title}</h3>
-          <p>{data.content}</p>
+        
+        <div key={data.title} className=' flex flex-col '>
+          <h2 className='  h2-class'>{data.title}</h2>
+          <p className='p-class'>{data.content}</p>
         </div>
       ))}
 
       {ethicalSlug === 'authorship' && authorship.map(data => (
         <div key={data.title} className=' flex flex-col'>
-          <h3 className=' text-lg font-bold'>{data.title}</h3>
-          <p>{data.content}</p>
+          <h2 className='  h2-class'>{data.title}</h2>
+          <p className='p-class'>{data.content}</p>
         </div>
       ))}
       {ethicalSlug === 'submission' && submission.map(data => (
         <div key={data.title} className=' flex flex-col'>
-          <h3 className=' text-lg font-bold'>{data.title}</h3>
-          <p>{data.content}</p>
+          <h2 className='  h2-class'>{data.title}</h2>
+          <p className='p-class'>{data.content}</p>
         </div>
       ))}
       {ethicalSlug === 'authorship' && (
         <div>
-        <h2 className='h2-class'>Authors FAQ</h2>
+        
         <AuthorFaqComponent/>
         </div>
       )}

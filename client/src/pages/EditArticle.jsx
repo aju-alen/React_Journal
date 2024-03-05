@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import ImageHeader from '../components/ImageHeader'
 import TextField from '@mui/material/TextField'
@@ -11,6 +11,7 @@ import FormControl from '@mui/material/FormControl'
 
 import { axiosTokenHeader } from '../helperFunctions'
 import axios from 'axios'
+import { httpRoute } from '../helperFunctions'
 const EditArticle = () => {
     const navigate = useNavigate()
     const { articleId, userId } = useParams()
@@ -30,13 +31,22 @@ const EditArticle = () => {
             }
         })
     }
-    const handleFileChange = (event) => {
-        setFiles([...files, event.target.files[0]]);
+    const publicPdfName = useRef('');
+    const handleFileChange = (event,id) => {
+        console.log(event);
+      
+        const duplicate = files.filter(file => file.id !== id)
+        setFiles([...duplicate,{id,file:event.target.files[0]}])
+
+       
+        if(id === 1 ){
+            publicPdfName.current = event.target.files[0].name
+        }
     };
     useEffect(() => {
         const fetchEditableArticle = async () => {
             axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-            const res = await axios.get(`http://localhost:3001/api/journalArticle/singleArticle/${articleId}`)
+            const res = await axios.get(`${httpRoute}/api/journalArticle/singleArticle/${articleId}`)
 
             setArticleData(res.data)
             console.log(res.data, 'res.data[0]');
@@ -58,22 +68,22 @@ const EditArticle = () => {
             const fileData = new FormData();
             for (const file of files) {
                 console.log(file, 'file');
-                fileData.append('s3Files', file)
+                fileData.append('s3Files', file.file)
                 console.log(fileData, 'file data');
             }
             console.log(fileData, 'file data');
 
-            const fileResp = await axios.post(`http://localhost:3001/api/s3/upload/${articleData.awsId}`, fileData)
+            const fileResp = await axios.post(`${httpRoute}/api/s3/upload/${articleData.awsId}`, fileData)
             console.log(fileResp, 'file response');
 
-            const fileGet = await axios.get(`http://localhost:3001/api/s3/${articleData.awsId}`)
+            const fileGet = await axios.get(`${httpRoute}/api/s3/${articleData.awsId}`)
             console.log(fileGet, 'file get data');
 
             const filesUrl = fileGet.data.files
 
-            const mergeForm = Object.assign({}, formData, { filesUrl })
+            const mergeForm = Object.assign({}, formData, { filesUrl },{publicPdfName:publicPdfName.current})
             console.log(mergeForm, 'final form data');
-            const resp = await axios.post(`http://localhost:3001/api/journalArticle/updateArticle/${articleId}`, mergeForm)
+            const resp = await axios.post(`${httpRoute}/api/journalArticle/updateArticle/${articleId}`, mergeForm)
             console.log(userId, 'userId');
             navigate(`/dashboard/${userId}?tab=0`)
         }
@@ -117,44 +127,55 @@ const EditArticle = () => {
                             onChange={handleChange}
                         />
 
-
-
-                        <Button sx={{ mb: 4,mx:80 }}
+<div className=" flex flex-col md:flex-row md:justify-center md:items-center">
+<div className=" mx-2 ">
+                        <Button sx={{ mb: 4}} 
+                        fullWidth
                             component="label"
                             role={undefined}
                             variant="contained"
                             tabIndex={-1}
                             accept=".pdf,.doc,.docx"
-                            onChange={handleFileChange}
+                            onChange={(event)=>handleFileChange(event,0)}
                             startIcon={<CloudUploadIcon />}
                         >
                             Cover Letter
                             <VisuallyHiddenInput type="file" />
                         </Button>
-                        <Button sx={{ mb: 4,mx:80 }}
+                        </div>
+
+                        <div className=" mx-2 ">
+                        <Button sx={{ mb: 4 }}
+                        fullWidth
                             component="label"
                             role={undefined}
                             variant="contained"
                             tabIndex={-1}
                             accept=".pdf,.doc,.docx"
-                            onChange={handleFileChange}
+                            onChange={(event)=>handleFileChange(event,1)}
                             startIcon={<CloudUploadIcon />}
                         >
                             Manuscript File
                             <VisuallyHiddenInput type="file" />
                         </Button>
-                        <Button sx={{ mb: 4,mx:80 }}
+                        </div>
+                        <div className=" mx-2">
+                        <Button sx={{ mb: 4 }}
+                        fullWidth
                             component="label"
                             role={undefined}
                             variant="contained"
                             tabIndex={-1}
                             accept=".pdf,.doc,.docx"
-                            onChange={handleFileChange}
+                            onChange={(event)=>handleFileChange(event,2)}
                             startIcon={<CloudUploadIcon />}
                         >
                             Supplementary File
                             <VisuallyHiddenInput type="file" />
                         </Button>
+                        </div>
+
+                        </div>
                         <Button variant='contained' onClick={handleSubmit} sx={{m:3}}>Submit Manuscript For Verification</Button>
                     </FormControl>
                 </Box>

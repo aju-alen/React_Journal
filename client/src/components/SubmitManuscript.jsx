@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef} from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import Box from '@mui/material/Box';
@@ -10,6 +10,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import { v4 as uuidv4 } from 'uuid';
+import { httpRoute } from '../helperFunctions.js';
 
 
 
@@ -41,7 +42,8 @@ const SubmitManuscript = ({ user }) => {
         setAuthorData((prevData) => ({ ...prevData, [name]: value }));
     }
 
-    let publicPdfName =''
+    
+    const publicPdfName = useRef('');
     const handleFileChange = (event,id) => {
         console.log(event);
       
@@ -50,10 +52,10 @@ const SubmitManuscript = ({ user }) => {
 
        
         if(id === 1 ){
-            publicPdfName = event.target.files[0].name
+            publicPdfName.current = event.target.files[0].name
         }
     };
-
+    console.log(publicPdfName, 'public pdf name');
     const handleChange = (event) => {
         const { name, value } = event.target
         console.log(name, value, 'name and value');
@@ -94,22 +96,22 @@ const SubmitManuscript = ({ user }) => {
         try {
             const awsId = uuidv4();
             const fileData = new FormData();
-            for (const file of files.file) {
+            for (const file of files) {
                 console.log(file, 'file in submit');
-                fileData.append('s3Files', file)
+                fileData.append('s3Files', file.file)
             }
             console.log(fileData, 'file data');
 
-            const fileResp = await axios.post(`http://localhost:3001/api/s3/upload/${awsId}`, fileData)
+            const fileResp = await axios.post(`${httpRoute}/api/s3/upload/${awsId}`, fileData)
             console.log(fileResp, 'file response');
-            const fileGet = await axios.get(`http://localhost:3001/api/s3/${awsId}`)
+            const fileGet = await axios.get(`${httpRoute}/api/s3/${awsId}`)
             console.log(fileGet, 'file get data');
             const filesUrl = fileGet.data.files
 
 
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId })
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId },{publicPdfName:publicPdfName.current})
             console.log(mergeForm, 'final form data');
-            const resp = await axios.post('http://localhost:3001/api/journalArticle/create', mergeForm)
+            const resp = await axios.post(`${httpRoute}/api/journalArticle/create`, mergeForm) //create publicPdfurl deets
             navigate(`/dashboard/${user.id}?tab=0`)
         }
         catch (err) {
@@ -121,7 +123,7 @@ const SubmitManuscript = ({ user }) => {
         const token = JSON.parse(localStorage.getItem('currentUser')).token
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
         const getJournalCategory = async () => {
-            const resp = await axios.get('http://localhost:3001/api/journal/categories')
+            const resp = await axios.get(`${httpRoute}/api/journal/categories`)
             setJournalCategory(resp.data)
         }
         getJournalCategory()

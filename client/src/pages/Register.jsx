@@ -4,6 +4,7 @@ import Select from 'react-select';
 import countryList from 'react-select-country-list'
 import { Link,useNavigate } from 'react-router-dom';
 import ImageHeader from '../components/ImageHeader';
+import { httpRoute } from '../helperFunctions.js';
 
 
 const Register = () => {
@@ -41,7 +42,7 @@ const Register = () => {
     }
     const mergeForm = Object.assign({},formData,value)
     try{
-      const res = await axios.post('http://localhost:3001/api/auth/register',mergeForm)
+      const res = await axios.post(`${httpRoute}/api/auth/register`,mergeForm)
       console.log(res);
       if (res.status === 201){
         navigate('/login')

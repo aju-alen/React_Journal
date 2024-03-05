@@ -9,6 +9,7 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import { getDates } from '../helperFunctions';
 import SingleArticleAbstractTab from '../components/SingleArticleAbstractTab';
+import { httpRoute } from '../helperFunctions.js';
 
 
 
@@ -20,12 +21,13 @@ export default function Article() {
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
-
+   
+   let getPublicManuscriptUrl = ` https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/${journal.userId}/${journal.awsId}/${journal.publicPdfName}`
+    console.log(getPublicManuscriptUrl, 'getpublicArticleUrl in article');
 
     useEffect(() => {
         const getSinglePublishedArticle = async () => {
-            const resp = await axios.get(`http://localhost:3001/api/journalArticle/singlePublishedArticle/${articleId}`)
+            const resp = await axios.get(`${httpRoute}/api/journalArticle/singlePublishedArticle/${articleId}`)
             console.log(resp.data, 'resp in single article');
             setJournal(resp.data[0])
         }
@@ -61,14 +63,18 @@ export default function Article() {
                     <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                         <TabList onChange={handleChange} aria-label="lab API tabs example">
                             <Tab label="Abstract" value="1" />
+                            <a href={getPublicManuscriptUrl} target="_blank" rel="noreferrer">
                             <Tab label="Full PDF" value="2" />
+                            </a>
                             <Tab label="Item Three" value="3" />
                         </TabList>
                     </Box>
                     <TabPanel value="1">
                         <SingleArticleAbstractTab journal={journal} />
                     </TabPanel>
-                    <TabPanel value="2">Item Two</TabPanel>
+                    <TabPanel value="2">
+                       
+                        </TabPanel>
                     <TabPanel value="3">Item Three</TabPanel>
                 </TabContext>
             </Box>

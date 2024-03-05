@@ -5,7 +5,7 @@ import { journals } from '../../data'
 import axios from 'axios'
 import { DNA } from 'react-loader-spinner'
 import { getDates } from '../helperFunctions'
-
+import { httpRoute } from '../helperFunctions.js'
 
 const JournalCards = () => {
     const {catId} = useParams()
@@ -14,7 +14,7 @@ const JournalCards = () => {
   useEffect(() => {
     const getPublishedArticles= async () => {
         try{
-            const resp = await axios.get(`http://localhost:3001/api/journalArticle/publishedArticle`)
+            const resp = await axios.get(`${httpRoute}/api/journalArticle/publishedArticle`)
             setArticles(resp.data)
         }
         catch(error){

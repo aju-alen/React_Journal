@@ -2,6 +2,7 @@ import axios from 'axios';
 import  {useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import ImageHeader from '../components/ImageHeader';
+import { httpRoute } from '../helperFunctions.js';
 // To stop the links being rendered (Replace the Link Component with MemoizedLinks) 
 
 // const MemoizedLink = memo(({ to, className, children }) => (
@@ -28,7 +29,7 @@ const Login = () => {
         e.preventDefault(); 
         console.log('Form submitted:', formData);
         try{
-          const res = await axios.post('http://localhost:3001/api/auth/login',formData)
+          const res = await axios.post(`${httpRoute}/api/auth/login`,formData)
           console.log(res.data);
           if (res.status === 200){
             console.log('User logged in',res.data);

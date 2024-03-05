@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
 import NavLinksStatic from "./NavLinksStatic"
 import axios from "axios"
+import { httpRoute } from "../helperFunctions.js"
 
 const Navbar = () => {
   const Navigate = useNavigate()
@@ -19,7 +20,7 @@ const Navbar = () => {
   const currentUser = JSON.parse(localStorage.getItem("currentUser"))
   console.log(currentUser,'in navbar');
   const handleLogout = async() => {
-    const resp = await axios.get('http://localhost:3001/api/auth/logout')
+    const resp = await axios.get(`${httpRoute}/api/auth/logout`)
     localStorage.removeItem("currentUser")
     console.log(resp.data);
     Navigate('/')

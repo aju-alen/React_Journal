@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { sortJournalByAZ } from '../helperFunctions'
 import ListJournalBySubject from '../components/ListJournalBySubject'
 import axios from 'axios'
+import { httpRoute } from '../helperFunctions.js'
 import { DNA } from 'react-loader-spinner'
 const Journal = () => {
   const [journalCategory, setJournalCategory] = useState([])
@@ -12,7 +13,7 @@ const Journal = () => {
 
   useEffect(() => {
     const fetchAllJournalCategory = async () => {
-      const resp = await axios('http://localhost:3001/api/journal')
+      const resp = await axios(`${httpRoute}/api/journal`)
       setJournalCategory(resp.data)
       console.log(resp.data, 'journalCategory in useEffect');
       setLoading(false)

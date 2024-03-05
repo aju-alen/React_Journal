@@ -8,6 +8,7 @@ import axios from 'axios';
 import ImageHeader from '../components/ImageHeader';
 const stripePromise = loadStripe("pk_test_51OmAAaC0iMczP50IYfYY6UQfkPaNsmSLw4x58ORMXQPhSqQoE08UazgTs4hYsIPGHSbL9dQ0hbklAqT7qcMHvrPj00SYJ1QA50");
 import { useParams } from "react-router-dom";
+import { httpRoute } from "../helperFunctions.js";
 const CheckoutForm = () => {
     const {articleId} = useParams()
 
@@ -16,7 +17,7 @@ const CheckoutForm = () => {
     useEffect(() => {
      
       const getStripeCheckoutSession = async () => {
-          const resp = await axios.post(`http://localhost:3001/api/stripe/create-checkout-session`,{articleId} ) 
+          const resp = await axios.post(`${httpRoute}/api/stripe/create-checkout-session`,{articleId} ) 
           setClientSecret(resp.data.clientSecret)
       }
       getStripeCheckoutSession()

@@ -12,6 +12,7 @@ import AdminMyManuscriptsDashboard from '../components/AdminMyManuscriptsDashboa
 import HeaderImage from '../components/HeaderImage';
 import ImageHeader from '../components/ImageHeader';
 import { DNA } from 'react-loader-spinner'
+import { httpRoute } from '../helperFunctions';
 
 
 function CustomTabPanel(props) {
@@ -71,11 +72,11 @@ useEffect(() => {
   try{
    
     if(!getUser.user.isAdmin){
-      const resp =await axios.get(`http://localhost:3001/api/users/${profileId}`)
+      const resp =await axios.get(`${httpRoute}/api/users/${profileId}`)
       setUser(resp.data)
     }
     else{
-      const resp =await axios.get(`http://localhost:3001/api/journalArticle/verifyArticles/${profileId}`)
+      const resp =await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
       setUser(resp.data)
     }
   }

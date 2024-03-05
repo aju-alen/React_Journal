@@ -4,6 +4,7 @@ import { journalCategory } from '../../data'
 import axios from 'axios'
 import React from 'react'
 import { DNA } from 'react-loader-spinner'
+import { httpRoute } from '../helperFunctions.js'
 
 
 const JournalCategory = () => {
@@ -12,7 +13,7 @@ const JournalCategory = () => {
 
     useEffect(() => {
         const fetchJournalCategory = async () => {
-            const resp = await axios('http://localhost:3001/api/journal')
+            const resp = await axios(`${httpRoute}/api/journal`)
             setJournalCategory(resp.data)
             setLoading(false)
 

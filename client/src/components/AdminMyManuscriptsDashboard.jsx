@@ -17,9 +17,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
-import { axiosTokenHeader } from '../helperFunctions';
+import { axiosTokenHeader, httpRoute } from '../helperFunctions';
 import { styled } from '@mui/material/styles';
 import { getPdfName } from '../helperFunctions';
+
 
 const AdminMyManuscriptsDashboard = ({ user }) => {
   const [open, setOpen] = React.useState(false);
@@ -53,7 +54,7 @@ console.log(articleId, 'articleId state');
     console.log(articleId, 'articleId inside handleAcceptManuscript state');
     try {
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-      await axios.put(`http://localhost:3001/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
+      await axios.put(`${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
     }
     catch (err) {
       console.log(err);
@@ -126,7 +127,7 @@ console.log(articleId, 'articleId state');
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        Accepting this manuscript will make it available for the public to view. This action cannot be undone.{articleId}
+                        Accepting this manuscript will make it available for the public to view. This action cannot be undone.
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -158,16 +159,16 @@ console.log(articleId, 'articleId state');
                           }
                           console.log(fileData, 'file data');
               
-                          const fileResp = await axios.post(`http://localhost:3001/api/s3/rejection/upload/${row.awsId}/${row.userId}`, fileData)
+                          const fileResp = await axios.post(`${httpRoute}/api/s3/rejection/upload/${row.awsId}/${row.userId}`, fileData)
                           console.log(fileResp, 'file response');
               
-                          const fileGet = await axios.get(`http://localhost:3001/api/s3/rejection/${row.awsId}/${row.userId}`)
+                          const fileGet = await axios.get(`${httpRoute}/api/s3/rejection/${row.awsId}/${row.userId}`)
                           console.log(fileGet, 'file get data');
               
                           const filesUrl = fileGet.data.files
               
                           axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-                          await axios.post(`http://localhost:3001/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl})
+                          await axios.post(`${httpRoute}/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl})
                         }
                         catch (err) {
                           console.log(err);

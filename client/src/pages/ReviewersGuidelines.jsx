@@ -3,7 +3,7 @@ import ImageHeader from '../components/ImageHeader'
 
 const ReviewersGuidelines = () => {
     return (
-        <div className="h-auto w-auto bg-slate-200 ">
+        <div className="h-auto w-auto  ">
             <ImageHeader />
             <div className="my-4">
                 <h2 className='font-bold text-3xl text-center my-4'>Reviewers Guidelines</h2>

@@ -10,6 +10,7 @@ import journalArticleRoute from './routes/journalArticle.route.js'
 import s3Route from './routes/s3.route.js'
 import stripeROute from './routes/stripe.route.js'
 import stripe from 'stripe';
+import sendMailRotue from './routes/sendMail.route.js'
 dotenv.config()
 
 
@@ -128,18 +129,19 @@ app.post(
 app.use(express.json())
 app.use(cookieParser())
 
-app.use('/api/auth',authRoute)
-app.use('/api/users',userRoute)
-app.use('/api/journal',journalRoute)
-app.use('/api/journalArticle',journalArticleRoute)
-app.use('/api/s3',s3Route)
-app.use('/api/stripe',stripeROute)
+app.use('/api/auth', authRoute)
+app.use('/api/users', userRoute)
+app.use('/api/journal', journalRoute)
+app.use('/api/journalArticle', journalArticleRoute)
+app.use('/api/s3', s3Route)
+app.use('/api/stripe', stripeROute)
+app.use('/api/send-email', sendMailRotue)
 
 
 
 app.use(errorHandler)
 const PORT = process.env.PORT || 3001
-app.listen(PORT,()=>{
+app.listen(PORT, () => {
 
-    console.log(`server listening at port ${PORT}`);
+  console.log(`server listening at port ${PORT}`);
 })

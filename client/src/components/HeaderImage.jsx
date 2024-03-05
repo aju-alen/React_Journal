@@ -1,9 +1,10 @@
 import axios from "axios"
 import { Link } from "react-router-dom"
+import { httpRoute } from "../helperFunctions.js"
 const HeaderImage = ()=>{
 
   const handleClickJournal =async () => {
-    const resp = await axios.get('http://localhost:3001/api/users')
+    const resp = await axios.get(`${httpRoute}/api/users`)
     console.log(resp.data);
   }
 

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React,{useState,useEffect} from 'react'
 import ImageHeader from '../components/ImageHeader';
+import { httpRoute } from '../helperFunctions';
 const ReturnAfterStripe = () => {
 
     const [status, setStatus] = useState(null);
@@ -12,7 +13,7 @@ const ReturnAfterStripe = () => {
     const sessionId = urlParams.get('session_id');
 
     const getSessionStatus = async () => {
-        const resp = await axios.get(`http://localhost:3001/api/stripe/session-status?session_id=${sessionId}`)
+        const resp = await axios.get(`${httpRoute}/api/stripe/session-status?session_id=${sessionId}`)
         setStatus(resp.data.status)
         setCustomerEmail(resp.data.customer_email)
     }

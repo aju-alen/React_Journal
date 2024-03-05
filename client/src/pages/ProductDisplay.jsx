@@ -1,18 +1,7 @@
 
-
-
-
-
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from 'react';
-import ImageHeader from '../components/ImageHeader';    
+import ImageHeader from '../components/ImageHeader';  
+import { httpRoute } from '../helperFunctions.js';
 const ProductDisplayy = () => (
     <div className="h-auto w-auto bg-slate-200 ">
     <ImageHeader/>
@@ -61,7 +50,7 @@ const SuccessDisplay = ({ sessionId }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        const resp = await axios.post(`http://localhost:3001/api/stripe/create-portal-session`,{sessionId} )
+        const resp = await axios.post(`${httpRoute}/api/stripe/create-portal-session`,{sessionId} )
         console.log(resp.data, 'resp in success');
     }
   return (
