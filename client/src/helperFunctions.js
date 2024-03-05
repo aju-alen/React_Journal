@@ -75,4 +75,4 @@ if (match && match[1]) {
 
 }
 
-export const httpRoute = 'http://localhost:3001'
+export const httpRoute = 'https://react-journal.onrender.com'
