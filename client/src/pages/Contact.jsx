@@ -1,5 +1,6 @@
-import React from 'react'
+import React,{ useState} from 'react'
 import Box from '@mui/material/Box';
+import Snackbar from '@mui/material/Snackbar';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import axios from 'axios';
 import Button from '@mui/material/Button';
@@ -14,6 +15,9 @@ import ImageHeader from '../components/ImageHeader'
 import { httpRoute } from '../helperFunctions';
 
 const Contact = () => {
+  const [open, setOpen] = useState(false);
+  const [alertStatus, setAlertStatus] = useState('success');
+  const [alertText, setAlertText] = useState('');
   const [formData, setFormData] = React.useState({
     username: '',
     email: '',
@@ -27,12 +31,24 @@ const Contact = () => {
   const handleSubmitContact = async() => {
     try {
       const resp =await  axios.post(`${httpRoute}/api/send-email/contact-us`,formData)
-
+      setOpen(true);
+      setAlertStatus('success');
+      setAlertText('Message Sent Successfully');
     } catch (error) {
       console.log(error);
+      setOpen(true);
+      setAlertStatus('error');
+      setAlertText('Message Sent Failed, Try again later');
   }  }
 
 console.log(formData);
+const handleClose = (event, reason) => {
+  if (reason === 'clickaway') {
+      return;
+  }
+
+  setOpen(false);
+};
   return (
     <div>
       <ImageHeader/>
@@ -81,6 +97,16 @@ console.log(formData);
                         <Button className='mt-5' variant="contained" onClick={handleSubmitContact}>Send Message</Button>
                     </FormControl>
                 </Box>
+                <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+                    <Alert
+                        onClose={handleClose}
+                        severity={alertStatus}
+                        variant="filled"
+                        sx={{ width: '100%' }}
+                    >
+                        {alertText}
+                    </Alert>
+                </Snackbar>
     </div>
   )
 }
