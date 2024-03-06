@@ -21,6 +21,7 @@ model User {
   surname  String
   otherName String
   affiliation String  
+  test String @default("test")
   isAdmin  Boolean  @default(false)
   value String
   label String

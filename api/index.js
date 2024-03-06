@@ -18,7 +18,14 @@ const app = express()
 dotenv.config()
 app.use(cors({
   origin: 'https://react-journal-1.onrender.com',
-}));
+})); //frontend url
+
+// http://localhost:5173
+
+// https://react-journal-1.onrender.com
+
+
+
 const endpointSecret = 'whsec_3c0176b917592f6c6c3832fc71c85a6ad2c8ae41df0f27ae8f8e9e3a37d4c123';
 
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
