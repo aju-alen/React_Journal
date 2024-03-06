@@ -9,7 +9,7 @@ const BUCKET_NAME = process.env.BUCKET_NAME;
 const REGION = process.env.REGION;
 const ACCESS_KEY = process.env.ACCESS_KEY;
 const SECRET_KEY = process.env.SECRET_KEY;
-console.log(BUCKET_NAME,REGION,ACCESS_KEY,SECRET,'bucketName region accessKey secretKey zzzzzzzzzzzzzzzzzzzzzzzzz');
+console.log(BUCKET_NAME,REGION,ACCESS_KEY,SECRET_KEY,'bucketName region accessKey secretKey zzzzzzzzzzzzzzzzzzzzzzzzz');
 
 const s3 = new S3({
     credentials: {
