@@ -130,6 +130,8 @@ const SubmitManuscript = ({ user }) => {
             const resp = await axios.post(`${httpRoute}/api/journalArticle/create`, mergeForm) //create publicPdfurl deets
 
             setOpen(true);
+            setAlertStatus('success')
+            setAlertText('Manuscript Submitted Successfully. Redirecting to your dashboard')
             setTimeout(() => {
                 navigate(`/dashboard/${user.id}?tab=0`)
             }, 3000)
