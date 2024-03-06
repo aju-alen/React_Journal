@@ -17,7 +17,7 @@ dotenv.config()
 const app = express()
 dotenv.config()
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: 'https://react-journal-1.onrender.com',
 })); //frontend url
 
 // http://localhost:5173
