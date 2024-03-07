@@ -4,7 +4,7 @@ dotenv.config()
 
 
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
-const YOUR_DOMAIN = 'http://localhost:5173';
+const YOUR_DOMAIN = 'https://react-journal-1.onrender.com';
 
 
 export const createCheckoutSession = async (req, res, next) => {
