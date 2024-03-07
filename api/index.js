@@ -72,8 +72,9 @@ app.post('/webhook', express.raw({type: 'application/json'}),async (request, res
 
   try {
     event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    console.log(event, 'event in web hook');
-    console.log(event.metadata, 'event in web hook');
+    console.log(event.data, 'data in event ');
+    console.log(event.data.object, 'object in event ');
+    console.log(event.data.object.metadata, 'metadata in object event');
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
@@ -89,7 +90,7 @@ app.post('/webhook', express.raw({type: 'application/json'}),async (request, res
       const checkoutSessionAsyncPaymentSucceeded = event.data.object;
       // Then define and call a function to handle the event checkout.session.async_payment_succeeded
       const payment = await prisma.article.update({
-        where:{id:Number(event.metadata.articleId)},
+        where:{id:Number(event.data.object.metadata.articleId)},
         data:{
           paymentStatus:true
         }
