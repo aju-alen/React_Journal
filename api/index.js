@@ -64,7 +64,7 @@ const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 
 
-app.post('/webhook', express.raw({type: 'application/json'}),async (request, response) => {
+app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
   const sig = request.headers['stripe-signature'];
 
   let event;
@@ -85,11 +85,13 @@ app.post('/webhook', express.raw({type: 'application/json'}),async (request, res
     case 'checkout.session.async_payment_failed':
       const checkoutSessionAsyncPaymentFailed = event.data.object;
       // Then define and call a function to handle the event checkout.session.async_payment_failed
+      console.log('1');
       break;
     case 'checkout.session.async_payment_succeeded':
+      console.log('2');
       const checkoutSessionAsyncPaymentSucceeded = event.data.object;
       // Then define and call a function to handle the event checkout.session.async_payment_succeeded
-      const payment = await prisma.article.update({
+      const payment =  prisma.article.update({
         where:{id:Number(event.data.object.metadata.articleId)},
         data:{
           paymentStatus:true
@@ -99,6 +101,7 @@ app.post('/webhook', express.raw({type: 'application/json'}),async (request, res
       console.log(payment, 'payment in stripe route webhook');
       break;
     case 'checkout.session.completed':
+      console.log('3');
       const checkoutSessionCompleted = event.data.object;
       // Then define and call a function to handle the event checkout.session.completed
       break;
