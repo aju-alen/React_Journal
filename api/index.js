@@ -66,6 +66,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
   const sig = request.headers['stripe-signature'];
 
   let event;
+  console.log('Logged into webhook route');
 
   try {
     event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
@@ -76,6 +77,14 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
 
   // Handle the event
   switch (event.type) {
+    case 'checkout.session.async_payment_failed':
+      const checkoutSessionAsyncPaymentFailed = event.data.object;
+      // Then define and call a function to handle the event checkout.session.async_payment_failed
+      break;
+    case 'checkout.session.async_payment_succeeded':
+      const checkoutSessionAsyncPaymentSucceeded = event.data.object;
+      // Then define and call a function to handle the event checkout.session.async_payment_succeeded
+      break;
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;
       // Then define and call a function to handle the event checkout.session.completed
