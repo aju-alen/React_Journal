@@ -19,13 +19,14 @@ dotenv.config()
 const app = express()
 dotenv.config()
 app.use(cors({
-  origin: 'https://react-journal-1.onrender.com',
+  origin: 'https://scientificjournalsportal.com',
 })); //frontend url
 
 // http://localhost:5173
 
 //https://react-journal-1.onrender.com
 
+//https://scientificjournalsportal.com
 
 
 const endpointSecret = "whsec_yLUMNQvIwFkRP7RG12tUlTg0MOZTaTzu";
