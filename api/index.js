@@ -26,7 +26,7 @@ app.use(cors({
 
 
 
-const endpointSecret = "whsec_3c0176b917592f6c6c3832fc71c85a6ad2c8ae41df0f27ae8f8e9e3a37d4c123";
+const endpointSecret = "whsec_6rhXj7TiuktaGubRpT19QSumkt9wGWKG";
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 // app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
