@@ -11,6 +11,8 @@ import s3Route from './routes/s3.route.js'
 import stripeROute from './routes/stripe.route.js'
 import stripe from 'stripe';
 import sendMailRotue from './routes/sendMail.route.js'
+import {PrismaClient} from '@prisma/client'
+const prisma = new PrismaClient()
 dotenv.config()
 
 
@@ -62,7 +64,7 @@ const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 
 
-app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
+app.post('/webhook', express.raw({type: 'application/json'}),async (request, response) => {
   const sig = request.headers['stripe-signature'];
 
   let event;
@@ -71,6 +73,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
   try {
     event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
     console.log(event, 'event in web hook');
+    console.log(event.metadata, 'event in web hook');
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
@@ -85,6 +88,14 @@ app.post('/webhook', express.raw({type: 'application/json'}), (request, response
     case 'checkout.session.async_payment_succeeded':
       const checkoutSessionAsyncPaymentSucceeded = event.data.object;
       // Then define and call a function to handle the event checkout.session.async_payment_succeeded
+      const payment = await prisma.article.update({
+        where:{id:Number(event.metadata.articleId)},
+        data:{
+          paymentStatus:true
+        }
+
+      })
+      console.log(payment, 'payment in stripe route webhook');
       break;
     case 'checkout.session.completed':
       const checkoutSessionCompleted = event.data.object;

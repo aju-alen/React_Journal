@@ -53,6 +53,7 @@ model Article {
   articleKeywords           String
   articleAuthors            Json
   filesURL                  Json
+  paymentStatus             Boolean @default(false)
   rejectionFilesURL         Json
   publicPdfName             String
   awsId                     String
