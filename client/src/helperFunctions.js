@@ -75,7 +75,7 @@ if (match && match[1]) {
 
 }
 
-export const httpRoute = 'https://react-journal.onrender.com' // backend url
+export const httpRoute = 'http://localhost:3001' // backend url
 
 // https://react-journal.onrender.com
 

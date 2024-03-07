@@ -5,7 +5,6 @@ import LatestJournalsHome from '../components/LatestJournalsHome'
 import EthicsOfPublicationCards from '../components/EthicsOfPublicationCards'
 
 const Home = () => {
-
   return (
     <div>
       <HeaderImage />

@@ -6,7 +6,7 @@ import {
 } from '@stripe/react-stripe-js';
 import axios from 'axios';
 import ImageHeader from '../components/ImageHeader';
-const stripePromise = loadStripe("pk_test_51OmAAaC0iMczP50IYfYY6UQfkPaNsmSLw4x58ORMXQPhSqQoE08UazgTs4hYsIPGHSbL9dQ0hbklAqT7qcMHvrPj00SYJ1QA50");
+const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 import { useParams } from "react-router-dom";
 import { httpRoute } from "../helperFunctions.js";
 const CheckoutForm = () => {
