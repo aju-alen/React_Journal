@@ -68,13 +68,14 @@ import { getPdfName } from '../helperFunctions';
                   </Link>
                 </TableCell>:<TableCell></TableCell>}
 
-                <TableCell sx={{fontWeight:'bold'}} align="center">
+                {!row.paymentStatus ?<TableCell sx={{fontWeight:'bold'}} align="center">
                   <Link to={`/checkout/${row.id}`}>
                   <Button variant="contained" color="primary">
-                    Payment
+                    Pay Here
                   </Button>
                   </Link>
-                </TableCell>
+                </TableCell>: <TableCell sx={{fontWeight:'bold', color:'green', fontSize:20}} align="center">Payment Complete</TableCell>}
+
               </TableRow>
               
             )

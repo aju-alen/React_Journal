@@ -13,7 +13,7 @@ const ProductDisplayy = () => (
                 <h5>$60.00 / month</h5>
             </div>
         </div>
-        <form action={`${httpRoute}/api/stripe/create-checkout-sessions`} method="POST">
+        <form action="http://localhost:3001/api/stripe/create-checkout-sessions" method="POST">
             {/* Add a hidden field with the lookup_key of your Price */}
             <input type="hidden" name="lookup_key" value="asda" />
             <button id="checkout-and-portal-button" type="submit">
@@ -30,7 +30,7 @@ const ProductDisplayy = () => (
     <h5>$10.00 / Week</h5>
   </div>
 </div>
-<form action={`${httpRoute}/api/stripe/create-checkout-sessions`} method="POST">
+<form action="http://localhost:3001/api/stripe/create-checkout-sessions" method="POST">
   {/* Add a hidden field with the lookup_key of your Price */}
   <input type="hidden" name="lookup_key" value="pokol" />
   <button id="checkout-and-portal-button" type="submit">

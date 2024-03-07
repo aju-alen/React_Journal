@@ -98,16 +98,16 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
       console.log(event.data.object.payment_status, 'payment status in stripe route webhook');
       console.log(event.data.object.status, 'status in stripe route webhook');
       const checkoutSessionCompleted = event.data.object;
-      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete') {
+      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment') {
         const payment = await prisma.article.update({
           where:{id:Number(event.data.object.metadata.articleId)},
           data:{
             paymentStatus:true
           }
-  
         })
         console.log(payment, 'payment in stripe route webhook');
       }
+      
       // Then define and call a function to handle the event checkout.session.completed
       break;
     // ... handle other event types
