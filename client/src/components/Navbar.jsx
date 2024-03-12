@@ -40,7 +40,7 @@ const Navbar = () => {
         <nav className={` h-28 p-4 flex justify-between items-center fixed z-50 w-full transition-all duration-500 ease-in-out ${userActive ? ' bg-[#f1ded7]' : ''} `}>
           {/* Logo on the left */}
           <Link className="text-black text-lg font-light" to="/">
-            Logo
+          <img src="./images/logo.png" alt="ScientificJournalsPortal" className=' h-20  object-cover' />
           </Link>
 
           {/* Navigation links on the right */}
@@ -77,6 +77,7 @@ const Navbar = () => {
 
       {/* Mobile Navbar Overlay  */}
       <div className='md:hidden'>
+      <img src="./images/logo.png" alt="ScientificJournalsPortal" className=' h-20  object-cover' />
         {/* Hamburger icon */}
         <div className=" absolute top-0 right-0 p-3  ">
           <img src='./images/mobile-hamburger.png' width="30px" height="10px" onClick={handleMobileNavBar} />
