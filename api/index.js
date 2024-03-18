@@ -12,6 +12,7 @@ import stripeROute from './routes/stripe.route.js'
 import stripe from 'stripe';
 import sendMailRotue from './routes/sendMail.route.js'
 import {PrismaClient} from '@prisma/client'
+import { originUrl } from './utils/cors.dev.js'
 const prisma = new PrismaClient()
 dotenv.config()
 
@@ -19,7 +20,7 @@ dotenv.config()
 const app = express()
 dotenv.config()
 app.use(cors({
-  origin: ['https://scientificjournalsportal.com', 'https://react-journal-1.onrender.com'],
+    origin: originUrl,
 })); //frontend url
 
 // http://localhost:5173
