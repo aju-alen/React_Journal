@@ -30,7 +30,7 @@ app.use(cors({
 //https://scientificjournalsportal.com
 
 
-const endpointSecret = "whsec_yLUMNQvIwFkRP7RG12tUlTg0MOZTaTzu";
+const endpointSecret = process.env.ENDPOINT_SECRET_STRIPE;
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 
 // app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
