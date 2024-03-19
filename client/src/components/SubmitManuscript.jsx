@@ -103,7 +103,8 @@ const SubmitManuscript = ({ user }) => {
 
     }
     const handleSubmit = async () => {
-        if (files.length > 0) {
+        console.log(files.length);
+        if (files.length < 0) {
             console.log('Please upload the Manuscript file. It is mandatory to proceed.')
             setAlertStatus('error')
             setAlertText('Please upload the Manuscript file. It is mandatory to proceed.')
@@ -311,7 +312,7 @@ const SubmitManuscript = ({ user }) => {
                         <VisuallyHiddenInput type="file" />
                     </Button>
                 </div>
-                <h2 className=' text-center'>Upload Your Manuscript File</h2>
+                <h2 className=' text-center'>Upload Your Manuscript File<span className=' text-red-500'>* (Mandatory Upload)</span></h2>
                 <div className=" md:mx-96">
                     <Button fullWidth sx={{ mb: 3 }}
 
@@ -323,7 +324,7 @@ const SubmitManuscript = ({ user }) => {
                         onChange={(event) => handleFileChange(event, 1)}
                         startIcon={<CloudUploadIcon />}
                     >
-                        {`Manuscript File*(Mandatory)`}
+                        {`Manuscript File`}
                         <VisuallyHiddenInput type="file" />
                     </Button>
                 </div>
