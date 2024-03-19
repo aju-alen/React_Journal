@@ -20,10 +20,12 @@ const SubmitManuscript = ({ user }) => {
     const [open, setOpen] = useState(false);
     const [alertStatus, setAlertStatus] = useState('success');
     const [alertText, setAlertText] = useState('');
+    const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
     const navigate = useNavigate()
     const [authors, setAuthors] = useState([]) //collection of authors
     const [journalCategory, setJournalCategory] = useState([]);
     const [checked, setChecked] = useState(true);
+    const [userEmail, setUserEmail] = useState('')
     const [authorData, setAuthorData] = useState({
         authorTitle: '',
         authorGivenName: '',
@@ -101,15 +103,16 @@ const SubmitManuscript = ({ user }) => {
 
     }
     const handleSubmit = async () => {
-        if (files.length !== 3) {
-            console.log('Please add all the required files before uploading the manuscript.')
+        if (files.length > 0) {
+            console.log('Please upload the Manuscript file. It is mandatory to proceed.')
             setAlertStatus('error')
-            setAlertText('Please add all the required files before uploading the manuscript.')
+            setAlertText('Please upload the Manuscript file. It is mandatory to proceed.')
             setOpen(true);
 
             return
         }
         try {
+            setSubmitButtonDisabled(true)
             const awsId = uuidv4();
             const fileData = new FormData();
             for (const file of files) {
@@ -135,12 +138,13 @@ const SubmitManuscript = ({ user }) => {
             setTimeout(() => {
                 navigate(`/dashboard/${user.id}?tab=0`)
             }, 3000)
-
+            setSubmitButtonDisabled(false)
         }
         catch (err) {
             console.log(err);
             setAlertStatus('error')
             setAlertText('Error submitting manuscript. Please see if all fields are filled')
+            setSubmitButtonDisabled(false)
             setOpen(true);
 
         }
@@ -161,11 +165,13 @@ const SubmitManuscript = ({ user }) => {
             setJournalCategory(resp.data)
         }
         getJournalCategory()
+        setAuthorData({ ...authorData, authorEmail: user.email })
     }, [])
     console.log(files, 'files');
     console.log(user, 'userId');
     return (
-        <div className='h-auto w-full'>
+        <div className='h-auto'>
+        <div className='h-auto w-full md:w-3/4'>
             {/* Step 1 */}
             <div>
                 <h2 className="flex justify-center font-bold text-xl mb-5 ">Manuscript Details</h2>
@@ -266,7 +272,8 @@ const SubmitManuscript = ({ user }) => {
                             />
                         </div>
                         <div className="mt-5">
-                            <TextField id="outlined-basic" fullWidth label="Email Address" variant="outlined"
+                            <TextField
+                                id="outlined-basic" fullWidth label="Email Address" variant="outlined"
                                 name='authorEmail'
                                 value={authorData.authorEmail}
                                 onChange={handleAuthorChange}
@@ -316,7 +323,7 @@ const SubmitManuscript = ({ user }) => {
                         onChange={(event) => handleFileChange(event, 1)}
                         startIcon={<CloudUploadIcon />}
                     >
-                        Manuscript File
+                        {`Manuscript File*(Mandatory)`}
                         <VisuallyHiddenInput type="file" />
                     </Button>
                 </div>
@@ -336,9 +343,8 @@ const SubmitManuscript = ({ user }) => {
                         <VisuallyHiddenInput type="file" />
                     </Button>
                 </div>
-                <div className=" flex justify-center items-center">
-                    <Button sx={{ p: 2 }} variant="contained" onClick={handleSubmit}>Submit Manuscript For Verification</Button>
                 </div>
+               
                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                     <Alert
                         onClose={handleClose}
@@ -350,6 +356,9 @@ const SubmitManuscript = ({ user }) => {
                     </Alert>
                 </Snackbar>
             </div>
+            <div className=" flex justify-center items-center ">
+                    <Button sx={{ p: 2 }} variant="contained" onClick={handleSubmit} disabled={submitButtonDisabled}>Submit Manuscript For Verification</Button>
+                </div>
         </div>
     )
 }
