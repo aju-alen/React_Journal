@@ -108,7 +108,7 @@ const Login = () => {
           variant="filled"
           sx={{ width: '100%' }}
         >
-         Login Failed, either email or password is incorrect or credentials does not exist
+         Login Failed, either email or password is incorrect or credentials does not exist or is not verified by registered email.
         </Alert>
       </Snackbar>
               <div className=" text-center p-4 flex justify-around">

@@ -24,6 +24,8 @@ model User {
   test String @default("test")
   isAdmin  Boolean  @default(false)
   value String
+  emailVerificationToken String @unique
+  emailVerified Boolean @default(false)
   label String
   articles Article[]
   createdAt DateTime @default(now())
