@@ -43,8 +43,8 @@ export default function Article() {
                     {journal.articleTitle}
                 </h2>
                 <div className="flex gap-2 md:gap-12 justify-center mt-2 font-bold   ">
-                    {journal?.articleAuthors?.map(author => (
-                        <p className=' text-md md:text-xl '>
+                    {journal?.articleAuthors?.map((author,idx) => (
+                        <p key={idx} className=' text-md md:text-xl '>
                             {author.authorGivenName}</p>
                     ))}
                 </div>
