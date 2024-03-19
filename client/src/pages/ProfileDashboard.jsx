@@ -55,6 +55,7 @@ const ProfileDashboard = () => {
 const {profileId} = useParams()
 const [userDetails, setUserDetails] = useState({})
 const [user, setUser] = useState({})
+const [loading, setLoading] = useState(true)
 let [searchParams, setSearchParams] = useSearchParams();
 const value = Number(searchParams.get("tab") || 0);
 
@@ -75,10 +76,12 @@ useEffect(() => {
     if(!getUser.user.isAdmin){
       const resp =await axios.get(`${httpRoute}/api/users/${profileId}`)
       setUser(resp.data)
+      setLoading(false)
     }
     else{
       const resp =await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
       setUser(resp.data)
+      setLoading(false)
     }
   }
   catch(err){
@@ -94,6 +97,7 @@ useEffect(() => {
   
   return (
     <div>
+    {!loading?(<div>
       <ImageHeader/>
        <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${user?.title} ${user?.surname}`}</h1>
        <Box sx={{ width: '100%' }} >
@@ -122,6 +126,18 @@ useEffect(() => {
                 </CustomTabPanel>
             </Box>
 
+    </div>):
+     (<div className='flex justify-center items-center h-96'>
+     <DNA
+       visible={true}
+       height="80"
+       width="80"
+       ariaLabel="dna-loading"
+       wrapperStyle={{}}
+       wrapperClass="dna-wrapper"
+     />
+   </div>)
+    }
     </div>
   )
 }
