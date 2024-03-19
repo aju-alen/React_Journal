@@ -40,7 +40,7 @@ const LatestJournalsHome = ({width}) => {
                                     <p className=' text-justify font-light'>
                                         {journal.articleAbstract.substring(0, 800)}...
                                     </p>
-                                    <Link to={`/journal/EIJOER/${journal.id}`} className='font-bold text-lg  border-2 rounded p-3 border-green bg-green-400'>
+                                    <Link to={`/journal/EIJER/${journal.id}`} className='font-bold text-lg  border-2 rounded p-3 border-green bg-green-400'>
                                         <button>Read More</button>
                                     </Link>
                                 </div>

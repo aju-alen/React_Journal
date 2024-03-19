@@ -24,7 +24,7 @@ const JournalCards = () => {
     getPublishedArticles()
   }, [])
     
-console.log(articles,'articles');
+// console.log(articles,'articles');
 if (!Array.isArray(articles) || articles.length === 0) {
     // Handle empty or non-array user prop
     return (
@@ -52,7 +52,7 @@ if (!Array.isArray(articles) || articles.length === 0) {
                         <div className=" flex flex-col justify-center items-center">
                         <p className=' mx-6 text-sm text-justify'> Published on: {getDates(journal.articlePublishedDate)}</p>
                         <p className=' mx-6 p-2 text-sm'>Authors: {journal.articleAuthors.map((author,idx) => (
-                            <React.Fragment key={idx}>{author.authorGivenName} | </React.Fragment>
+                            <React.Fragment key={idx}>{author.authorGivenName}  {author.authorLastName } | </React.Fragment>
                         ))}</p>
                         
                         <p className='  mx-6'>
@@ -60,7 +60,7 @@ if (!Array.isArray(articles) || articles.length === 0) {
                             <span> Article Number - A000{journal.id}</span>
                             </p>
                             </div>
-                        <Link to={`/journal/EIJOER/${journal.id}`} >
+                        <Link to={`/journal/EIJER/${journal.id}`} >
                             <div className="flex justify-center items-center">
 
                             <button className='  font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4'  >View Article</button>
