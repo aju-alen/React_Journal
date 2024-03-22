@@ -65,10 +65,19 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
         from: process.env.GMAIL_AUTH_USER,
         to: email,
         subject: 'Account Verification',
-        text: `
-        Hi ${name},
-
-        Please click the link below to verify your account: ${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}`
+        html: `
+    <html>
+    <body>
+        <div>
+            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+        </div>
+        <div>
+            <p>Hi ${name},</p>
+            <p>Please click the link below to verify your account:</p>
+            <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}">${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}</a></p>
+        </div>
+    </body>
+    </html>`
     }
 
     //send the mail
