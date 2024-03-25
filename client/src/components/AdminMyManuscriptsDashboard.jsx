@@ -75,7 +75,7 @@ console.log(articleId, 'articleId state');
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Manuscript Id</TableCell>
+            <TableCell>Manuscript Author</TableCell>
             <TableCell align="center">Article Title</TableCell>
             <TableCell align="center">Article Abstract</TableCell>
             <TableCell align="center">Article Keywords</TableCell>
@@ -92,7 +92,7 @@ console.log(articleId, 'articleId state');
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.id}
+                  {row.articleAuthors[0].authorEmail}
                 </TableCell>
                 <TableCell align="center">{row.articleTitle}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleAbstract}</TableCell>
