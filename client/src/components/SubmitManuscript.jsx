@@ -10,7 +10,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { styled } from '@mui/material/styles';
 import { v4 as uuidv4 } from 'uuid';
-import { httpRoute } from '../helperFunctions.js';
+import { calculateIssue, httpRoute } from '../helperFunctions.js';
 import Snackbar from '@mui/material/Snackbar';
 
 
@@ -128,10 +128,25 @@ const SubmitManuscript = ({ user }) => {
             console.log(fileGet, 'file get data');
             const filesUrl = fileGet.data.files
 
+            calculateIssue()
+            console.log(formData, 'formData');
+            const journalDate = journalCategory.find(data => data.id === formData.journalId);
+            const journalYear = journalDate.journalStartYear;
+            const journalMonth = journalDate.journalStartMonth;
+            const articleDate = Date.now();
+            const articleYear = new Date(articleDate).getFullYear();
+            const articleMonth = new Date(articleDate).getMonth()+1;
+            const issue = calculateIssue(journalYear, journalMonth, articleYear, articleMonth)
+            console.log(issue, 'issue');
+            const volume = articleYear-journalYear+1;
 
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId }, { publicPdfName: publicPdfName.current })
+
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId }, { publicPdfName: publicPdfName.current },{articleIssue:issue},{articleVolume:volume})
             console.log(mergeForm, 'final form data');
-            const resp = await axios.post(`${httpRoute}/api/journalArticle/create`, mergeForm) //create publicPdfurl deets
+            
+            //create publicPdfurl deets
+            const resp = await axios.post(`${httpRoute}/api/journalArticle/create`, mergeForm) 
+            
 
             setOpen(true);
             setAlertStatus('success')
