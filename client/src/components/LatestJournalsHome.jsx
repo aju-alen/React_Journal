@@ -34,8 +34,13 @@ const LatestJournalsHome = ({width}) => {
                                     <h2 className=' uppercase text-yellow-400 font-bold w-5/6 text-left p-2'>
                                         {journal.articleTitle}
                                     </h2>
-                                    <p className=' text-left p-2'>
-                                        {getDates(journal.articleAcceptedDate)} | Vol.22(12), pp. 322-328
+                                    <p className=' text-center '>
+                                        Authors - {journal.articleAuthors.map((author,idx) => (
+                                            <React.Fragment key={idx}>{`${author.authorGivenName} ${author.authorLastName } |`}    </React.Fragment>
+                                        ))}
+                                    </p>
+                                    <p className=' text-center '>
+                                        {getDates(journal.articleAcceptedDate)} | Vol.{journal.articleVolume}, Issue.{journal.articleIssue} 
                                     </p>
                                     <p className=' text-justify font-light'>
                                         {journal.articleAbstract.substring(0, 800)}...

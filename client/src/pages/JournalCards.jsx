@@ -56,8 +56,8 @@ if (!Array.isArray(articles) || articles.length === 0) {
                         ))}</p>
                         
                         <p className='  mx-6'>
-                            <span>doi: testlive.com</span> |
-                            <span> Article Number - A000{journal.id}</span>
+                            {/* <span>doi: testlive.com</span> | */}
+                            <span> Article Number - A000{journal.id.split('').splice(4,journal.id.length-5-27).join('')}</span>
                             </p>
                             </div>
                         <Link to={`/journal/EIJER/${journal.id}`} >

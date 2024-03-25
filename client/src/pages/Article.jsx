@@ -35,6 +35,9 @@ export default function Article() {
         getSinglePublishedArticle()
     }, [])
     console.log(journal, "journal in article");
+    const articleYear = journal.articlePublishedDate
+    const year = new Date(articleYear).getFullYear()
+    console.log(year, 'year');
     return (
         <div>
             <ImageHeaderArticle />
@@ -45,12 +48,13 @@ export default function Article() {
                 <div className="flex gap-2 md:gap-12 justify-center mt-2 font-bold   ">
                     {journal?.articleAuthors?.map((author,idx) => (
                         <p key={idx} className=' text-md md:text-xl '>
-                            {author.authorGivenName}</p>
+                            {author.authorGivenName + author.authorLastName}</p>
                     ))}
                 </div>
                 <div className="flex gap-2 md:gap-3 justify-center mt-2 ">
-                    <span> Article Number - A000{journal.id}  | </span>
-                    <span> Vol 20 - {getDates(journal.articlePublishedDate)} </span>
+                    <span> Article Number - A000{journal?.id?.split('').splice(4,journal.id.length-5-27).join('')}  | </span>
+                    <span> Vol-{journal?.articleVolume} Issue-{journal?.articleIssue}   </span>
+                    
                 </div>
                 <div className=" text-center  mt-2  text-sm md:text-lg">
                     <span>Recieved: {getDates(journal.articleReceivedDate)} | </span>
