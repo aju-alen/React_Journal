@@ -75,6 +75,15 @@ if (match && match[1]) {
 
 }
 
+export function calculateIssue(startYear, startMonth, currentYear, currentMonth) {
+  const monthsPerIssue = 3;
+  const startTotalMonths = (startYear - 1) * 12 + startMonth;
+  const currentTotalMonths = (currentYear - 1) * 12 + currentMonth;
+  const issue = Math.ceil((currentTotalMonths - startTotalMonths + 1) / monthsPerIssue);
+  return issue;
+}
+
+
 export const httpRoute = 'https://react-journal.onrender.com' // backend url
 
 // https://react-journal.onrender.com
