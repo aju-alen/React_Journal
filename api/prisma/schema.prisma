@@ -14,7 +14,7 @@ datasource db {
 
 
 model User {
-  id      Int      @id @default(autoincrement())
+   id        String    @id @default(uuid())
   email   String   @unique
   password String
   title    String
@@ -32,7 +32,7 @@ model User {
 }
 
 model Journal{
-  id     Int      @id @default(autoincrement())
+    id        String    @id @default(uuid())
   journalTitle   String   @unique
   journalImageURL String
   journalAbbreviation String
@@ -40,6 +40,7 @@ model Journal{
   journalISSN String
   journalDOI String
   journalStartYear Int
+  journalStartMonth Int
   journalPublishedArticles Int @default(0)
   articles Article[]
   createdAt DateTime @default(now())
@@ -49,12 +50,15 @@ model Journal{
 
 
 model Article {
-  id                        Int      @id @default(autoincrement())
+    id        String    @id @default(uuid())
   articleTitle              String
   articleAbstract           String @db.VarChar(3000)
   articleKeywords           String
   articleAuthors            Json
   filesURL                  Json
+  articleIssue             Int
+  articleVolume            Int
+  
   paymentStatus             Boolean @default(false)
   rejectionFilesURL         Json
   publicPdfName             String
@@ -68,9 +72,9 @@ model Article {
   articleReceivedDate       DateTime @default(now())
   articleAcceptedDate       DateTime @updatedAt
   articlePublishedDate      DateTime @updatedAt
-  journalId                 Int
+  journalId                 String
   articlePublishedJournal   Journal @relation(fields: [journalId], references: [id])
-  userId                    Int
+  userId                    String
   articlePublishedUser      User     @relation(fields: [userId], references: [id])
   createdAt                 DateTime @default(now())
 }
