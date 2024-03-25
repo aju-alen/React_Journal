@@ -14,6 +14,7 @@ export const createJournal = async (req, res, next) => {
                 journalISSN: req.body.journalISSN,
                 journalDOI: req.body.journalDOI,
                 journalStartYear: req.body.journalStartYear,
+                journalStartMonth: req.body.journalStartMonth
             }
         })
         await prisma.$disconnect();
@@ -43,7 +44,9 @@ export const getAllJournalCategoryName = async (req, res, next) => {
         const journal = await prisma.journal.findMany({
             select: {
                 id: true,
-                journalTitle: true
+                journalTitle: true,
+                journalStartYear: true,
+                journalStartMonth: true
             }
         })
         await prisma.$disconnect();
