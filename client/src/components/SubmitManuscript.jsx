@@ -127,8 +127,7 @@ const SubmitManuscript = ({ user }) => {
             const fileGet = await axios.get(`${httpRoute}/api/s3/${awsId}`)
             console.log(fileGet, 'file get data');
             const filesUrl = fileGet.data.files
-
-            calculateIssue()
+            
             console.log(formData, 'formData');
             const journalDate = journalCategory.find(data => data.id === formData.journalId);
             const journalYear = journalDate.journalStartYear;
