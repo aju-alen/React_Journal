@@ -7,7 +7,7 @@ export const getOneUser = async (req, res, next) => {
          const profileId = req.params.profileId
          const user = await prisma.user.findUnique({
 
-            where:{id:Number(profileId)},
+            where:{id:profileId},
             include:{articles:true}
             
          })
@@ -40,7 +40,7 @@ export const editUserDetails = async (req, res, next) => {
    try {
       const profileId = req.params.profileId
       const user = await prisma.user.update({
-          where: { id: Number(profileId) },
+          where: { id: profileId },
           data: {
              
                affiliation: req.body.affiliation,
