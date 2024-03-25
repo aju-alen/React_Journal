@@ -20,6 +20,8 @@ export const createJournalArticle = async (req, res, next) => {
             awsId: req.body.awsId,
             rejectionFilesURL:[],
             publicPdfName: req.body.publicPdfName,
+            articleIssue: req.body.articleIssue,
+            articleVolume: req.body.articleVolume,
           },
         });
       
@@ -111,7 +113,7 @@ export const postRejectionText = async (req, res, next) => {
 export const getSingleArticle = async (req, res, next) => {
     try {
         const journalArticle = await prisma.article.findUnique({
-            where: { id: Number(req.params.articleId) }
+            where: { id: req.params.articleId }
         });
         console.log(journalArticle);
         res.status(200).json(journalArticle);
@@ -126,7 +128,7 @@ export const getSingleArticle = async (req, res, next) => {
 export const getSinglePublishedArticle = async (req, res, next) => {
     try {
         const journalArticle = await prisma.article.findUnique({
-            where: { id: Number(req.params.articleId),isPublished:true }
+            where: { id: req.params.articleId,isPublished:true }
         });
         console.log(journalArticle,"journal Article in api");
         res.status(200).json([journalArticle]);
@@ -141,7 +143,7 @@ export const getSinglePublishedArticle = async (req, res, next) => {
 export const updateJournalArticle = async (req, res, next) => {
     try {
         const journalArticle = await prisma.article.update({
-            where: { id: Number(req.params.articleId) },
+            where: { id: req.params.articleId },
             data: {
                 articleTitle: req.body.articleTitle,
                 articleAbstract: req.body.articleAbstract,
@@ -192,6 +194,8 @@ export const getPublsihedJournalArticle = async (req, res, next) => {
         const journalArticle = await prisma.article.findMany({
             where: {
                 isPublished: true
+            }, orderBy: {
+                createdAt: 'desc'
             }
         });
         console.log(journalArticle);
