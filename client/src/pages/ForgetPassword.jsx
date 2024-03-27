@@ -4,12 +4,17 @@ import axios from 'axios';
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { httpRoute } from '../helperFunctions.js';
+import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 
+
 const ForgetPassword = () => {
   const navigate = useNavigate()
-
+  const [open, setOpen] = React.useState(false);
+  const [alertStatus, setAlertStatus] = React.useState('success');
+  const [alertText, setAlertText] = React.useState('');
+  
   const [formData, setFormData] = useState({
 
     email: '',
@@ -26,11 +31,26 @@ const ForgetPassword = () => {
    try{
     const res = await axios.post(`${httpRoute}/api/auth/forget-password`, formData)
     console.log(res.data);
+    setOpen(true);
+    setAlertStatus('success')
+    setAlertText('An Email is sent to your email address to reset your password')
+
    }
    catch(err){
       console.log(err);
-
+      setOpen(true);
+      setAlertStatus('error')
+      setAlertText('Either the email is not registered or there is a network error, Please try again or contact Us')
    }
+  };
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
   };
 
 
@@ -69,19 +89,23 @@ const ForgetPassword = () => {
           </form>
          
           <div className=" text-center p-4 flex justify-around">
-            <div className="">
-              <span>Forgot Password?</span>
+           
+            <div className=" flex flex-col">
+              <span>{ `Remember Your Password :)`}</span>
               <span>
-                <Link to='/forget-password' className=' text-blue-600'> CLICK HERE </Link>
+                <Link to='/login' className=' text-blue-600'> Login Here</Link>
               </span>
             </div>
-            <div className="">
-              <span> Not Registered Yet?</span>
-              <span>
-                <Link to='/register' className=' text-blue-600'> CLICK HERE TO REGISTER</Link>
-              </span>
-            </div>
-
+            <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={alertStatus}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alertText}
+        </Alert>
+      </Snackbar>
           </div>
         </div>
       </div>

@@ -1,8 +1,11 @@
-import { useState, useMemo } from 'react'
+import React,{ useState, useMemo } from 'react'
 import axios from 'axios';
 import { Link, useNavigate,useParams } from 'react-router-dom';
 import ImageHeader from '../components/ImageHeader.jsx';
 import { httpRoute } from '../helperFunctions.js';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 
 const ResetPassword = () => {
@@ -14,6 +17,18 @@ const ResetPassword = () => {
     password: '',
     retypepassword: '',
   });
+  const [open, setOpen] = React.useState(false);
+  const [alertStatus, setAlertStatus] = React.useState('success');
+  const [alertText, setAlertText] = React.useState('');
+
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
 
 
   const handleChange = (e) => {
@@ -29,10 +44,20 @@ const ResetPassword = () => {
         return alert("Password do not match")
       }
       const res = await axios.post(`${httpRoute}/api/auth/reset/${resetToken}`,formData)
-      console.log(res).data;
+      console.log(res.data);
+      setOpen(true);
+      setAlertStatus('success')
+      setAlertText('Password reset successful')
+      setTimeout(() => {
+        navigate('/login')
+      }, 1000);
     }
     catch(err){
       console.log(err);
+      setOpen(true);
+      setAlertStatus('error')
+      setAlertText('Password reset failed, Please try again or contact Us')
+
 
     }
    
@@ -88,6 +113,16 @@ const ResetPassword = () => {
           <div className=" text-center p-4 flex justify-around">
           </div>
         </div>
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={alertStatus}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alertText}
+        </Alert>
+      </Snackbar>
       </div>
     </div>
   )
