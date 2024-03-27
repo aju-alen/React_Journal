@@ -12,9 +12,9 @@ const Home = () => {
       <ServicesHome />
       <div className='mt-4'>
         <h2 className=" text-center font-bold text-3xl">About Us</h2>
-        <p className=' text-justify p-10'>Scientific Journals Portal serves as a publisher for a wide range of open access journals that undergo rigorous peer review. With a diverse collection of over 100 journals, we cover various disciplines including art and humanities, engineering, medical science, social sciences, biological sciences, physical sciences, and agricultural sciences. Our primary objective is to expedite the sharing of knowledge by publishing research articles of exceptional quality, while adhering to the principles of open access.</p>
+        <p className=' text-justify p-10 md:px-44'>Scientific Journals Portal serves as a publisher for a wide range of open access journals that undergo rigorous peer review. With a diverse collection of over 100 journals, we cover various disciplines including art and humanities, engineering, medical science, social sciences, biological sciences, physical sciences, and agricultural sciences. Our primary objective is to expedite the sharing of knowledge by publishing research articles of exceptional quality, while adhering to the principles of open access.</p>
       </div>
-<div className="mt-4">
+<div className="mt-4 md:px-32">
       <EthicsOfPublicationCards />
 </div>
 
