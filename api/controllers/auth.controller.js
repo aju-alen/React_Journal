@@ -50,17 +50,18 @@ export const register = async (req, res, next) => {
         res.status(400).send('An error occoured')
     }
 }
+const createTransport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_AUTH_USER,
+        pass: process.env.GMAIL_AUTH_PASS
+    }
+})
 
 // not a route controller, function to send verification email
 const sendVerificationEmail = async (email, verificationToken, name) => {
 
-    const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: process.env.GMAIL_AUTH_USER,
-            pass: process.env.GMAIL_AUTH_PASS
-        }
-    })
+    const transporter = createTransport;
     const mailOptions = {
         from: process.env.GMAIL_AUTH_USER,
         to: email,
@@ -158,4 +159,103 @@ export const login = async (req, res, next) => {
 }
 export const logout = async (req, res) => {
     res.clearCookie("accessToken", { sameSite: 'none', secure: true }).status(200).json({ message: "User logged out" })
+}
+
+export const forgetPassword = async (req, res,next) => {
+    try{
+        const user = await prisma.user.findUnique({
+            where:{
+                email:req.body.email
+            }
+
+        })
+        if(!user){
+            return next(createError(400, 'User does not exists'))
+        }
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        await prisma.user.update({
+            where:{
+                email:req.body.email
+            },
+            data:{
+                resetToken:resetToken
+            }
+        })
+        console.log("reached");
+        await prisma.$disconnect()
+        console.log(req.body.email,resetToken,user.surname, 'user in forget password');
+        sendResetPassword(req.body.email, resetToken, user.surname);
+        res.status(200).json({message:'Password reset link sent to your email'})
+    }
+    catch(err){
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
+}
+const sendResetPassword = async (email, resetToken, name) => {
+
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        to: email,
+        subject: 'Reset Password',
+        html: `
+    <html>
+    <body>
+        <div>
+            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+        </div>
+        <div>
+            <p>Hi ${name},</p>
+            <p>Click to reset your password:</p>
+            <p><a href="http://localhost:5173/reset-password/${resetToken}">Reset Password</a></p>
+        </div>
+    </body>
+    </html>`
+    }
+
+    //send the mail
+    try {
+        const response = await transporter.sendMail(mailOptions);
+        console.log("Reset Password email sent", response);
+    }
+    catch (err) {
+        console.log("Err sending Reset Password email", err);
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    const resetToken = req.params.resetToken;
+    console.log(resetToken, 'resetToken');
+    console.log(req.body.password, 'password');
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                resetToken,
+            }
+          });
+
+        if(!user){
+            return res.status(400).json({message:'Invalid token'})
+        }
+        const hash = await bcrypt.hash(req.body.password, 10);
+        await prisma.user.update({
+            where:{
+                resetToken:resetToken,
+            },
+            data:{
+                password:hash,
+                resetToken:''
+            }
+        })
+        await prisma.$disconnect()
+        res.status(200).json({message:'Password reset successful'}) 
+
+    }
+    catch (err) {
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
+
+       
 }

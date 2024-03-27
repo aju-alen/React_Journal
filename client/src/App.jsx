@@ -30,6 +30,7 @@ import Contact from './pages/Contact'
 import TermsAndCondPage from './pages/TermsAndCondPage'
 import ComingSoon from './components/ComingSoon'
 import ConferencesPage from './pages/ConferencesPage'
+import ResetPassword from './pages/ResetPassword'
 import ForgetPassword from './pages/ForgetPassword'
 
 
@@ -158,6 +159,10 @@ function App() {
       {
         path: '/forget-password',
         element: <ForgetPassword/>,
+      },
+      {
+        path: '/reset-password/:resetToken',
+        element: <ResetPassword/>,
       },
      
     ]

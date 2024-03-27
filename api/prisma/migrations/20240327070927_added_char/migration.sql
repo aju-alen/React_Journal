@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `User` MODIFY `resetToken` VARCHAR(255) NOT NULL DEFAULT '0';
