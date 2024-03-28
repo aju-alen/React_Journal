@@ -117,9 +117,9 @@ const Navbar = () => {
                       </div>
                       <div>
                         <Link to="/logout" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
-                          <button >
-                            Logout
-                          </button>
+                        <button onClick={handleLogout}>
+                      Logout
+                    </button>
                         </Link>
                       </div>
                     </div>

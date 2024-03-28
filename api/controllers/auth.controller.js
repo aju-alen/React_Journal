@@ -137,7 +137,7 @@ export const login = async (req, res, next) => {
         }
         let isCorrect = bcrypt.compareSync(req.body.password, finduser.password)
         if (!isCorrect) {
-            return res.send('Wrong password or username')
+            return res.status(400).json({message:'Wrong password or username'})
         }
         const token = jwt.sign(
             { id: finduser.id },
