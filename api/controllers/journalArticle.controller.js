@@ -191,10 +191,19 @@ export const acceptManuscript = async (req, res, next) => {
 
 export const getPublsihedJournalArticle = async (req, res, next) => {
     try {
+        // const journalArticle = await prisma.journal.findMany({
+        //     where: {
+        //         id: "57048a90-aa37-4716-bba1-cce74d449da6"
+        //     }, 
+        //     include: {
+        //         articles: true
+        //     }
+        // });
         const journalArticle = await prisma.article.findMany({
             where: {
                 isPublished: true
-            }, orderBy: {
+            }, 
+            orderBy: {
                 createdAt: 'desc'
             }
         });
