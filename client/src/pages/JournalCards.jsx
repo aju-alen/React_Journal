@@ -43,7 +43,7 @@ if (!Array.isArray(articles) || articles.length === 0) {
   return (
     <div className="h-auto w-auto bg-slate-200 ">
         <ImageHeader/>
-    <h1 className='text-center font-bold text-4xl mt-6'>Journals</h1>
+    <h1 className='text-center font-bold text-4xl mt-6'>Emirates International Journal Of Empirical Research</h1>
       <div className=" md:w-4/6 mx-auto  ">
                 {articles?.map(journal => {
                 return (

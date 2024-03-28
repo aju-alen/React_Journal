@@ -3,9 +3,10 @@ import HeaderImage from '../components/HeaderImage'
 import ServicesHome from '../components/ServicesHome'
 import LatestJournalsHome from '../components/LatestJournalsHome'
 import EthicsOfPublicationCards from '../components/EthicsOfPublicationCards'
-
 const Home = () => {
+
   return (
+    
     <div>
       <HeaderImage />
 

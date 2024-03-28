@@ -46,7 +46,7 @@ const Navbar = () => {
           {/* Navigation links on the right */}
           <div className="flex justify-around items-center space-x-4 text-black font-light">
             <NavLinksStatic />
-            {currentUser ? <Link to={`/dashboard/${currentUser?.user?.id}?tab=1`} >Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
+             <Link to={currentUser ? `/dashboard/${currentUser?.user?.id}?tab=1`:`/login`} >Submit Manuscript</Link> 
             {!currentUser ?
               (<span className=" p-2 space-x-2">
                 <Link to="/login" className="  text-lg font-bold border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
