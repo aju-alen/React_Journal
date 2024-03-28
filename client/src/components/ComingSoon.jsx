@@ -11,7 +11,7 @@ const ComingSoon = () => {
           <div className="content">
             <div className="title-holder">
               <h1>SOON!</h1>
-              <p>Website coming soon. Please check back to know more.</p>
+              <p>This page is coming soon. Please check back to know more.</p>
             </div>
           </div>
           <div className="footer">

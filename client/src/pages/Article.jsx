@@ -70,7 +70,7 @@ export default function Article() {
                             <a href={getPublicManuscriptUrl} target="_blank" rel="noreferrer">
                             <Tab label="Full PDF" value="2" />
                             </a>
-                            <Tab label="Item Three" value="3" />
+                            {/* <Tab label="Item Three" value="3" /> */}
                         </TabList>
                     </Box>
                     <TabPanel value="1">

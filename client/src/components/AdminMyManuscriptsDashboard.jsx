@@ -95,7 +95,7 @@ console.log(articleId, 'articleId state');
                   {row.articleAuthors[0].authorEmail}
                 </TableCell>
                 <TableCell align="center">{row.articleTitle}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleAbstract}</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }} align="justify">{row.articleAbstract}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleKeywords}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize:10, display:'flex', flexDirection:"column",justifyContent:"center" }} align="center">
                   <Link to={row.filesURL[0]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
