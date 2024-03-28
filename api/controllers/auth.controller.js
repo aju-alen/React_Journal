@@ -229,7 +229,7 @@ export const resetPassword = async (req, res) => {
     console.log(resetToken, 'resetToken');
     console.log(req.body.password, 'password');
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.user.findFirst({
             where: {
                 resetToken,
             }
