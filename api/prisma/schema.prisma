@@ -19,7 +19,7 @@ model User {
   password String
   title    String
   surname  String
-  resetToken String @unique @db.VarChar(255)
+  resetToken String @default("") @db.VarChar(255)
   otherName String
   affiliation String  
   test String @default("test")
@@ -59,7 +59,6 @@ model Article {
   filesURL                  Json
   articleIssue             Int
   articleVolume            Int
-  
   paymentStatus             Boolean @default(false)
   rejectionFilesURL         Json
   publicPdfName             String
