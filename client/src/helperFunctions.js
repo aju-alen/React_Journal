@@ -84,7 +84,7 @@ export function calculateIssue(startYear, startMonth, currentYear, currentMonth)
 }
 
 
-export const httpRoute = 'https://react-journal.onrender.com' // backend url
+export const httpRoute = 'https://react-journal1.onrender.com' // backend url
 
 // https://react-journal.onrender.com
 
