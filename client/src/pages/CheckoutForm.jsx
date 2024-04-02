@@ -19,6 +19,7 @@ const CheckoutForm = () => {
       const getStripeCheckoutSession = async () => {
           const resp = await axios.post(`${httpRoute}/api/stripe/create-checkout-session`,{articleId} ) 
           setClientSecret(resp.data.clientSecret)
+          console.log(resp.data.clientSecret,'clientSecret in checkout');
       }
       getStripeCheckoutSession()
     }, []);

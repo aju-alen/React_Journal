@@ -69,8 +69,11 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
         html: `
     <html>
     <body>
-        <div>
+        <div style="background-color:black">
+
             <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <p>Scientific Journals Portal</p>
+
         </div>
         <div>
             <p>Hi ${name},</p>
