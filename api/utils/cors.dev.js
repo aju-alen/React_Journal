@@ -1,3 +1,3 @@
-export const originUrl = ['https://react-journal-i1ca.onrender.com','https://scientificjournalsportal.com'];
+export const originUrl = 'https://scientificjournalsportal.com';
 
 export const emailVerifyBackendUrl = 'https://react-journal.onrender.com'
