@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { httpRoute } from '../helperFunctions'
+import { httpRoute,axiosTokenHeader } from '../helperFunctions'
 
 const FullIssueHome = () => {
     const [imageUrl, setImageUrl] = useState('')
     const [pdfUrl, setPdfUrl] = useState('')
     const [fullIssueId, setFullIssueId] = useState('')
     const [userId, setUserId] = useState('')
+    const [purchasedFullIssue, setPurchasedFullIssue] = useState([])
 
     useEffect(() => {
         try {
@@ -21,8 +22,11 @@ const FullIssueHome = () => {
 
                 const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user?.id
                 setUserId(getUser)
-                console.log(getUser, 'gettttttttuser');
-                // setUserId(getUser)
+                console.log(getUser, 'getuser');
+                axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                const getFullissuePaymentResp = await axios.get(`${httpRoute}/api/user-fullissue/getfullissue`)
+                console.log(getFullissuePaymentResp.data, 'getFullIssue');
+                setPurchasedFullIssue(getFullissuePaymentResp.data?.fullIssuePurchasedUser)
             }
             getLatestFullIssue()
 
@@ -33,16 +37,20 @@ const FullIssueHome = () => {
 
     }, [])
     // console.log(imageUrl, pdfUrl, 'urls');
-    console.log(fullIssueId, 'urls');
+    console.log(purchasedFullIssue, 'userfullissue api data');
+    const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
+    console.log(ifUserPurchasedFullIssue, 'ifUserPurchasedFullIssue boolean');
 
     return (
         <>
             {(imageUrl && pdfUrl) && (
                 <div className=" flex flex-col items-center justify-center p-10">
                     <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1>
-                    <Link to={`/checkout/${fullIssueId}/fullIssue/${userId}`}>
+                    {ifUserPurchasedFullIssue.length === 1?(<Link to={pdfUrl}>
                         <img src={imageUrl} alt="cloud" className=' w-64 h-64' />
-                    </Link>
+                    </Link>):<Link to={`/checkout/${fullIssueId}/fullIssue/${userId}`}>
+                        <img src={imageUrl} alt="cloud" className=' w-64 h-64' />
+                    </Link>}
                 </div>
             )}
         </>

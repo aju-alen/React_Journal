@@ -8,6 +8,7 @@ import userRoute from './routes/user.route.js'
 import journalRoute from './routes/journal.route.js'
 import journalArticleRoute from './routes/journalArticle.route.js'
 import fullIssueRoute from './routes/fullIssue.route.js'
+import userFullIssueRoute from './routes/userFullIssue.route.js'
 import s3Route from './routes/s3.route.js'
 import stripeROute from './routes/stripe.route.js'
 import stripe from 'stripe';
@@ -101,47 +102,6 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
   response.send();
 });
 
-// -----------------------FullIssue Payment Webhook
-
-// const fullIssueWebhook = process.env.FULLISSUE_WEBHOOK_SIG;
-// app.post('/fullissue', express.raw({type: 'application/json'}), async(request, response) => {
-//   const sig = request.headers['stripe-signature'];
-
-//   let event;
-//   console.log('Logged into webhook route',event);
-
-//   try {
-//     event = Stripe.webhooks.constructEvent(request.body, sig, fullIssueWebhook);
-
-//   } catch (err) {
-//     response.status(400).send(`Webhook Error: ${err.message}`);
-//     return;
-//   }
-
-//   // Handle the event
-//   switch (event.type) {
-//     case 'checkout.session.async_payment_failed':
-//       const checkoutSessionAsyncPaymentFailed = event.data.object;
-//       // Then define and call a function to handle the event checkout.session.async_payment_failed
-//       break;
-//     case 'checkout.session.async_payment_succeeded':
-//       console.log("checkout session async payment succeeded for full issue");
-//       const checkoutSessionAsyncPaymentSucceeded = event.data.object;
-//       // Then define and call a function to handle the event checkout.session.async_payment_succeeded
-//       break;
-//     case 'checkout.session.completed':
-//       console.log("checkout session completed for full issue");
-//       const checkoutSessionCompleted = event.data.object;
-//       // Then define and call a function to handle the event checkout.session.completed
-//       break;
-//     // ... handle other event types
-//     default:
-//       console.log(`Unhandled event type ${event.type}`);
-//   }
-
-//   // Return a 200 response to acknowledge receipt of the event
-//   response.send();
-// });
 
 
 
@@ -157,6 +117,7 @@ app.use('/api/s3', s3Route)
 app.use('/api/fullIssue',fullIssueRoute )
 app.use('/api/stripe', stripeROute)
 app.use('/api/send-email', sendMailRotue)
+app.use('/api/user-fullissue', userFullIssueRoute)
 
 
 
