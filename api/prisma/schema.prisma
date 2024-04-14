@@ -30,6 +30,7 @@ model User {
   label String
   articles Article[]
   issuePurchased FullIssue[]
+  userFullIssue UserFullIssue[]
   createdAt DateTime @default(now())
 }
 
@@ -92,5 +93,15 @@ model FullIssue{
   issueNumber Int
   issuePaidUsers User[]
   issueCount Int @default(0)
+  userFullIssue UserFullIssue[]
   createdAt                 DateTime @default(now())
+}
+model UserFullIssue{
+   userId      String
+  user        User      @relation(fields: [userId], references: [id])
+
+  fullIssueId String
+  fullIssue   FullIssue @relation(fields: [fullIssueId], references: [id])
+
+  @@id([userId, fullIssueId])
 }
