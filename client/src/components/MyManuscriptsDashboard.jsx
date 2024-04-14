@@ -69,7 +69,7 @@ import { getPdfName } from '../helperFunctions';
                 </TableCell>:<TableCell></TableCell>}
 
                 {!row.paymentStatus ?<TableCell sx={{fontWeight:'bold'}} align="center">
-                  <Link to={`/checkout/${row.id}`}>
+                  <Link to={`/checkout/${row.id}/publisharticle`}>
                   <Button variant="contained" color="primary">
                     Pay Here
                   </Button>

@@ -11,20 +11,27 @@ const YOUR_DOMAIN = 'https://scientificjournalsportal.com';
 
 export const createCheckoutSession = async (req, res, next) => {
   let price;
-  // req.body.articleId? price = "price_1P2sRtFGVHo1I2AtMozyX4gc" : "price_1P2sd1FGVHo1I2AtH9gCkV6m"
+  let {articleId,checkoutStatus} = req.body;
+  console.log(checkoutStatus,articleId, 'checkoutStatus in api');
+  if (checkoutStatus === "publisharticle" ){
+    price = "price_1P5OvyFGVHo1I2AtjbWzCMyH"
+  }
+  else if (checkoutStatus === "fullIssue"){
+    price = "price_1P5Q2SFGVHo1I2Aty4w7qlfV"
+  }
   try{
     const session = await Stripe.checkout.sessions.create({
       ui_mode: 'embedded',
       line_items: [
         {
           
-          price: 'price_1P5OvyFGVHo1I2AtjbWzCMyH',
+          price: price,
           quantity: 1,
         },
       ],
       mode: 'payment',
       metadata:{
-        articleId:req.body.articleId
+        articleId:articleId
       },
       return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
     });

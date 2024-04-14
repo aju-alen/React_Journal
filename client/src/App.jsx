@@ -97,7 +97,7 @@ function App() {
         element: <EditArticle />,
       },
       {
-        path: '/checkout/:articleId',
+        path: '/checkout/:articleId/:checkoutStatus',
         element: <CheckoutForm />,
       },
       {

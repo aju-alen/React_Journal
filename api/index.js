@@ -31,41 +31,8 @@ app.use(cors({
 //https://scientificjournalsportal.com
 
 
-const endpointSecret = process.env.ENDPOINT_SECRET_STRIPE;
+const endpointSecret = process.env.PUBLISH_JOURNAL_WEBHOOK_SIG;
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
-
-// app.post('/webhook', express.raw({type: 'application/json'}), (request, response) => {
-//   const sig = request.headers['stripe-signature'];
-
-//   let event;
-
-//   try {
-//     event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-//   } catch (err) {
-//     response.status(400).send(`Webhook Error: ${err.message}`);
-//     return;
-//   }
-
-//   // Handle the event
-//   switch (event.type) {
-//     case 'payment_intent.succeeded':
-//       const paymentIntentSucceeded = event.data.object;
-//       console.log(event, 'event in web hook');
-//       break;
-//     // ... handle other event types
-//     default:
-//       console.log(`Unhandled event type ${event.type}`);
-//   }
-
-//   // Return a 200 response to acknowledge receipt of the event
-//   response.send();
-// });
-
-
-
-
-
-
 
 app.post('/webhook', express.raw({type: 'application/json'}), async(request, response) => {
   const sig = request.headers['stripe-signature'];
@@ -112,6 +79,50 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
         console.log(payment, 'payment in stripe route webhook');
       }
       
+      // Then define and call a function to handle the event checkout.session.completed
+      break;
+    // ... handle other event types
+    default:
+      console.log(`Unhandled event type ${event.type}`);
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  response.send();
+});
+
+// -----------------------FullIssue Payment Webhook
+
+const fullIssueWebhook = process.env.FULLISSUE_WEBHOOK_SIG;
+app.post('/fullissue/webhook', express.raw({type: 'application/json'}), async(request, response) => {
+  const sig = request.headers['stripe-signature'];
+
+  let event;
+  console.log('Logged into webhook route');
+
+  try {
+    event = Stripe.webhooks.constructEvent(request.body, sig, fullIssueWebhook);
+    console.log(event.data, 'data in event ');
+    console.log(event.data.object, 'object in event ');
+    console.log(event.data.object.metadata, 'metadata in object event');
+  } catch (err) {
+    response.status(400).send(`Webhook Error: ${err.message}`);
+    return;
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case 'checkout.session.async_payment_failed':
+      const checkoutSessionAsyncPaymentFailed = event.data.object;
+      // Then define and call a function to handle the event checkout.session.async_payment_failed
+      break;
+    case 'checkout.session.async_payment_succeeded':
+      console.log("checkout session async payment succeeded for full issue");
+      const checkoutSessionAsyncPaymentSucceeded = event.data.object;
+      // Then define and call a function to handle the event checkout.session.async_payment_succeeded
+      break;
+    case 'checkout.session.completed':
+      console.log("checkout session completed for full issue");
+      const checkoutSessionCompleted = event.data.object;
       // Then define and call a function to handle the event checkout.session.completed
       break;
     // ... handle other event types

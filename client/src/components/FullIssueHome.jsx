@@ -6,6 +6,7 @@ import { httpRoute } from '../helperFunctions'
 const FullIssueHome = () => {
     const [imageUrl, setImageUrl] = useState('')
     const [pdfUrl, setPdfUrl] = useState('')
+    const [fullIssueId, setFullIssueId] = useState('')
 
     useEffect(() => {
         try {
@@ -15,6 +16,7 @@ const FullIssueHome = () => {
 
                 setImageUrl(getFullissueResp.data.getIssue[0]?.issueImageURL)
                 setPdfUrl(getFullissueResp.data.getIssue[0]?.issueDoccumentURL)
+                setFullIssueId(getFullissueResp.data.getIssue[0]?.id)
             }
             getLatestFullIssue()
 
@@ -24,13 +26,15 @@ const FullIssueHome = () => {
         }
 
     }, [])
-    console.log(imageUrl, pdfUrl, 'urls');
+    // console.log(imageUrl, pdfUrl, 'urls');
+    console.log(fullIssueId, 'urls');
+
     return (
         <>
             {(imageUrl && pdfUrl) && (
                 <div className=" flex flex-col items-center justify-center p-10">
                     <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1>
-                    <Link to={pdfUrl}>
+                    <Link to={`/checkout/${fullIssueId}/fullIssue`}>
                         <img src={imageUrl} alt="cloud" className=' w-64 h-64' />
                     </Link>
                 </div>
