@@ -90,7 +90,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
 // -----------------------FullIssue Payment Webhook
 
 const fullIssueWebhook = process.env.FULLISSUE_WEBHOOK_SIG;
-app.post('/fullissue/webhook', express.raw({type: 'application/json'}), async(request, response) => {
+app.post('/fullissue', express.raw({type: 'application/json'}), async(request, response) => {
   const sig = request.headers['stripe-signature'];
 
   let event;
