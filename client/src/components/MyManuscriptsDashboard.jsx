@@ -12,9 +12,16 @@ import { getPdfName } from '../helperFunctions';
 
  const MyManuscriptsDashboard=({user})=> {
   const [articles, setArticles] = useState(false);
+  const [userId, setUserId] = useState('');
     useEffect(() => {
       setArticles(prev=>!prev)
     }, [user]);
+
+    useEffect(() => {
+      const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user?.id
+      setUserId(getUser)
+    }, []);
+
     console.log(user,'user details');
   return (
     <TableContainer component={Paper}>
@@ -69,7 +76,7 @@ import { getPdfName } from '../helperFunctions';
                 </TableCell>:<TableCell></TableCell>}
 
                 {!row.paymentStatus ?<TableCell sx={{fontWeight:'bold'}} align="center">
-                  <Link to={`/checkout/${row.id}/publisharticle`}>
+                  <Link to={`/checkout/${row.id}/publisharticle/${userId}`}>
                   <Button variant="contained" color="primary">
                     Pay Here
                   </Button>

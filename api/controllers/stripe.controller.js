@@ -11,7 +11,7 @@ const YOUR_DOMAIN = 'https://scientificjournalsportal.com';
 
 export const createCheckoutSession = async (req, res, next) => {
   let price;
-  let {articleId,checkoutStatus} = req.body;
+  let {articleId,checkoutStatus,userId} = req.body;
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
   if (checkoutStatus === "publisharticle" ){
     price = "price_1P5OvyFGVHo1I2AtjbWzCMyH"
@@ -33,7 +33,8 @@ export const createCheckoutSession = async (req, res, next) => {
       mode: 'payment',
       metadata:{
         articleId:articleId,
-        checkoutStatus:checkoutStatus
+        checkoutStatus:checkoutStatus,
+        userId:userId
       },
       return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
     });

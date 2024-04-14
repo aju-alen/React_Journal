@@ -66,13 +66,28 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
       console.log(event.data.object.payment_status, 'payment status in stripe route webhook');
       console.log(event.data.object.status, 'status in stripe route webhook');
       const checkoutSessionCompleted = event.data.object;
-      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment') {
+      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment' && event.data.object.metadata.checkoutStatus === 'publisharticle') {
         const payment = await prisma.article.update({
           where:{id:event.data.object.metadata.articleId},
           data:{
             paymentStatus:true
           }
         })
+        await prisma.$disconnect();
+        console.log(payment, 'payment in stripe route webhook');
+      }
+      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment' && event.data.object.metadata.checkoutStatus === 'fullIssue') {
+
+        const user = await prisma.user.update({
+          where: { id: event.data.object.metadata.userId }, /////////////////////////////////////
+          data: {
+            issuePurchased: {
+              connect: { id: event.data.object.metadata.articleId }
+            }
+          }
+        });
+        console.log(user, 'user schema in database');
+
         await prisma.$disconnect();
         console.log(payment, 'payment in stripe route webhook');
       }
