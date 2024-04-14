@@ -91,5 +91,6 @@ model FullIssue{
   issueVolume Int
   issueNumber Int
   issuePaidUsers User[]
+  issueCount Int @default(0)
   createdAt                 DateTime @default(now())
 }
