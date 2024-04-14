@@ -18,7 +18,7 @@ export const createCheckoutSession = async (req, res, next) => {
       line_items: [
         {
           
-          price: 'price_1P2rwiFGVHo1I2AttFh5meyW',
+          price: 'price_1P5OvyFGVHo1I2AtjbWzCMyH',
           quantity: 1,
         },
       ],
