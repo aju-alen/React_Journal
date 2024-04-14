@@ -29,8 +29,7 @@ export const createFullIssue = async (req, res, next) => {
 export const getSingleFullIssue = async (req, res, next) => {
     try{
 
-        const getIssue = await prisma.fullIssue.findMany({
-            take:1,
+        const getIssue = await prisma.fullIssue.findFirst({
             orderBy:{
                 createdAt:'desc'
             }  
