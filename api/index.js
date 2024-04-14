@@ -38,13 +38,10 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
   const sig = request.headers['stripe-signature'];
 
   let event;
-  console.log('Logged into webhook route');
+  console.log('Logged into webhook route for publish journal ');
 
   try {
     event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    console.log(event.data, 'data in event ');
-    console.log(event.data.object, 'object in event ');
-    console.log(event.data.object.metadata, 'metadata in object event');
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
@@ -101,9 +98,7 @@ app.post('/fullissue/webhook', express.raw({type: 'application/json'}), async(re
 
   try {
     event = Stripe.webhooks.constructEvent(request.body, sig, fullIssueWebhook);
-    console.log(event.data, 'data in event ');
-    console.log(event.data.object, 'object in event ');
-    console.log(event.data.object.metadata, 'metadata in object event');
+
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
