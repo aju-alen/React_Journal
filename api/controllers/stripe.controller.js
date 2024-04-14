@@ -32,7 +32,8 @@ export const createCheckoutSession = async (req, res, next) => {
       ],
       mode: 'payment',
       metadata:{
-        articleId:articleId
+        articleId:articleId,
+        checkoutStatus:checkoutStatus
       },
       return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
     });

@@ -94,7 +94,7 @@ app.post('/fullissue', express.raw({type: 'application/json'}), async(request, r
   const sig = request.headers['stripe-signature'];
 
   let event;
-  console.log('Logged into webhook route');
+  console.log('Logged into webhook route',event);
 
   try {
     event = Stripe.webhooks.constructEvent(request.body, sig, fullIssueWebhook);
