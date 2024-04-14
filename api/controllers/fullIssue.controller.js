@@ -26,7 +26,7 @@ export const createFullIssue = async (req, res, next) => {
     
 
 }
-export const getFullIssue = async (req, res, next) => {
+export const getSingleFullIssue = async (req, res, next) => {
     try{
 
         const getIssue = await prisma.fullIssue.findMany({
