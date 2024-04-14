@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client"
+import createError from '../utils/createError.js'
 const prisma = new PrismaClient()
 
 
@@ -29,7 +30,8 @@ export const createFullIssue = async (req, res, next) => {
 export const getSingleFullIssue = async (req, res, next) => {
     try{
 
-        const getIssue = await prisma.fullIssue.findFirst({
+        const getIssue = await prisma.fullIssue.findMany({
+            take:1,
             orderBy:{
                 createdAt:'desc'
             }  
