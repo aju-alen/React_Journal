@@ -5,27 +5,38 @@ dotenv.config()
 
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 const YOUR_DOMAIN = 'https://scientificjournalsportal.com';
+// const YOUR_DOMAIN = 'http://localhost:5173';
+// const YOUR_DOMAIN = 'https://scientificjournalsportal.com';
 
 
 export const createCheckoutSession = async (req, res, next) => {
-  const session = await Stripe.checkout.sessions.create({
-    ui_mode: 'embedded',
-    line_items: [
-      {
-        
-        price: 'price_1OmAyCC0iMczP50IFuEamjs3',
-        quantity: 1,
+  let price;
+  // req.body.articleId? price = "price_1P2sRtFGVHo1I2AtMozyX4gc" : "price_1P2sd1FGVHo1I2AtH9gCkV6m"
+  try{
+    const session = await Stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      line_items: [
+        {
+          
+          price: 'price_1P2rwiFGVHo1I2AttFh5meyW',
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      metadata:{
+        articleId:req.body.articleId
       },
-    ],
-    mode: 'payment',
-    metadata:{
-      articleId:req.body.articleId
-    },
-    return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
-  });
-  console.log(session, 'session in api');
-
-  res.send({clientSecret: session.client_secret});
+      return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
+    });
+    console.log(session, 'session in api');
+  
+    res.send({clientSecret: session.client_secret});
+  }
+  catch(err){
+    console.log(err, 'error in stripe');
+    res.status(500).send({error: err.message});
+  }
+  
   
 };
 

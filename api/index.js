@@ -7,6 +7,7 @@ import authRoute from './routes/auth.route.js'
 import userRoute from './routes/user.route.js'
 import journalRoute from './routes/journal.route.js'
 import journalArticleRoute from './routes/journalArticle.route.js'
+import fullIssueRoute from './routes/fullIssue.route.js'
 import s3Route from './routes/s3.route.js'
 import stripeROute from './routes/stripe.route.js'
 import stripe from 'stripe';
@@ -102,11 +103,12 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
       const checkoutSessionCompleted = event.data.object;
       if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment') {
         const payment = await prisma.article.update({
-          where:{id:Number(event.data.object.metadata.articleId)},
+          where:{id:event.data.object.metadata.articleId},
           data:{
             paymentStatus:true
           }
         })
+        await prisma.$disconnect();
         console.log(payment, 'payment in stripe route webhook');
       }
       
@@ -132,6 +134,7 @@ app.use('/api/users', userRoute)
 app.use('/api/journal', journalRoute)
 app.use('/api/journalArticle', journalArticleRoute)
 app.use('/api/s3', s3Route)
+app.use('/api/fullIssue',fullIssueRoute )
 app.use('/api/stripe', stripeROute)
 app.use('/api/send-email', sendMailRotue)
 

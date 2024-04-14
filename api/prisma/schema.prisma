@@ -29,6 +29,7 @@ model User {
   emailVerified Boolean @default(false)
   label String
   articles Article[]
+  issuePurchased FullIssue[]
   createdAt DateTime @default(now())
 }
 
@@ -44,6 +45,7 @@ model Journal{
   journalStartMonth Int
   journalPublishedArticles Int @default(0)
   articles Article[]
+  fullIssue FullIssue[]
   createdAt DateTime @default(now())
 }
 
@@ -79,3 +81,15 @@ model Article {
   createdAt                 DateTime @default(now())
 }
 
+model FullIssue{
+  id        String    @id @default(uuid())
+  issueImageURL String
+  issueDoccumentURL String
+  issuePrice String
+  journalId String
+  issueJournal Journal @relation(fields: [journalId], references: [id])
+  issueVolume Int
+  issueNumber Int
+  issuePaidUsers User[]
+  createdAt                 DateTime @default(now())
+}

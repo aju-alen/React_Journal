@@ -19,11 +19,14 @@ const s3 = new S3({
     region: REGION
 });
 
+// Uploading ArticleFiles to AWS
+
  const uploadWithMulter = (awsId) => multer({
     storage: mutlerS3({
         s3: s3,
         bucket: BUCKET_NAME,
         metadata: function (req, file, cb) {
+            console.log(file, 'file in metadata');
             cb(null, { fieldName: file.fieldname });
         },
         key: function (req, file, cb) {
@@ -75,6 +78,7 @@ console.log(awsId,userId,'awsId and userId');
     }
 };
 
+// Get all uploaded files URL to store in db
 export const fetchAllFiles = async (req, res) => {
     try {
         const data = await s3.listObjects({
@@ -102,7 +106,7 @@ export const fetchAllFiles = async (req, res) => {
 
 
 
-
+// Sending Rejection Files to AWS
 
 const uploadWithMulterAdmin = (awsId,id) => multer({
     storage: mutlerS3({
@@ -154,7 +158,8 @@ export const uploadToAWSAdmin = async (req, res) => {
         res.status(500).json({ message: 'An error occurred', error: err });
     }
 };
-
+ 
+// Get all Rejected uploaded files URL to store in db (Update RejectionFiles)
 export const fetchAllFilesAdmin = async (req, res) => {
     const { userId,awsId } = req.params;
     try {
@@ -165,6 +170,72 @@ export const fetchAllFilesAdmin = async (req, res) => {
         let urlArr = []
         console.log(data,'data from s3');
         const filteredData = data.Contents.filter((file) => file.Key.includes(`${userId}/${awsId}/RejectionFiles`))
+
+        filteredData.map((file) => {
+           
+            urlArr.push(baseUrl + file.Key)
+        })
+     
+        res.status(200).json({ message: 'Files fetched successfully', files: urlArr })
+    }
+    catch (err) {
+        res.status(500).json({ message: 'An error occoured', error: err })
+    }
+}
+
+
+
+//---------------- Full Issue upload and get URL Logic  -----------------
+
+// Uploading ArticleFiles to AWS
+
+const uploadWithMulterFullIssue = (awsId) => multer({
+    storage: mutlerS3({
+        s3: s3,
+        bucket: BUCKET_NAME,
+        metadata: function (req, file, cb) {
+            console.log(file, 'file in metadata');
+            cb(null, { fieldName: file.fieldname });
+        },
+        key: function (req, file, cb) {
+            console.log(file, 'file in key');
+            const fileName = `fullIssue/${awsId}/${file.originalname}`
+            cb(null, fileName)
+        }
+    })
+}).array('s3FullIssue', 2);
+
+
+export const uploadToAWSFullIssue = async (req, res) => {
+    const { awsId } = req.params;
+console.log(awsId,'awsId and userId');
+    try {
+        // Upload new files
+        const upload = uploadWithMulterFullIssue(awsId);
+        upload(req, res, (err) => {
+            if (err) {
+                res.status(500).json({ message: 'An error occurred', error: err });
+            } else {
+                res.status(200).json({ message: 'Files uploaded successfully', files: req.files });
+            }
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'An error occurred', error: err });
+    }
+};
+
+// Get all uploaded FULL ISSUE files URL to store in db
+export const fetchFullIssueFiles = async (req, res) => {
+    const { awsId } = req.params;
+    try {
+        const data = await s3.listObjects({
+            Bucket: BUCKET_NAME
+        });
+        let baseUrl = `https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/`
+        let urlArr = []
+        console.log(data,'data from s3');
+        const filteredData = data.Contents.filter((file) =>  file.Key.includes(`fullIssue/${awsId}/`) )
 
         filteredData.map((file) => {
            

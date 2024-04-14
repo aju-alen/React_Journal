@@ -6,6 +6,7 @@ import axios from 'axios'
 import { DNA } from 'react-loader-spinner'
 import { getDates } from '../helperFunctions'
 import { httpRoute } from '../helperFunctions.js'
+import FullIssueHome from '../components/FullIssueHome.jsx'
 
 const JournalCards = () => {
     const {catId} = useParams()
@@ -69,6 +70,7 @@ if (!Array.isArray(articles) || articles.length === 0) {
                     </div>
                 )})}
             </div>
+            <FullIssueHome/>
     </div>
   )
 }

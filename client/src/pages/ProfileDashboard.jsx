@@ -14,6 +14,7 @@ import ImageHeader from '../components/ImageHeader';
 import { DNA } from 'react-loader-spinner'
 import { httpRoute } from '../helperFunctions';
 import EditProfile from '../components/EditProfile';
+import SubmitIssue from '../components/SubmitIssue';
 
 
 function CustomTabPanel(props) {
@@ -104,7 +105,9 @@ useEffect(() => {
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
                     <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
                         <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts":"My Manuscripts"} {...a11yProps(0)} />
-                        {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />}
+                        <Tab label={userDetails?.user?.isAdmin ? "Submit Issue":"Submit Manuscript"} {...a11yProps(1)} />
+
+                        {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
                         <Tab label="Edit Profile" {...a11yProps(2)} />
                     </Tabs>
                     
@@ -117,6 +120,7 @@ useEffect(() => {
                 <CustomTabPanel value={value} index={1}>
 
                 {!userDetails?.user?.isAdmin &&<SubmitManuscript user={user}/>}
+                {userDetails?.user?.isAdmin &&<SubmitIssue user={user}/>}
                  
 
                 </CustomTabPanel>
