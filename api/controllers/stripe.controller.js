@@ -20,6 +20,7 @@ export const createCheckoutSession = async (req, res, next) => {
     price = "price_1P5Q2SFGVHo1I2Aty4w7qlfV"
   }
   try{
+    console.log(price, 'price in stripe');
     const session = await Stripe.checkout.sessions.create({
       ui_mode: 'embedded',
       line_items: [
