@@ -59,15 +59,7 @@ const FullIssueHome = () => {
     console.log(purchasedFullIssue, 'userfullissue api data');
     const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
 
-    const buttons = (
-        <React.Fragment>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Button >
-              Top-Center
-            </Button>
-          </Box>
-        </React.Fragment>
-        );
+    
 
     return (
         <>
@@ -92,7 +84,7 @@ const FullIssueHome = () => {
                 </div>
             )}
              <Box sx={{ width: 500 }}>
-      {buttons}
+      
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
