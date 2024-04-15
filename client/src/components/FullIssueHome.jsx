@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
-import { httpRoute,axiosTokenHeader } from '../helperFunctions'
+import { httpRoute, axiosTokenHeader } from '../helperFunctions'
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
 
 const FullIssueHome = () => {
     const [imageUrl, setImageUrl] = useState('')
@@ -10,10 +14,25 @@ const FullIssueHome = () => {
     const [userId, setUserId] = useState('')
     const [purchasedFullIssue, setPurchasedFullIssue] = useState([])
 
+    const [state, setState] = React.useState({
+        open: false,
+        vertical: 'top',
+        horizontal: 'center',
+    });
+    const { vertical, horizontal, open } = state;
+
+    const handleClick = (newState) => () => {
+        setState({ ...newState, open: true });
+    };
+
+    const handleClose = () => {
+        setState({ ...state, open: false });
+    };
+
     useEffect(() => {
         try {
             const getLatestFullIssue = async () => {
-                
+
                 const getFullissueResp = await axios.get(`${httpRoute}/api/fullIssue/getIssue`)
 
                 setImageUrl(getFullissueResp.data.getIssue[0]?.issueImageURL)
@@ -39,22 +58,52 @@ const FullIssueHome = () => {
     // console.log(imageUrl, pdfUrl, 'urls');
     console.log(purchasedFullIssue, 'userfullissue api data');
     const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
-    console.log(ifUserPurchasedFullIssue, 'ifUserPurchasedFullIssue boolean');
+
+    const buttons = (
+        <React.Fragment>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Button >
+              Top-Center
+            </Button>
+          </Box>
+        </React.Fragment>
+        );
 
     return (
         <>
             {(imageUrl && pdfUrl) && (
                 <div className=" flex flex-col items-center justify-center p-10">
                     <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1>
-                    {ifUserPurchasedFullIssue.length === 1?(<Link to={pdfUrl}>
-                        <img src={imageUrl} alt="cloud" className=' w-64 h-64' />
-                    </Link>):<Link to={`/checkout/${fullIssueId}/fullIssue/${userId}`}>
-                        <img src={imageUrl} alt="cloud" className=' w-64 h-64' />
-                    </Link>}
+                    {userId === undefined ? (
+                        
+                            <img src={imageUrl} alt="cloud" className='w-64 h-64' onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
+                        
+                    ) : (
+                        ifUserPurchasedFullIssue.length === 1 ? (
+                            <Link to={pdfUrl}>
+                                <img src={imageUrl} alt="cloud" className='w-64 h-64' />
+                            </Link>
+                        ) : (
+                            <Link to={`/checkout/${fullIssueId}/fullIssue/${userId}`}>
+                                <img src={imageUrl} alt="cloud" className='w-64 h-64' />
+                            </Link>
+                        )
+                    )}
                 </div>
             )}
+             <Box sx={{ width: 500 }}>
+      {buttons}
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        onClose={handleClose}
+        message="Pldease Login to Purchase Full Issue"
+        key={vertical + horizontal}
+      />
+    </Box>
         </>
     )
+
 }
 
 export default FullIssueHome
