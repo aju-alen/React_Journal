@@ -42,10 +42,13 @@ const FullIssueHome = () => {
                 const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user?.id
                 setUserId(getUser)
                 console.log(getUser, 'getuser');
-                axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-                const getFullissuePaymentResp = await axios.get(`${httpRoute}/api/user-fullissue/getfullissue`)
-                console.log(getFullissuePaymentResp.data, 'getFullIssue');
-                setPurchasedFullIssue(getFullissuePaymentResp.data?.fullIssuePurchasedUser)
+
+                if (getUser !== undefined) {
+                    axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                    const getFullissuePaymentResp = await axios.get(`${httpRoute}/api/user-fullissue/getfullissue`)
+                    console.log(getFullissuePaymentResp.data, 'getFullIssue');
+                    setPurchasedFullIssue(getFullissuePaymentResp.data?.fullIssuePurchasedUser)
+                }
             }
             getLatestFullIssue()
 
@@ -59,7 +62,7 @@ const FullIssueHome = () => {
     console.log(purchasedFullIssue, 'userfullissue api data');
     const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
 
-    
+
 
     return (
         <>
@@ -67,9 +70,9 @@ const FullIssueHome = () => {
                 <div className=" flex flex-col items-center justify-center p-10">
                     <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1>
                     {userId === undefined ? (
-                        
-                            <img src={imageUrl} alt="cloud" className='w-64 h-64' onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
-                        
+
+                        <img src={imageUrl} alt="cloud" className='w-64 h-64' onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
+
                     ) : (
                         ifUserPurchasedFullIssue.length === 1 ? (
                             <Link to={pdfUrl}>
@@ -83,16 +86,16 @@ const FullIssueHome = () => {
                     )}
                 </div>
             )}
-             <Box sx={{ width: 500 }}>
-      
-      <Snackbar
-        anchorOrigin={{ vertical, horizontal }}
-        open={open}
-        onClose={handleClose}
-        message="Pldease Login to Purchase Full Issue"
-        key={vertical + horizontal}
-      />
-    </Box>
+            <Box sx={{ width: 500 }}>
+
+                <Snackbar
+                    anchorOrigin={{ vertical, horizontal }}
+                    open={open}
+                    onClose={handleClose}
+                    message="Pldease Login to Purchase Full Issue"
+                    key={vertical + horizontal}
+                />
+            </Box>
         </>
     )
 
