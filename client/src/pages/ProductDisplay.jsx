@@ -18,82 +18,39 @@ import { httpRoute } from '../helperFunctions.js';
 
 const tiers = [
   {
-    title: 'Free',
-    price: '0',
+    title: 'Weekly plan',
+    price: '20.00',
     description: [
-      '10 users included',
-      '2 GB of storage',
-      'Help center access',
-      'Email support',
+      'Week long access to all articles',
     ],
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
   },
-  {
-    title: 'Starter plan',
-    subheader: 'Recommended',
-    price: '20.00',
-    description: [
-      '20 users included',
-      '10 GB of storage',
-      'Help center access',
-      'Priority email support',
-      'Dedicated team',
-      'Best deals',
-    ],
-    buttonText: 'Start now',
-    buttonVariant: 'contained',
-  },
-  {
-    title: 'Enterprise',
-    price: '30',
-    description: [
-      '50 users included',
-      '30 GB of storage',
-      'Help center access',
-      'Phone & email support',
-    ],
-    buttonText: 'Contact us',
-    buttonVariant: 'outlined',
-  },
+  
+  // {
+  //   title: 'Monthly plan',
+  //   price: '60.00',
+  //   description: [
+  //     'Month long access to all articles',
+  //   ],
+  //   buttonText: 'Contact us',
+  //   buttonVariant: 'outlined',
+  // },
 ];
 
 
 const ProductDisplayy = () => {
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    try {
-      const response = await fetch("https://react-journal1.onrender.com/api/stripe/create-checkout-sessions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ lookup_key: "ArticlePurchase" })
-      });
-      // Handle response as needed
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+  const [userId, setUserId] = useState('')
+  useEffect(() => {
+    const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user?.id
+    setUserId(getUser)
+    console.log(getUser, 'getuser');
+  }, []);
+  
   return (
     <div className="h-auto w-auto bg-slate-200 ">
     <ImageHeader/>
-    <section>
-    <div className="product">
-      <Logo />
-      <div className="description">
-        <h3>Starter plan</h3>
-        <h5>$20.00 / month</h5>
-      </div>
-    </div>
-    <form action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions" method="POST">
-      {/* Add a hidden field with the lookup_key of your Price */}
-      <input type="hidden" name="lookup_key" value="ArticlePurchase" />
-      <button id="checkout-and-portal-button" type="submit">
-        Checkout
-      </button>
-    </form>
-  </section>
+    
 
   <Container
       id="pricing"
@@ -117,10 +74,10 @@ const ProductDisplayy = () => {
           Pricing
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          Quickly build an effective pricing table for your potential customers with
+          {/* Quickly build an effective pricing table for your potential customers with
           this layout. <br />
           It&apos;s built with default Material UI components with little
-          customization.
+          customization. */}
         </Typography>
       </Box>
       <Grid container spacing={3} alignItems="center" justifyContent="center">
@@ -138,12 +95,12 @@ const ProductDisplayy = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 4,
-                border: tier.title === 'Professional' ? '1px solid' : undefined,
+                border: tier.title === '' ? '1px solid' : undefined,
                 borderColor:
-                  tier.title === 'Professional' ? 'primary.main' : undefined,
+                  tier.title === '' ? 'primary.main' : undefined,
                 background:
-                  tier.title === 'Professional'
-                    ? 'linear-gradient(#033363, #021F3B)'
+                  tier.title === ''
+                    ? 'linear-gradient(#f4dea7, #000000)'
                     : undefined,
               }}
             >
@@ -154,13 +111,13 @@ const ProductDisplayy = () => {
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
-                    color: tier.title === 'Professional' ? 'grey.100' : '',
+                    color: tier.title === '' ? 'grey.100' : '',
                   }}
                 >
                   <Typography component="h3" variant="h6">
                     {tier.title}
                   </Typography>
-                  {tier.title === 'Professional' && (
+                  {tier.title === '' && (
                     <Chip
                       icon={<AutoAwesomeIcon />}
                       label={tier.subheader}
@@ -183,11 +140,11 @@ const ProductDisplayy = () => {
                   sx={{
                     display: 'flex',
                     alignItems: 'baseline',
-                    color: tier.title === 'Professional' ? 'grey.50' : undefined,
+                    color: tier.title === '' ? 'grey.50' : undefined,
                   }}
                 >
                   <Typography component="h3" variant="h2">
-                    ${tier.price}
+                    AED{tier.price}
                   </Typography>
                   <Typography component="h3" variant="h6">
                     &nbsp; per month
@@ -224,7 +181,7 @@ const ProductDisplayy = () => {
                       variant="subtitle2"
                       sx={{
                         color:
-                          tier.title === 'Professional' ? 'grey.200' : undefined,
+                          tier.title === '' ? 'grey.200' : undefined,
                       }}
                     >
                       {line}
@@ -233,17 +190,14 @@ const ProductDisplayy = () => {
                 ))}
               </CardContent>
               <CardActions>
-      <form onSubmit={handleSubmit}>
-        {/* Add a hidden field with the lookup_key of your Price */}
-        <input type="hidden" name="lookup_key" value="ArticlePurchase" />
-        <Button
-          fullWidth
-          variant={tier.buttonVariant}
-          type="submit"
-        >
-          {tier.buttonText}
-        </Button>
-      </form>
+              <form action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions" method="POST">
+      {/* Add a hidden field with the lookup_key of your Price */}
+      <input type="hidden" name="lookup_key" value="AllArticlePurchaseSub" />
+      <input type="hidden" name="userId" value={userId} />
+      <Button id="checkout-and-portal-button" type="submit">
+        Checkout
+      </Button>
+    </form>
     </CardActions>
             </Card>
           </Grid>

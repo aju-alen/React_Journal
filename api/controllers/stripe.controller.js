@@ -60,6 +60,7 @@ export const returnSessionStatus = async (req, res, next) => {
 };
 
 export const createCheckoutSessionForSubscription = async (req, res, next) => {
+  console.log(req.body, 'req.body in stripe subscription');
 
   const prices = await Stripe.prices.list({
     lookup_keys: [req.body.lookup_key],
@@ -75,8 +76,12 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
         quantity: 1,
 
       },
+      
     ],
     mode: 'subscription',
+    metadata:{
+      userId:req.body.userId
+    },
     success_url: `${YOUR_DOMAIN}/productDisplay/?success=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${YOUR_DOMAIN}?canceled=true`,
   });

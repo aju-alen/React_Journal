@@ -28,10 +28,29 @@ model User {
   emailVerificationToken String @unique
   emailVerified Boolean @default(false)
   label String
+
   articles Article[]
   issuePurchased FullIssue[]
   userFullIssue UserFullIssue[]
+  
+subscriptions Subscription[]
   createdAt DateTime @default(now())
+}
+
+model Subscription {
+  id             String    @id @default(uuid())
+  isSubscribed    Boolean
+  subscriptionPeriodStart DateTime 
+  subscriptionAmmount Int
+  subscriptionEmail String
+  hosted_invoice_url String
+  subscriptionPeriodEnd   DateTime 
+  subscriptionDescription String
+  subscriptionInterval String
+  
+  // Define the one-to-one relationship with User
+  user            User     @relation(fields: [userId], references: [id])
+  userId          String
 }
 
 model Journal{
@@ -105,3 +124,4 @@ model UserFullIssue{
 
   @@id([userId, fullIssueId])
 }
+
