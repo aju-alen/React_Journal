@@ -64,12 +64,13 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
       break;
     case 'checkout.session.completed':
       console.log('3');
-      console.log(event.data.object.payment_status, 'payment status in stripe route webhook');
-      console.log(event.data.object.status, 'status in stripe route webhook');
+      
       const checkoutSessionCompleted = event.data.object;
-      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment' && event.data.object.metadata.checkoutStatus === 'publisharticle') {
+      console.log(checkoutSessionCompleted.payment_status, 'payment status in stripe route webhook');
+      console.log(checkoutSessionCompleted.status, 'status in stripe route webhook');
+      if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'publisharticle') {
         const payment = await prisma.article.update({
-          where:{id:event.data.object.metadata.articleId},
+          where:{id:checkoutSessionCompleted.metadata.articleId},
           data:{
             paymentStatus:true
           }
@@ -77,12 +78,12 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
         await prisma.$disconnect();
         // console.log(payment, 'payment in stripe route webhook');
       }
-      if (event.data.object.payment_status === 'paid' && event.data.object.status === 'complete' && event.data.object.mode === 'payment' && event.data.object.metadata.checkoutStatus === 'fullIssue') {
+      if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'fullIssue') {
 
         const userFullIssue = await prisma.userFullIssue.create({
           data: {
-            userId: event.data.object.metadata.userId,
-            fullIssueId: event.data.object.metadata.articleId
+            userId: checkoutSessionCompleted.metadata.userId,
+            fullIssueId: checkoutSessionCompleted.metadata.articleId
           }
         });
         console.log(userFullIssue, 'user schema in database');
@@ -93,7 +94,17 @@ app.post('/webhook', express.raw({type: 'application/json'}), async(request, res
       
       // Then define and call a function to handle the event checkout.session.completed
       break;
-    // ... handle other event types
+      case 'invoice.created':
+        const invoiceCreated = event.data.object;
+        console.log(invoiceCreated, 'invoice created in stripe route webhook');
+        // Then define and call a function to handle the event invoice.created
+        break;
+      case 'invoice.payment_succeeded':
+        const invoicePaymentSucceeded = event.data.object;
+        console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
+        // Then define and call a function to handle the event invoice.payment_succeeded
+        break;
+  
     default:
       console.log(`Unhandled event type ${event.type}`);
   }
