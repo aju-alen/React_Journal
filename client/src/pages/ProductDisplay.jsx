@@ -193,7 +193,7 @@ const ProductDisplayy = () => {
               <form action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions" method="POST">
       {/* Add a hidden field with the lookup_key of your Price */}
       <input type="hidden" name="lookup_key" value="AllArticlePurchaseSub" />
-      <input type="hidden" name="userId" value={userId} />
+      <input type="hidden" name="metadata[userId]" value={userId} />
       <Button id="checkout-and-portal-button" type="submit">
         Checkout
       </Button>
