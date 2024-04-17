@@ -94,6 +94,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
         // console.log(payment, 'payment in stripe route webhook');
       }
       if(checkoutSessionCompleted.mode === 'subscription'){
+        console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
         const subscription = await prisma.subscription.update({
           where:{
             invoiceId : checkoutSessionCompleted.invoice
@@ -102,6 +103,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
             userId : checkoutSessionCompleted.metadata.userId,
           }
           })
+          await prisma.$disconnect();
           console.log(subscription, 'subscription find in databaseeeee');
       }
       // Then define and call a function to handle the event checkout.session.completed
