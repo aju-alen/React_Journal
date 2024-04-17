@@ -106,7 +106,24 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
     case 'invoice.payment_succeeded':
       // Then define and call a function to handle the event invoice.payment_succeeded
       const invoicePaymentSucceeded = event.data.object;
-      console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
+      // console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
+
+      const subscription = await prisma.subscription.create({
+        data:{
+          isSubscribed : true,
+          subscriptionAmmount : invoicePaymentSucceeded.amount_paid,
+          subscriptionPeriodStart : invoicePaymentSucceeded.period_start,
+          subscriptionPeriodEnd : invoicePaymentSucceeded.period_end,
+          subscriptionEmail : invoicePaymentSucceeded.customer_email,
+          hosted_invoice_url : invoicePaymentSucceeded.hosted_invoice_url,
+          hosted_invoice_pdf : invoicePaymentSucceeded.invoice_pdf,
+          invoiceId : invoicePaymentSucceeded.id,
+          customerId : invoicePaymentSucceeded.subscription
+
+        }
+
+      })
+      console.log(subscription, 'subscription in stripe route webhook logged in database');
       break;
     case 'customer.subscription.trial_will_end':
       subscription = event.data.object;
