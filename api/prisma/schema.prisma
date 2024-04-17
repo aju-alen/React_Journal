@@ -46,7 +46,7 @@ model Subscription {
   hosted_invoice_url String
   hosted_invoice_pdf String
   subscriptionPeriodEnd   Int 
-  invoiceId String
+  invoiceId String @unique
   customerId String
   
   // Define the one-to-one relationship with User

@@ -97,7 +97,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
         console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
         const subscription = await prisma.subscription.update({
 
-          where: { customerId: checkoutSessionCompleted.customer },
+          where: { invoiceId: checkoutSessionCompleted.invoice },
           data:{
             userId: checkoutSessionCompleted.metadata.userId,
           }
