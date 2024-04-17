@@ -96,13 +96,12 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
       if(checkoutSessionCompleted.mode === 'subscription'){
         console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
         const subscription = await prisma.subscription.update({
-          where:{
-            invoiceId : checkoutSessionCompleted.invoice
-            },
+
+          where: { customerId: checkoutSessionCompleted.customer },
           data:{
-            userId : checkoutSessionCompleted.metadata.userId,
+            userId: checkoutSessionCompleted.metadata.userId,
           }
-          })
+        });
           await prisma.$disconnect();
           console.log(subscription, 'subscription find in databaseeeee');
       }
