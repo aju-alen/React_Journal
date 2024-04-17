@@ -46,7 +46,7 @@ model Subscription {
   hosted_invoice_url String
   hosted_invoice_pdf String
   subscriptionPeriodEnd   Int 
-  subscriptionDescription String
+  subscriptionDescription String @default("Weekly Subscription")
   subscriptionInterval String
   invoiceId String
   customerId String
