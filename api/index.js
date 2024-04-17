@@ -51,6 +51,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
   }
   let subscription;
   let status;
+  let invoiceobject;
   // Handle the event
   switch (event.type) {
     case 'checkout.session.async_payment_failed':
@@ -95,7 +96,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
         await prisma.$disconnect();
         // console.log(payment, 'payment in stripe route webhook');
       }
-
+      console.log(invoiceobject, 'invoice object in stripe route webhook');
       // Then define and call a function to handle the event checkout.session.completed
       break;
     case 'invoice.created':
@@ -119,10 +120,21 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           hosted_invoice_pdf : invoicePaymentSucceeded.invoice_pdf,
           invoiceId : invoicePaymentSucceeded.id,
           customerId : invoicePaymentSucceeded.subscription
-
         }
 
+
       })
+      invoiceobject={
+        isSubscribed : true,
+        subscriptionAmmount : invoicePaymentSucceeded.amount_paid,
+        subscriptionPeriodStart : invoicePaymentSucceeded.period_start,
+        subscriptionPeriodEnd : invoicePaymentSucceeded.period_end,
+        subscriptionEmail : invoicePaymentSucceeded.customer_email,
+        hosted_invoice_url : invoicePaymentSucceeded.hosted_invoice_url,
+        hosted_invoice_pdf : invoicePaymentSucceeded.invoice_pdf,
+        invoiceId : invoicePaymentSucceeded.id,
+        customerId : invoicePaymentSucceeded.subscription
+      }
       console.log(subscription, 'subscription in stripe route webhook logged in database');
       break;
     case 'customer.subscription.trial_will_end':
