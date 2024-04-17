@@ -96,8 +96,12 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
       if(checkoutSessionCompleted.mode === 'subscription'){
         const subscription = await prisma.subscription.update({
           where:{
-            invoiceId : checkoutSessionCompleted
-          }})
+            invoiceId : checkoutSessionCompleted.invoice
+            },
+          data:{
+            userId : checkoutSessionCompleted.metadata.userId,
+          }
+          })
           console.log(subscription, 'subscription find in databaseeeee');
       }
       // Then define and call a function to handle the event checkout.session.completed
