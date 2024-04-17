@@ -67,7 +67,12 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
     expand: ['data.product'],
   });
  
+  // console.log(prices, 'prices in stripe');
+
   const session = await Stripe.checkout.sessions.create({
+    metadata:{
+      userId:req.body.userId,
+    },
     billing_address_collection: 'auto',
     line_items: [
       {
@@ -79,12 +84,10 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
       
     ],
     mode: 'subscription',
-    metadata:{
-      userId:req.body.userId
-    },
     success_url: `${YOUR_DOMAIN}/productDisplay/?success=true&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${YOUR_DOMAIN}?canceled=true`,
   });
+  // console.log('session in stripe subscription',session);
   
   res.redirect(303, session.url);
 

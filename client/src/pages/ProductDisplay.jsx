@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
@@ -14,6 +14,7 @@ import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import ImageHeader from '../components/ImageHeader';  
 import { httpRoute } from '../helperFunctions.js';
+import axios from 'axios';
 
 
 const tiers = [
@@ -26,16 +27,6 @@ const tiers = [
     buttonText: 'Sign up for free',
     buttonVariant: 'outlined',
   },
-  
-  // {
-  //   title: 'Monthly plan',
-  //   price: '60.00',
-  //   description: [
-  //     'Month long access to all articles',
-  //   ],
-  //   buttonText: 'Contact us',
-  //   buttonVariant: 'outlined',
-  // },
 ];
 
 
@@ -192,8 +183,8 @@ const ProductDisplayy = () => {
               <CardActions>
               <form action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions" method="POST">
       {/* Add a hidden field with the lookup_key of your Price */}
-      <input type="hidden" name="lookup_key" value="AllArticlePurchaseSub" />
-      <input type="hidden" name="metadata[userId]" value={userId} />
+      <input type="hidden" name="lookup_key" value="weekaccess" />
+      <input type="hidden" name="userId" value={userId} />
       <Button id="checkout-and-portal-button" type="submit">
         Checkout
       </Button>
@@ -210,16 +201,37 @@ const ProductDisplayy = () => {
 )
 }
 
-const SuccessDisplay = ({ sessionId }) => {
+// const SuccessDisplay = ({ sessionId }) => {
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const resp = await axios.post(`${httpRoute}/api/stripe/create-portal-session`,{sessionId} )
-        console.log(resp.data, 'resp in success');
-    }
+//     const handleSubmit = async (event) => {
+//         event.preventDefault();
+//         const resp = await axios.post(`${httpRoute}/api/stripe/create-portal-session`,{sessionId} )
+//         console.log(resp.data, 'resp in success');
+//     }
+//   return (
+//     <div className="h-auto w-auto bg-slate-200 ">
+//     <ImageHeader/>
+//     <section>
+//       <div className="product Box-root">
+//         <Logo />
+//         <div className="description Box-root">
+//           <h3>Subscription to starter plan successful!</h3>
+//         </div>
+//       </div>
+//       <form onSubmit={handleSubmit}>
+        
+//         <button id="checkout-and-portal-button" type="submit">
+//           Manage your billing information
+//         </button>
+//       </form>
+//     </section>
+//     </div>
+//   );
+// };
+
+
+const SuccessDisplay = ({ sessionId }) => {
   return (
-    <div className="h-auto w-auto bg-slate-200 ">
-    <ImageHeader/>
     <section>
       <div className="product Box-root">
         <Logo />
@@ -227,14 +239,18 @@ const SuccessDisplay = ({ sessionId }) => {
           <h3>Subscription to starter plan successful!</h3>
         </div>
       </div>
-      <form onSubmit={handleSubmit}>
-        
-        {/* <button id="checkout-and-portal-button" type="submit">
+      <form action="https://react-journal1.onrender.com/api/create-portal-session" method="POST">
+        <input
+          type="hidden"
+          id="session-id"
+          name="session_id"
+          value={sessionId}
+        />
+        <button id="checkout-and-portal-button" type="submit">
           Manage your billing information
-        </button> */}
+        </button>
       </form>
     </section>
-    </div>
   );
 };
 
