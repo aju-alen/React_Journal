@@ -1,11 +1,11 @@
 import dotenv from 'dotenv'
 import stripe from 'stripe';
-import { originUrl } from '../utils/cors.dev';
+import { stripeDomain } from '../utils/cors.dev.js';
 dotenv.config()
 
 
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
-const YOUR_DOMAIN = originUrl;
+const YOUR_DOMAIN = stripeDomain;
 // const YOUR_DOMAIN = 'http://localhost:5173';
 // const YOUR_DOMAIN = 'https://scientificjournalsportal.com';
 
