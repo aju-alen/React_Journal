@@ -58,22 +58,42 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           // Then define and call a function to handle the event invoice.payment_succeeded
           const invoicePaymentSucceeded = event.data.object;
           // console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
-         
-              const subscription = await prisma.subscription.create({
-                  data: {
-                      isSubscribed: true,
-                      subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
-                      subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
-                      subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
-                      subscriptionEmail: invoicePaymentSucceeded.customer_email,
-                      hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
-                      hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
-                      invoiceId: invoicePaymentSucceeded.id,
-                      customerId: invoicePaymentSucceeded.subscription
-                  }
-              });
-              console.log(subscription, 'subscription in invoice succeed');
+            const findCustomer = await prisma.subscription.findUnique({
+                where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
+            });
+            if(findCustomer){
 
+              const updateSubscription = await prisma.subscription.update({
+                where : {subscriptionEmail : invoicePaymentSucceeded.customer_email},
+                data: {
+                  isSubscribed: true,
+                  subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+                  subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
+                  subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
+                  hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+                  hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+                  invoiceId: invoicePaymentSucceeded.id,
+                  customerId: invoicePaymentSucceeded.subscription
+                }
+              });
+              console.log(updateSubscription, 'updateSubscription in invoice succeed');
+            }
+            else{
+              const subscription = await prisma.subscription.create({
+                data: {
+                    isSubscribed: true,
+                    subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+                    subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
+                    subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
+                    subscriptionEmail: invoicePaymentSucceeded.customer_email,
+                    hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+                    hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+                    invoiceId: invoicePaymentSucceeded.id,
+                    customerId: invoicePaymentSucceeded.subscription
+                }
+            });
+            console.log(subscription, 'subscription in invoice succeed');
+            }
               await prisma.$disconnect();
 
           break;
