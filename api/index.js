@@ -66,7 +66,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
 
           console.log(checkCustomerEmail, 'checkCustomerEmail in stripe route webhook');
 
-          if (checkCustomerEmail) {
+          if (checkCustomerEmail !==null) {
               await prisma.subscription.update({
                   where: { subscriptionEmail: invoicePaymentSucceeded.customer_email },
                   data: {
@@ -97,6 +97,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
                       customerId: invoicePaymentSucceeded.subscription
                   }
               });
+              console.log(subscription, 'subscription in invoice succeed');
 
               await prisma.$disconnect();
               invoiceHandled = true;
@@ -108,9 +109,11 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           // Wait for invoice.payment_succeeded to finish for a maximum of 10 seconds
           if (!invoiceHandled) {
               setTimeout(async () => {
+                console.log('2222');
                   // Check if invoice is still not handled after 10 seconds
                   if (!invoiceHandled) {
                       // Do something if invoice is not handled
+                      console.log('33333');
                   }
               }, 10000); // 10 seconds delay
           }
