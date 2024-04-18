@@ -23,7 +23,7 @@ dotenv.config()
 const app = express()
 dotenv.config()
 app.use(cors({
-    origin: originUrl,
+  origin: originUrl,
 })); //frontend url
 
 // http://localhost:5173
@@ -51,7 +51,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
   }
   let subscription;
   let status;
-    // Handle the event
+  // Handle the event
   switch (event.type) {
     case 'checkout.session.async_payment_failed':
       const checkoutSessionAsyncPaymentFailed = event.data.object;
@@ -93,26 +93,42 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
         await prisma.$disconnect();
         // console.log(payment, 'payment in stripe route webhook');
       }
-      if(checkoutSessionCompleted.mode === 'subscription'){
+      if (checkoutSessionCompleted.mode === 'subscription') {
         console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
         const subscription = await prisma.subscription.update({
 
           where: { invoiceId: checkoutSessionCompleted.invoice },
-          data:{
+          data: {
             userId: checkoutSessionCompleted.metadata.userId,
           }
         });
-          await prisma.$disconnect();
-          console.log(subscription, 'subscription find in databaseeeee');
+        await prisma.$disconnect();
+        console.log(subscription, 'subscription find in databaseeeee');
       }
       // Then define and call a function to handle the event checkout.session.completed
       break;
 
-      case 'customer.created':
-        const customerCreated = event.data.object;
-        console.log(customerCreated, 'customer created event in webhook');
-        // Then define and call a function to handle the event customer.created
-        break;
+    case 'customer.created':
+      const customerCreated = event.data.object;
+      console.log(customerCreated, 'customer created event in webhook');
+      // Then define and call a function to handle the event customer.created
+      break;
+    case 'customer.updated':
+      const customerUpdated = event.data.object;
+      console.log(customerUpdated, 'customer updated event in webhook');
+      // Then define and call a function to handle the event customer.updated
+      break;
+
+    case 'account.updated':
+      const accountUpdated = event.data.object;
+      console.log(accountUpdated, 'account updated event in webhook');
+      // Then define and call a function to handle the event account.updated
+      break;
+    case 'account.external_account.created':
+      const accountExternalAccountCreated = event.data.object;
+      console.log(accountExternalAccountCreated, 'account external account created event in webhook');
+      // Then define and call a function to handle the event account.external_account.created
+      break;
 
     case 'invoice.created':
       // Then define and call a function to handle the event invoice.created
@@ -125,22 +141,22 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
       // console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
 
       const subscription = await prisma.subscription.create({
-        data:{
-          isSubscribed : true,
-          subscriptionAmmount : invoicePaymentSucceeded.amount_paid,
-          subscriptionPeriodStart : invoicePaymentSucceeded.period_start,
-          subscriptionPeriodEnd : invoicePaymentSucceeded.period_end,
-          subscriptionEmail : invoicePaymentSucceeded.customer_email,
-          hosted_invoice_url : invoicePaymentSucceeded.hosted_invoice_url,
-          hosted_invoice_pdf : invoicePaymentSucceeded.invoice_pdf,
-          invoiceId : invoicePaymentSucceeded.id,
-          customerId : invoicePaymentSucceeded.subscription
+        data: {
+          isSubscribed: true,
+          subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
+          subscriptionPeriodStart: invoicePaymentSucceeded.period_start,
+          subscriptionPeriodEnd: invoicePaymentSucceeded.period_end,
+          subscriptionEmail: invoicePaymentSucceeded.customer_email,
+          hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
+          hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
+          invoiceId: invoicePaymentSucceeded.id,
+          customerId: invoicePaymentSucceeded.subscription
         }
 
 
       })
-     
-     
+
+
       break;
     case 'customer.subscription.trial_will_end':
       subscription = event.data.object;
