@@ -68,7 +68,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
 
           if (checkCustomerEmail !==null) {
               await prisma.subscription.update({
-                  where: { subscriptionEmail: invoicePaymentSucceeded.customer_email },
+                  where: { invoiceId: invoicePaymentSucceeded.id },
                   data: {
                       isSubscribed: true,
                       subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
