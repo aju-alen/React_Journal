@@ -107,6 +107,13 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
       }
       // Then define and call a function to handle the event checkout.session.completed
       break;
+
+      case 'customer.created':
+        const customerCreated = event.data.object;
+        console.log(customerCreated, 'customer created event in webhook');
+        // Then define and call a function to handle the event customer.created
+        break;
+
     case 'invoice.created':
       // Then define and call a function to handle the event invoice.created
       const invoiceCreated = event.data.object;
