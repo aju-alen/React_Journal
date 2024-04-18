@@ -52,6 +52,8 @@ model Subscription {
   // Define the one-to-one relationship with User
   user            User?    @relation(fields: [userId], references: [id])
   userId          String?
+
+  createdAt DateTime @default(now())
 }
 
 model Journal{
