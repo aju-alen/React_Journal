@@ -67,6 +67,8 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           console.log(checkCustomerEmail, 'checkCustomerEmail in stripe route webhook');
 
           if (checkCustomerEmail !==null) {
+            console.log('checkoutSession updata db');
+
               await prisma.subscription.update({
                   where: { invoiceId: invoicePaymentSucceeded.id },
                   data: {
@@ -146,8 +148,10 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
               await prisma.$disconnect();
               // console.log(payment, 'payment in stripe route webhook');
           }
+
           if (checkoutSessionCompleted.mode === 'subscription') {
               console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
+              console.log('checkoutSession updata db');
               const subscription = await prisma.subscription.update({
                   where: { invoiceId: checkoutSessionCompleted.invoice },
                   data: { userId: checkoutSessionCompleted.metadata.userId }
