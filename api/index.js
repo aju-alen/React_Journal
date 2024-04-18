@@ -49,8 +49,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
       response.status(400).send(`Webhook Error: ${err.message}`);
       return;
   }
-  
-  let invoiceHandled = false;
 
   // Handle the event
   switch (event.type) {
@@ -94,9 +92,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
                   }
               });
 
-              await prisma.$disconnect();
-              // console.log(payment, 'payment in stripe route webhook');
-          }
+              await prisma.$disconnect();          }
           if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'fullIssue') {
               const userFullIssue = await prisma.userFullIssue.create({
                   data: {
@@ -113,7 +109,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           if (checkoutSessionCompleted.mode === 'subscription') {
               console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
               console.log('checkoutSession updata db');
-              console.log(subscription, 'subscription find in databaseeeee');
           }
           break;
       //---------------------------------checkout.session.async_payment_failed-------------------------------------
