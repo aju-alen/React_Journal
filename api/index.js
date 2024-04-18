@@ -60,32 +60,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           // Then define and call a function to handle the event invoice.payment_succeeded
           const invoicePaymentSucceeded = event.data.object;
           // console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
-          const checkCustomerEmail = await prisma.subscription.findFirst({
-              where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
-          });
-
-          console.log(checkCustomerEmail, 'checkCustomerEmail in stripe route webhook');
-
-          if (checkCustomerEmail !==null) {
-            console.log('checkoutSession updata db');
-
-              await prisma.subscription.update({
-                  where: { invoiceId: invoicePaymentSucceeded.id },
-                  data: {
-                      isSubscribed: true,
-                      subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
-                      subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
-                      subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
-                      hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
-                      hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
-                      invoiceId: invoicePaymentSucceeded.id,
-                      customerId: invoicePaymentSucceeded.subscription
-                  }
-              });
-
-              await prisma.$disconnect();
-              invoiceHandled = true;
-          } else {
+         
               const subscription = await prisma.subscription.create({
                   data: {
                       isSubscribed: true,
@@ -102,25 +77,11 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
               console.log(subscription, 'subscription in invoice succeed');
 
               await prisma.$disconnect();
-              invoiceHandled = true;
-          }
 
           break;
       //---------------------------------checkout.session.completed-------------------------------------
       case 'checkout.session.completed':
-          // Wait for invoice.payment_succeeded to finish for a maximum of 10 seconds
-          if (!invoiceHandled) {
-              setTimeout(async () => {
-                console.log('2222');
-                  // Check if invoice is still not handled after 10 seconds
-                  if (!invoiceHandled) {
-                      // Do something if invoice is not handled
-                      console.log('33333');
-                  }
-              }, 10000); // 10 seconds delay
-          }
-
-          // Your logic for checkout.session.completed
+         
           console.log('3');
           const checkoutSessionCompleted = event.data.object;
           console.log(checkoutSessionCompleted, 'checkoutSessionCompleted in stripe route webhookkkkkkkkkk');
@@ -152,12 +113,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
           if (checkoutSessionCompleted.mode === 'subscription') {
               console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
               console.log('checkoutSession updata db');
-              const subscription = await prisma.subscription.update({
-                  where: { invoiceId: checkoutSessionCompleted.invoice },
-                  data: { userId: checkoutSessionCompleted.metadata.userId }
-              });
-
-              await prisma.$disconnect();
               console.log(subscription, 'subscription find in databaseeeee');
           }
           break;
