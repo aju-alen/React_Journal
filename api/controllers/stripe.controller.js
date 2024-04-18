@@ -75,7 +75,7 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
       userId:req.body.userId,
     },
     billing_address_collection: 'auto',
-    customer_email: "vannos940@gmail.com",
+    customer_email: req.body.email,
     line_items: [
       {
         price: prices.data[0].id,

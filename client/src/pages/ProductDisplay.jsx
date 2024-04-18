@@ -32,10 +32,13 @@ const tiers = [
 
 const ProductDisplayy = () => {
   const [userId, setUserId] = useState('')
+  const [emailId, setEmailId] = useState('')
   useEffect(() => {
-    const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user?.id
-    setUserId(getUser)
-    console.log(getUser, 'getuser');
+    const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user
+    setUserId(getUser.id)
+    setEmailId(getUser.email)
+
+    console.log(userId,emailId, 'getuser');
   }, []);
   
   return (
@@ -185,6 +188,7 @@ const ProductDisplayy = () => {
       {/* Add a hidden field with the lookup_key of your Price */}
       <input type="hidden" name="lookup_key" value="weekaccess" />
       <input type="hidden" name="userId" value={userId} />
+      <input type="hidden" name="emailId" value={emailId} />
       <Button id="checkout-and-portal-button" type="submit">
         Checkout
       </Button>
