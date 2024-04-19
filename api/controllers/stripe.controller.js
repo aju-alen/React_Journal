@@ -98,13 +98,16 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
 }
 
 export const createPortalSessionForSubscription = async (req, res, next) => {
-const  session_id  = 'cs_test_a1hQJ9VSuJFQOLpNX3mFT0RVFZcb9shdeTyrp9l0ceyOJ7Lqb64DiqjDEZ';
-const checkoutSession = await Stripe.checkout.sessions.retrieve(session_id);
+ // For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
+  // Typically this is stored alongside the authenticated user in your database.
+  const { session_id } = req.body;
+  const checkoutSession = await stripe.checkout.sessions.retrieve(session_id);
+
   // This is the url to which the customer will be redirected when they are done
   // managing their billing with the portal.
   const returnUrl = YOUR_DOMAIN;
 
-  const portalSession = await Stripe.billingPortal.sessions.create({
+  const portalSession = await stripe.billingPortal.sessions.create({
     customer: checkoutSession.customer,
     return_url: returnUrl,
   });

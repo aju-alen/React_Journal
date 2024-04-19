@@ -12,6 +12,7 @@ import fullIssueRoute from './routes/fullIssue.route.js'
 import userFullIssueRoute from './routes/userFullIssue.route.js'
 import s3Route from './routes/s3.route.js'
 import stripeROute from './routes/stripe.route.js'
+import subscriptionROute from './routes/subscription.route.js'
 import stripe from 'stripe';
 import sendMailRotue from './routes/sendMail.route.js'
 import { PrismaClient } from '@prisma/client'
@@ -159,6 +160,7 @@ app.use('/api/fullIssue', fullIssueRoute)
 app.use('/api/stripe', stripeROute)
 app.use('/api/send-email', sendMailRotue)
 app.use('/api/user-fullissue', userFullIssueRoute)
+app.use('/api/subscription', subscriptionROute)
 
 
 

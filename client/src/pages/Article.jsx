@@ -5,20 +5,24 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ImageHeaderArticle from '../components/ImageHeaderArticle';
 import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';
+import {  Link, useParams } from 'react-router-dom';
+import ProductDisplay from '../pages/ProductDisplay.jsx';
 import { getDates } from '../helperFunctions';
 import SingleArticleAbstractTab from '../components/SingleArticleAbstractTab';
-import { httpRoute } from '../helperFunctions.js';
+import { httpRoute,axiosTokenHeader } from '../helperFunctions.js';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
+import { useNavigate } from 'react-router-dom'
 import { DNA } from 'react-loader-spinner'
 
 
 
 export default function Article() {
+    const navigate = useNavigate()
     const { articleId } = useParams()
     const [journal, setJournal] = useState([])
     const [loading, setLoading] = useState(true)
+    const [userSubscriptionData, setUserSubscriptionData] = useState({})
     const [value, setValue] = React.useState('1');
     const currentUser = JSON.parse(localStorage.getItem("currentUser"))
     const [state, setState] = React.useState({
@@ -57,10 +61,45 @@ export default function Article() {
 
         getSinglePublishedArticle()
     }, [])
-    console.log(journal, "journal in article");
+
+    useEffect(() => {
+        try{
+
+            const getSubscriptionDetails = async () => {  
+                axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                console.log(currentUser.user.email, 'currentUser.user.email in article');
+               const userSubscription = await axios.get(`${httpRoute}/api/subscription/user-details/${currentUser.user.email}`);
+               console.log('api loaded');
+                console.log(userSubscription.data.getSubscription, 'userSubscription in article');
+                setUserSubscriptionData(userSubscription?.data?.getSubscription)
+            }
+    
+            getSubscriptionDetails();
+        }catch(err){
+            console.log(err);
+        }
+    }, [])
+
+    const handleCheckSubscription = () => {
+        if (userSubscriptionData) {
+            let currentTimeUnix = Math.floor(Date.now() / 1000);
+            if (userSubscriptionData.subscriptionEndDate > currentTimeUnix) {
+                window.open(getPublicManuscriptUrl)
+            } else {
+                navigate('/productDisplay')
+            }
+        } else {
+            return(
+                navigate('/productDisplay')
+            )
+        }
+    }
+    
     const articleYear = journal.articlePublishedDate
     const year = new Date(articleYear).getFullYear()
-    console.log(year, 'year');
+    console.log(currentUser, 'currentUser in article');
+    console.log(userSubscriptionData, 'userSubscriptionData');
+    
     return (
         <div>
             {loading ? ((<div className='flex justify-center items-center h-96'>
@@ -102,13 +141,11 @@ export default function Article() {
                                 <TabList onChange={handleChange} aria-label="lab API tabs example">
                                     <Tab label="Abstract" value="1" />
                                     {
-                                        currentUser ? <a href={getPublicManuscriptUrl} target="_blank" rel="noreferrer">
-                                            <Tab label="Full PDF" value="2" />
-                                        </a> : <Tab label="Full PDF" value="2" onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
+                                        currentUser ? 
+                                            <Tab label="Full PDF" value="2" onClick={handleCheckSubscription} />
+                                            : <Tab label="Full PDF" value="2" onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
                                     }
-                                    {/* <a href={getPublicManuscriptUrl} target="_blank" rel="noreferrer">
-                            <Tab label="Full PDF" value="2" />
-                            </a> */}
+                                   
                                     {/* <Tab label="Item Three" value="3" /> */}
                                 </TabList>
                             </Box>
