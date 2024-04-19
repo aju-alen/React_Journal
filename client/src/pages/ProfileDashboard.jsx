@@ -9,7 +9,6 @@ import Box from '@mui/material/Box';
 import SubmitManuscript from '../components/SubmitManuscript';
 import MyManuscriptsDashboard from '../components/MyManuscriptsDashboard';
 import AdminMyManuscriptsDashboard from '../components/AdminMyManuscriptsDashboard';
-import HeaderImage from '../components/HeaderImage';
 import ImageHeader from '../components/ImageHeader';
 import { DNA } from 'react-loader-spinner'
 import { httpRoute } from '../helperFunctions';
