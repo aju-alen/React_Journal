@@ -5,8 +5,7 @@ import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 import ImageHeaderArticle from '../components/ImageHeaderArticle';
 import axios from 'axios';
-import {  Link, useParams } from 'react-router-dom';
-import ProductDisplay from '../pages/ProductDisplay.jsx';
+import { useParams } from 'react-router-dom';
 import { getDates } from '../helperFunctions';
 import SingleArticleAbstractTab from '../components/SingleArticleAbstractTab';
 import { httpRoute,axiosTokenHeader } from '../helperFunctions.js';
@@ -94,11 +93,6 @@ export default function Article() {
             )
         }
     }
-    
-    const articleYear = journal.articlePublishedDate
-    const year = new Date(articleYear).getFullYear()
-    console.log(currentUser, 'currentUser in article');
-    console.log(userSubscriptionData, 'userSubscriptionData');
     
     return (
         <div>
