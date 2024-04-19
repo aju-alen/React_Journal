@@ -109,6 +109,7 @@ useEffect(() => {
 
                         {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
                         <Tab label="Edit Profile" {...a11yProps(2)} />
+                        <a href='https://billing.stripe.com/p/login/test_dR6g0e8251ah12M4gg'><Tab label="Manage Payments" {...a11yProps(3)} /></a>
                     </Tabs>
                     
                 </Box>
@@ -127,6 +128,11 @@ useEffect(() => {
                 <CustomTabPanel value={value} index={2}>
                   
               <EditProfile userDetails={userDetails}/>
+                </CustomTabPanel>
+               
+                <CustomTabPanel value={value} index={3}>
+                  
+
                 </CustomTabPanel>
             </Box>
 

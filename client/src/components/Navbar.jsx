@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Link, useNavigate, useLocation } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import NavLinksStatic from "./NavLinksStatic"
 import axios from "axios"
 import { httpRoute } from "../helperFunctions.js"
@@ -14,6 +14,7 @@ const Navbar = () => {
   }
 
   const handleMobileNavBar = () => {
+    console.log('clicked');
     setOpenMobileNav(prev => !prev)
   }
 
@@ -91,19 +92,17 @@ const Navbar = () => {
 
             <div className=' mt-28 flex flex-col items-center text-2xl gap-3 '>
               <NavLinksStatic />
-              {currentUser ? <Link to={`/dashboard/${currentUser.user.id}?tab=1`}>Submit Manuscript</Link> : <Link to="/login" >Submit Manuscript</Link>}
+              {currentUser ? <Link to={`/dashboard/${currentUser.user.id}?tab=1`} onClick={handleMobileNavBar}>Submit Manuscript</Link> : <Link to="/login" onClick={handleMobileNavBar} >Submit Manuscript</Link>}
               <div>
                 {!currentUser ?
                   (<div className=" flex flex-col gap-6 items-center">
                     <div>
-                      <Link to="/login" className="  text-lg font-light border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white">
-                        <button >
+                      <Link to="/login" className="  text-lg font-light border-2 rounded p-2 bg-green-300 hover:border-green-300 hover:bg-white" onClick={handleMobileNavBar}>
                           Login
-                        </button>
                       </Link>
                     </div>
                     <div>
-                      <Link to="/register" className=" text-lg font-light border-2 rounded p-2 border-blue-500">
+                      <Link to="/register" className=" text-lg font-light border-2 rounded p-2 border-blue-500" onClick={handleMobileNavBar}>
                         <button > Register
                         </button>
                       </Link>
@@ -113,7 +112,7 @@ const Navbar = () => {
                   (
                     <div className=" flex flex-col gap-6 items-center">
                       <div>
-                        <Link to={`/dashboard/${currentUser.user.id}`}>Dashboard</Link>
+                        <Link to={`/dashboard/${currentUser.user.id}`} onClick={handleMobileNavBar}>Dashboard</Link>
                       </div>
                       <div>
                         <Link to="/logout" className="  text-lg font-light border-2 rounded p-2 hover:bg-red-300">
