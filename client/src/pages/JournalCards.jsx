@@ -1,7 +1,6 @@
 import React, { useEffect,useState } from 'react'
 import ImageHeader from '../components/ImageHeader'
-import { Link,useParams } from 'react-router-dom'
-import { journals } from '../../data'
+import { Link} from 'react-router-dom'
 import axios from 'axios'
 import { DNA } from 'react-loader-spinner'
 import { getDates } from '../helperFunctions'
@@ -9,9 +8,7 @@ import { httpRoute } from '../helperFunctions.js'
 import FullIssueHome from '../components/FullIssueHome.jsx'
 
 const JournalCards = () => {
-    const {catId} = useParams()
-    const [articles, setArticles] = useState([])
-    
+    const [articles, setArticles] = useState([])    
   useEffect(() => {
     const getPublishedArticles= async () => {
         try{
