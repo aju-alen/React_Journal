@@ -29,7 +29,6 @@ model User {
   emailVerified Boolean @default(false)
   label String
   marketingCommunications Boolean @default(false)
-  agreeTerms Boolean @default(false)
 
   articles Article[]
   issuePurchased FullIssue[]

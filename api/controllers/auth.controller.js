@@ -29,15 +29,16 @@ export const register = async (req, res, next) => {
 
         const user = await prisma.user.create({
             data: {
-                email: req.body.email,
-                password: hash,
-                title: req.body.title,
-                surname: req.body.surname,
-                otherName: req.body.otherName,
-                affiliation: req.body.affiliation,
-                label: req.body.label,
-                value: req.body.value,
-                emailVerificationToken: emailVerificationToken,
+                email : req.body.email,
+                password : hash,
+                title : req.body.title,
+                surname : req.body.surname,
+                otherName : req.body.otherName,
+                affiliation : req.body.affiliation,
+                label : req.body.label,
+                value : req.body.value,
+                emailVerificationToken : emailVerificationToken,
+                marketingCommunications : req.body.marketingCommunications,
             }
         })
         await prisma.$disconnect()
@@ -171,7 +172,7 @@ const sendWelcomeEmail = async (email,name) => {
             <br>
             <p>Help</p>
             <br>
-            <p>we use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
+            <p>We use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
         </div>
     </body>
     </html>`

@@ -1,8 +1,9 @@
-import  { useState,useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import axios from 'axios';
 import Select from 'react-select';
 import countryList from 'react-select-country-list'
-import { Link,useNavigate } from 'react-router-dom';
+import Checkbox from '@mui/material/Checkbox';
+import { Link, useNavigate } from 'react-router-dom';
 import ImageHeader from '../components/ImageHeader';
 import { httpRoute } from '../helperFunctions.js';
 
@@ -19,6 +20,11 @@ const Register = () => {
     otherName: '',
     affiliation: '',
   });
+
+  const [checkedFormdata, setCheckedFormdata] = useState({
+    marketingCommunications : false,
+    agreeTerms : false
+  })
   const [passwordError, setPasswordError] = useState('');
   const [isValid, setIsValid] = useState(false);
   const [value, setValue] = useState('')
@@ -38,6 +44,10 @@ const Register = () => {
     console.log(formData, e);
   };
 
+  const handleCheckBoxChange = (event) => {
+   setCheckedFormdata({ ...checkedFormdata, [event.target.name]: event.target.checked });
+  }
+
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-={}[\]:;"'<>,.?/])(?=.{8,})/;
     if (!passwordRegex.test(password)) {
@@ -48,17 +58,18 @@ const Register = () => {
     }
   };
 
-  const handleSubmit =async  (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(e.target[0]);
     if (formData.password !== formData.confirmPassword) {
       return alert("Password do not match")
     }
-    const mergeForm = Object.assign({},formData,value)
-    try{
-      const res = await axios.post(`${httpRoute}/api/auth/register`,mergeForm)
+    const mergeForm = Object.assign({}, formData, value, checkedFormdata)
+    console.log(mergeForm, 'merged');
+    try {
+      const res = await axios.post(`${httpRoute}/api/auth/register`, mergeForm)
       console.log(res);
-      if (res.status === 201){
+      if (res.status === 201) {
         navigate('/login')
       }
       else {
@@ -66,14 +77,15 @@ const Register = () => {
       }
 
     }
-    catch(err){
+    catch (err) {
       console.log(err);
     }
     console.log('Form submitted:', mergeForm);
   };
+  console.log(checkedFormdata, 'checked');
   return (
     <div className="h-auto w-auto">
-      <ImageHeader/>
+      <ImageHeader />
       <div className="min-h-screen flex flex-col md:items-center justify-center bg-gray-100 md:p-10">
         <img src="./images/SJP-Image.png" alt="ScientificJournalsPortal" className=' object-scale-down md: h-64 w-auto my-1 md:my-2' />
         <div className="bg-white p-8 rounded shadow-md w-full md:w-5/6">
@@ -81,7 +93,7 @@ const Register = () => {
           <form onSubmit={handleSubmit}>
 
             <div className="mb-4">
-           
+
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
                 Email
               </label>
@@ -108,7 +120,7 @@ const Register = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                 required
               />
-                {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
+              {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
             </div>
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
@@ -125,25 +137,25 @@ const Register = () => {
               />
             </div>
             <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
-              Title
-            </label>
-            <select
-              id="title"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
-              required
-            >
-              <option value="">Select Title</option>
-              <option value="Mr">Mr</option>
-              <option value="Mrs">Mrs</option>
-              <option value="Ms">Ms</option>
-              <option value="Dr">Dr</option>
-              <option value="Prof">Prof</option>
-            </select>
-          </div>
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="title">
+                Title
+              </label>
+              <select
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                required
+              >
+                <option value="">Select Title</option>
+                <option value="Mr">Mr</option>
+                <option value="Mrs">Mrs</option>
+                <option value="Ms">Ms</option>
+                <option value="Dr">Dr</option>
+                <option value="Prof">Prof</option>
+              </select>
+            </div>
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="surname">
                 Surname
@@ -190,9 +202,18 @@ const Register = () => {
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="affiliation">
                 Country
               </label>
-              <Select options={options} value={value} onChange={changeHandler}  />
+              <Select options={options} value={value} onChange={changeHandler} />
             </div>
-            <div className=""></div>
+            <div className=" flex justify-start items-center mb-6">
+              <Checkbox
+                checked={checkedFormdata.marketingCommunications}
+                name='marketingCommunications'
+                onChange={handleCheckBoxChange}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+              <label className=' text-xs md:w-1/2 '>Scientific Journals Portal may send you marketing communications about relevant products and events. You can unsubscribe at any time via your Scientific Journals Portal account. </label>
+            </div>
+            <div className=" text-xs"><span className=' text-red-500'>*</span>By continuing you agree with our Terms and conditions and Privacy policy</div>
             <button
               type="submit"
               className="bg-indigo-500 text-white px-4 py-2 rounded focus:outline-none hover:bg-indigo-600 w-full"
@@ -201,11 +222,11 @@ const Register = () => {
               Register
             </button>
             <div className=" text-center p-4">
-                Already Registered?
-                <span>
-                    <Link to='/login' className=' text-blue-600'> CLICK HERE TO LOGIN</Link>
-                </span>
-              </div>
+              Already Registered?
+              <span>
+                <Link to='/login' className=' text-blue-600'> CLICK HERE TO LOGIN</Link>
+              </span>
+            </div>
           </form>
         </div>
       </div>
