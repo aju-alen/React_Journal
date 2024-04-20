@@ -25,9 +25,11 @@ model User {
   test String @default("test")
   isAdmin  Boolean  @default(false)
   value String
-  emailVerificationToken String @unique
+  emailVerificationToken String 
   emailVerified Boolean @default(false)
   label String
+  marketingCommunications Boolean @default(false)
+  agreeTerms Boolean @default(false)
 
   articles Article[]
   issuePurchased FullIssue[]

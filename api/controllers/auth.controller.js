@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
 import createError from '../utils/createError.js'
 import dotenv from 'dotenv'
-import {emailVerifyBackendUrl} from '../utils/cors.dev.js'
+import {emailVerifyBackendUrl, originUrl} from '../utils/cors.dev.js'
 dotenv.config()
 
 const prisma = new PrismaClient();
@@ -65,11 +65,11 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
     const mailOptions = {
         from: process.env.GMAIL_AUTH_USER,
         to: email,
-        subject: 'Account Verification',
+        subject: 'Verify Your Email Address',
         html: `
     <html>
     <body>
-        <div style="background-color:black">
+        <div>
 
             <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
@@ -77,8 +77,15 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
         </div>
         <div>
             <p>Hi ${name},</p>
-            <p>Please click the link below to verify your account:</p>
-            <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}">${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}</a></p>
+            <p>You're almost there.</p>
+            <br>
+            <p>We just need to verify your email address before you can access your Scientific Journals Portal. Verifying your email address helps secure your account.</p>
+            <br>
+            <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}">VERIFY YOUR EMAIL</a></p>
+            <br>
+            <p>Cannot verify your email by clicking the button? Copy and paste the URL into your browser to verify your email.</p>
+            <br>
+            <p>${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}</p>
         </div>
     </body>
     </html>`
@@ -99,7 +106,7 @@ export const verifyEmail = async (req, res) => {
 
         const emailVerificationToken = req.params.token;
         console.log(emailVerificationToken, 'emailVerificationToken');
-       const userToken = await prisma.user.findUnique({
+       const userToken = await prisma.user.findFirst({
             where: {
                 emailVerificationToken: emailVerificationToken
             }
@@ -109,7 +116,7 @@ export const verifyEmail = async (req, res) => {
             return res.status(400).json({ message: 'Invalid token' })
         }
     
-        await prisma.user.update({
+       const updatedUser =  await prisma.user.update({
             where: {
                 id: userToken.id
             },
@@ -119,6 +126,8 @@ export const verifyEmail = async (req, res) => {
             }
         })
         await prisma.$disconnect()
+            sendWelcomeEmail(updatedUser.email, updatedUser.surname);
+        console.log(updatedUser, 'updatedUser');
         res.status(200).json({ message: 'Email verified' })
     }
     catch (err) {
@@ -126,6 +135,58 @@ export const verifyEmail = async (req, res) => {
         res.status(400).send('An error occoured')
     }
 }
+
+const sendWelcomeEmail = async (email,name) => {
+
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        to: email,
+        subject: 'Welcome to the Scientific Journals Portal(SJP)',
+        html: `
+    <html>
+    <body>
+        <div>
+
+            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <p>Scientific Journals Portal</p>
+
+        </div>
+        <div>
+            <p>welcome ${name},</p>
+            <p>With your Scientific Journals Portal account you can sign in, edit your details and make institutional connections for a range of the Scientific Journals Portal products.</p>
+            <br>
+            <p>The Scientific Journals Team</p>
+            <br>
+            <p><a href="${originUrl}">View Your Scientific Journals Portal Account</a></p>
+            <br>
+            <p>--------------------</p>
+            <p>Copyright © 2024, Scientific Journals Portal, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
+            <br>
+            <p>About SJP</p>
+            <br>
+            <p>Terms and conditions</p>
+            <br>
+            <p>Privacy policy</p>
+            <br>
+            <p>Help</p>
+            <br>
+            <p>we use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
+        </div>
+    </body>
+    </html>`
+    }
+
+    //send the mail
+    try {
+        const response = await transporter.sendMail(mailOptions);
+        console.log("Verification email sent", response);
+    }
+    catch (err) {
+        console.log("Err sending verification email", err);
+    }
+}
+
 
 export const login = async (req, res, next) => {
     try {

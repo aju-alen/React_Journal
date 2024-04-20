@@ -74,9 +74,10 @@ const Register = () => {
   return (
     <div className="h-auto w-auto">
       <ImageHeader/>
-      <div className="min-h-screen flex md:items-center justify-center bg-gray-100 md:p-10">
+      <div className="min-h-screen flex flex-col md:items-center justify-center bg-gray-100 md:p-10">
+        <img src="./images/SJP-Image.png" alt="ScientificJournalsPortal" className=' object-scale-down md: h-64 w-auto my-1 md:my-2' />
         <div className="bg-white p-8 rounded shadow-md w-full md:w-5/6">
-          <h2 className="text-2xl font-semibold mb-6 text-center">Please enter your details to create your account and submit articles</h2>
+          <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
           <form onSubmit={handleSubmit}>
 
             <div className="mb-4">
