@@ -15,10 +15,10 @@ export const createCheckoutSession = async (req, res, next) => {
   let {articleId,checkoutStatus,userId} = req.body;
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
   if (checkoutStatus === "publisharticle" ){
-    price = "price_1P5OvyFGVHo1I2AtjbWzCMyH"
+    price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
   }
   else if (checkoutStatus === "fullIssue"){
-    price = "price_1P5Q2SFGVHo1I2Aty4w7qlfV"
+    price = process.env.STRIPE_FULL_ISSUE_PRICEID
   }
   try{
     console.log(price, 'price in stripe');

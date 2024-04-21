@@ -1,4 +1,4 @@
-import { useEffect,useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -21,19 +21,19 @@ function CustomTabPanel(props) {
 
 
   return (
-      <div
-          role="tabpanel"
-          hidden={value !== index}
-          id={`simple-tabpanel-${index}`}
-          aria-labelledby={`simple-tab-${index}`}
-          {...other}
-      >
-          {value === index && (
-              <Box sx={{ p: 3 }}>
-                  <Typography component={'span'}>{children}</Typography>
-              </Box>
-          )}
-      </div>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <Typography component={'span'}>{children}</Typography>
+        </Box>
+      )}
+    </div>
   );
 }
 
@@ -45,108 +45,108 @@ CustomTabPanel.propTypes = {
 
 function a11yProps(index) {
   return {
-      id: `simple-tab-${index}`,
-      'aria-controls': `simple-tabpanel-${index}`,
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
   };
 }
 
 
 const ProfileDashboard = () => {
-const {profileId} = useParams()
-const [userDetails, setUserDetails] = useState({})
-const [user, setUser] = useState({})
-const [loading, setLoading] = useState(true)
-let [searchParams, setSearchParams] = useSearchParams();
-const value = Number(searchParams.get("tab") || 0);
+  const { profileId } = useParams()
+  const [userDetails, setUserDetails] = useState({})
+  const [user, setUser] = useState({})
+  const [loading, setLoading] = useState(true)
+  let [searchParams, setSearchParams] = useSearchParams();
+  const value = Number(searchParams.get("tab") || 0);
 
-const handleChange = (event, newValue) => {
-  setSearchParams((params) => {
-    params.set("tab", newValue);
-    return params;
-  });
-};
+  const handleChange = (event, newValue) => {
+    setSearchParams((params) => {
+      params.set("tab", newValue);
+      return params;
+    });
+  };
 
-useEffect(() => {
- const getUser = async () => {
-  const getUser = await JSON.parse(localStorage.getItem('currentUser'))
-  setUserDetails(getUser)
-  axios.defaults.headers.common['Authorization'] = `Bearer ${getUser.token}`
-  try{
-   
-    if(!getUser.user.isAdmin){
-      const resp =await axios.get(`${httpRoute}/api/users/${profileId}`)
-      setUser(resp.data)
-      setLoading(false)
+  useEffect(() => {
+    const getUser = async () => {
+      const getUser = await JSON.parse(localStorage.getItem('currentUser'))
+      setUserDetails(getUser)
+      axios.defaults.headers.common['Authorization'] = `Bearer ${getUser.token}`
+      try {
+
+        if (!getUser.user.isAdmin) {
+          const resp = await axios.get(`${httpRoute}/api/users/${profileId}`)
+          setUser(resp.data)
+          setLoading(false)
+        }
+        else {
+          const resp = await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
+          setUser(resp.data)
+          setLoading(false)
+        }
+      }
+      catch (err) {
+        console.log(err)
+      }
     }
-    else{
-      const resp =await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
-      setUser(resp.data)
-      setLoading(false)
-    }
-  }
-  catch(err){
-    console.log(err)
-  }
- }
- 
-  getUser()
-}, [])
-  console.log(userDetails,'zzzzzz');
- 
-  console.log(user,'userDetails');
-  
+
+    getUser()
+  }, [])
+  console.log(userDetails, 'zzzzzz');
+
+  console.log(user, 'userDetails');
+
   return (
     <div>
-    {!loading?(<div>
-      <ImageHeader/>
-       <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${user?.title} ${user?.surname}`}</h1>
-       <Box sx={{ width: '100%' }} >
-                <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
-                    <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                        <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts":"My Manuscripts"} {...a11yProps(0)} />
-                        <Tab label={userDetails?.user?.isAdmin ? "Submit Issue":"Submit Manuscript"} {...a11yProps(1)} />
+      {!loading ? (<div>
+        <ImageHeader />
+        <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${user?.title} ${user?.surname}`}</h1>
+        <Box sx={{ width: '100%' }} >
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts" : "My Manuscripts"} {...a11yProps(0)} />
+              <Tab label={userDetails?.user?.isAdmin ? "Submit Issue" : "Submit Manuscript"} {...a11yProps(1)} />
 
-                        {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
-                        <Tab label="Edit Profile" {...a11yProps(2)} />
-                        <a href='https://billing.stripe.com/p/login/test_dR6g0e8251ah12M4gg'><Tab label="Manage Payments" {...a11yProps(3)} /></a>
-                    </Tabs>
-                    
-                </Box>
-                <CustomTabPanel value={value} index={0}>
-                  {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={user} />}
-                 {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user}/>}
+              {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
+              <Tab label="Edit Profile" {...a11yProps(2)} />
+              <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION}><Tab label="Manage Payments" {...a11yProps(3)} /></a>
+            </Tabs>
 
-                </CustomTabPanel>
-                <CustomTabPanel value={value} index={1}>
+          </Box>
+          <CustomTabPanel value={value} index={0}>
+            {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={user} />}
+            {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
 
-                {!userDetails?.user?.isAdmin &&<SubmitManuscript user={user}/>}
-                {userDetails?.user?.isAdmin &&<SubmitIssue user={user}/>}
-                 
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
 
-                </CustomTabPanel>
-                <CustomTabPanel value={value} index={2}>
-                  
-              <EditProfile userDetails={userDetails}/>
-                </CustomTabPanel>
-               
-                <CustomTabPanel value={value} index={3}>
-                  
+            {!userDetails?.user?.isAdmin && <SubmitManuscript user={user} />}
+            {userDetails?.user?.isAdmin && <SubmitIssue user={user} />}
 
-                </CustomTabPanel>
-            </Box>
 
-    </div>):
-     (<div className='flex justify-center items-center h-96'>
-     <DNA
-       visible={true}
-       height="80"
-       width="80"
-       ariaLabel="dna-loading"
-       wrapperStyle={{}}
-       wrapperClass="dna-wrapper"
-     />
-   </div>)
-    }
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={2}>
+
+            <EditProfile userDetails={userDetails} />
+          </CustomTabPanel>
+
+          <CustomTabPanel value={value} index={3}>
+
+
+          </CustomTabPanel>
+        </Box>
+
+      </div>) :
+        (<div className='flex justify-center items-center h-96'>
+          <DNA
+            visible={true}
+            height="80"
+            width="80"
+            ariaLabel="dna-loading"
+            wrapperStyle={{}}
+            wrapperClass="dna-wrapper"
+          />
+        </div>)
+      }
     </div>
   )
 }
