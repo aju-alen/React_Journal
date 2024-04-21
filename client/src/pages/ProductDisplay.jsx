@@ -182,7 +182,7 @@ const ProductDisplayy = () => {
                 <CardActions>
                   <form action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions" method="POST">
                     {/* Add a hidden field with the lookup_key of your Price */}
-                    <input type="hidden" name="lookup_key" value="weekaccess" />
+                    <input type="hidden" name="lookup_key" value={import.meta.env.VITE_STRIPE_WEEKLY_SUBSCRIPTION_LOOKUP_KEY} />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
                     <Button id="checkout-and-portal-button" type="submit">
