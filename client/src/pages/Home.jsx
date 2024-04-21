@@ -1,4 +1,3 @@
-import React from 'react'
 import HeaderImage from '../components/HeaderImage'
 import ServicesHome from '../components/ServicesHome'
 import LatestJournalsHome from '../components/LatestJournalsHome'

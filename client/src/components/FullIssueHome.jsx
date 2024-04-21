@@ -2,9 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { httpRoute, axiosTokenHeader } from '../helperFunctions'
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 
 const FullIssueHome = () => {
@@ -12,6 +10,7 @@ const FullIssueHome = () => {
     const [pdfUrl, setPdfUrl] = useState('')
     const [fullIssueId, setFullIssueId] = useState('')
     const [userId, setUserId] = useState('')
+    const [emailId, setEmailId] = useState('')
     const [purchasedFullIssue, setPurchasedFullIssue] = useState([])
 
     const [state, setState] = React.useState({
@@ -39,8 +38,9 @@ const FullIssueHome = () => {
                 setPdfUrl(getFullissueResp.data.getIssue[0]?.issueDoccumentURL)
                 setFullIssueId(getFullissueResp.data.getIssue[0]?.id)
 
-                const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user?.id
-                setUserId(getUser)
+                const getUser = JSON.parse(localStorage.getItem('currentUser'))
+                setUserId(getUser?.user?.id)
+                setEmailId(getUser?.user?.email)
                 console.log(getUser, 'getuser');
 
                 if (getUser !== undefined) {
@@ -60,6 +60,7 @@ const FullIssueHome = () => {
     }, [])
     // console.log(imageUrl, pdfUrl, 'urls');
     console.log(purchasedFullIssue, 'userfullissue api data');
+    console.log(userId,emailId, 'userId');
     const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
 
 
@@ -79,7 +80,7 @@ const FullIssueHome = () => {
                                 <img src={imageUrl} alt="cloud" className='w-64 h-64' />
                             </Link>
                         ) : (
-                            <Link to={`/checkout/${fullIssueId}/fullIssue/${userId}`}>
+                            <Link to={`/checkout/${fullIssueId}/fullIssue/${userId}/${emailId}`}>
                                 <img src={imageUrl} alt="cloud" className='w-64 h-64' />
                             </Link>
                         )

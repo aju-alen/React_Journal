@@ -97,7 +97,7 @@ function App() {
         element: <EditArticle />,
       },
       {
-        path: '/checkout/:articleId/:checkoutStatus/:userId',
+        path: '/checkout/:articleId/:checkoutStatus/:userId/:emailId',
         element: <CheckoutForm />,
       },
       {

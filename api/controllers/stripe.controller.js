@@ -12,7 +12,7 @@ const YOUR_DOMAIN = stripeDomain;
 
 export const createCheckoutSession = async (req, res, next) => {
   let price;
-  let {articleId,checkoutStatus,userId} = req.body;
+  let {articleId,checkoutStatus,userId,emailId} = req.body;
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
   if (checkoutStatus === "publisharticle" ){
     price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
@@ -24,6 +24,7 @@ export const createCheckoutSession = async (req, res, next) => {
     console.log(price, 'price in stripe');
     const session = await Stripe.checkout.sessions.create({
       ui_mode: 'embedded',
+      customer_email: emailId,
       line_items: [
         {
           
