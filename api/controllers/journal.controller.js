@@ -13,8 +13,8 @@ export const createJournal = async (req, res, next) => {
                 journalLanguage: req.body.journalLanguage,
                 journalISSN: req.body.journalISSN,
                 journalDOI: req.body.journalDOI,
-                journalStartYear: req.body.journalStartYear,
-                journalStartMonth: req.body.journalStartMonth
+                journalStartYear: Number(req.body.journalStartYear),
+                journalStartMonth: Number(req.body.journalStartMonth)
             }
         })
         await prisma.$disconnect();

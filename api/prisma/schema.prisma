@@ -60,7 +60,7 @@ model Subscription {
 model Journal{
     id        String    @id @default(uuid())
   journalTitle   String   @unique
-  journalImageURL String
+  journalImageURL String @default("")
   journalAbbreviation String
   journalLanguage String
   journalDescription  String  @default("") @db.VarChar(3000)

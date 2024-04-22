@@ -14,6 +14,7 @@ import { DNA } from 'react-loader-spinner'
 import { httpRoute } from '../helperFunctions';
 import EditProfile from '../components/EditProfile';
 import SubmitIssue from '../components/SubmitIssue';
+import CreateNewJournal from '../components/CreateNewJournal';
 
 
 function CustomTabPanel(props) {
@@ -109,6 +110,7 @@ const ProfileDashboard = () => {
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab label="Edit Profile" {...a11yProps(2)} />
               <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION}><Tab label="Manage Payments" {...a11yProps(3)} /></a>
+              <Tab label={userDetails?.user?.isAdmin && "Create new journal" } {...a11yProps(4)} />
             </Tabs>
 
           </Box>
@@ -131,6 +133,10 @@ const ProfileDashboard = () => {
 
           <CustomTabPanel value={value} index={3}>
 
+
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={4}>
+            <CreateNewJournal />
 
           </CustomTabPanel>
         </Box>
