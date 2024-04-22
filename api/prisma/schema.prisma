@@ -63,6 +63,7 @@ model Journal{
   journalImageURL String
   journalAbbreviation String
   journalLanguage String
+  journalDescription  String  @default("") @db.VarChar(3000)
   journalISSN String
   journalDOI String
   journalStartYear Int
