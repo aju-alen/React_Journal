@@ -310,7 +310,6 @@ export const resetPassword = async (req, res) => {
             },
             data:{
                 password:hash,
-                resetToken:''
             }
         })
         await prisma.$disconnect()
