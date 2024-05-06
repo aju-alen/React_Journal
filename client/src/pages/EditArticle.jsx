@@ -60,8 +60,8 @@ const EditArticle = () => {
         fetchEditableArticle()
     }, [])
     const handleSubmit = async () => {
-        if (files.length !== 3) {
-            console.log('Please add all the required files before uploading the manuscript.')
+        if (files.length < 1) {
+            console.log('Please add minimum of one file to submit')
             return
         }
         try {
