@@ -164,13 +164,13 @@ const sendWelcomeEmail = async (email,name) => {
             <p>--------------------</p>
             <p>Copyright © 2024, Scientific Journals Portal, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
             <br>
-            <p>About SJP</p>
+            <p> <a href="${originUrl}">About SJP</a></p>
             <br>
-            <p>Terms and conditions</p>
+            <p><a href="${originUrl}/terms">Terms and conditions</a></p>
             <br>
-            <p>Privacy policy</p>
+            <p> <a href="${originUrl}/policies">Privacy policy</a></p>
             <br>
-            <p>Help</p>
+            <p> <a href="${originUrl}/contact">Help</a></p>
             <br>
             <p>We use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
         </div>
