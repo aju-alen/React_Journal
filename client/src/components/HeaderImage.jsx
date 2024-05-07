@@ -13,7 +13,7 @@ const HeaderImage = ()=>{
       <img
         src="./images/desert.jpg"
         alt="Your Image Alt Text"
-        className="w-full md:h-auto h-[370px] object-cover"
+        className="w-full md:h-[100vh] h-[370px] object-cover"
       />
       
       <div className="absolute sm:top-40 md:top-1/4 top-1/4  left-1/2  transform -translate-x-1/2 -translate-y-1/2 text-gray-900 text-center w-full flex flex-col justify-center items-center gap-3 ">
