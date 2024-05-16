@@ -84,7 +84,8 @@ export function calculateIssue(startYear, startMonth, currentYear, currentMonth)
 }
 
 
-export const httpRoute = 'https://react-journal1.onrender.com' // backend url
+export const httpRoute = 'http://localhost:3001' // backend url
+
 // https://react-journal.onrender.com
 
 // http://localhost:3001

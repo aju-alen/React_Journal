@@ -83,10 +83,10 @@ const EditProfile = ({ userDetails }) => {
     return (
         <div>
             <Box sx={{ minWidth:"auto" }} className='md:p-20'>
-                <FormControl fullwidth>
+                <FormControl fullWidth>
 
                     <div className="mt-5">
-                        <TextField fullwidth
+                        <TextField fullWidth
                             id="outlined-basic"
                             label="Affiliation"
                             variant="outlined"
@@ -95,7 +95,7 @@ const EditProfile = ({ userDetails }) => {
                             onChange={handleFormChange} />
                     </div>
                     <div className="mt-5">
-                        <TextField fullwidth
+                        <TextField fullWidth
                             id="outlined-basic"
                             label="Email Address"
                             variant="outlined"
@@ -104,7 +104,7 @@ const EditProfile = ({ userDetails }) => {
                             onChange={handleFormChange} />
                     </div>
                     <div className="mt-5">
-                        <TextField fullwidth
+                        <TextField fullWidth
                             id="outlined-basic"
                             label="Other Name"
                             variant="outlined"
@@ -113,7 +113,7 @@ const EditProfile = ({ userDetails }) => {
                             onChange={handleFormChange} />
                     </div>
                     <div className="mt-5">
-                        <TextField fullwidth
+                        <TextField fullWidth
                             id="outlined-basic"
                             label="Surname"
                             variant="outlined"
