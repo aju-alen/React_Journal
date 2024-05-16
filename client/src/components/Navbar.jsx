@@ -91,7 +91,7 @@ const Navbar = () => {
             </div>
 
             <div className=' mt-28 flex flex-col items-center text-2xl gap-3 '>
-              <NavLinksStatic />
+              <NavLinksStatic handleMobileNavBar={handleMobileNavBar} />
               {currentUser ? <Link to={`/dashboard/${currentUser.user.id}?tab=1`} onClick={handleMobileNavBar}>Submit Manuscript</Link> : <Link to="/login" onClick={handleMobileNavBar} >Submit Manuscript</Link>}
               <div>
                 {!currentUser ?
