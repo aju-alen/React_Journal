@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import PropTypes from 'prop-types';
@@ -16,10 +16,20 @@ import EditProfile from '../components/EditProfile';
 import SubmitIssue from '../components/SubmitIssue';
 import CreateNewJournal from '../components/CreateNewJournal';
 import CreateMarkettingEmail from '../components/CreateMarkettingEmail';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+
+
 
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
+
+  
 
 
   return (
@@ -60,6 +70,30 @@ const ProfileDashboard = () => {
   const [loading, setLoading] = useState(true)
   let [searchParams, setSearchParams] = useSearchParams();
   const value = Number(searchParams.get("tab") || 0);
+
+  const [open, setOpen] = React.useState(false);
+  const [specialIssue, setSpecialIssue] = React.useState(false);
+  const [regularIssue, setRegularIssue ] = React.useState(false);
+
+  const handleSpecialIssue = async () => {
+    setOpen(false);
+    setSpecialIssue(true)
+    setRegularIssue(false)
+  }
+
+  const handleRegularIssue = async () => {
+    setOpen(false);
+    setRegularIssue(true)
+    setSpecialIssue(false)
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleChange = (event, newValue) => {
     setSearchParams((params) => {
@@ -106,7 +140,44 @@ const ProfileDashboard = () => {
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
               <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts" : "My Manuscripts"} {...a11yProps(0)} />
-              <Tab label={userDetails?.user?.isAdmin ? "Submit Issue" : "Submit Manuscript"} {...a11yProps(1)} />
+
+              {/* START ------------ This is a tab button to check if user wants special issue or regular issue */}
+              <Tab label={userDetails?.user?.isAdmin ? "Submit Issue" : 
+              
+              (
+                <div>
+              <Button variant="text" onClick={handleClickOpen}>
+              Submit Manuscript
+            </Button>
+            <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+            <DialogTitle id="alert-dialog-title">
+          {"Submit this manuscript as a special issue?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+           Special Issue - A special issue will be published at the current issue of the journal
+          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">
+            Regular Issue - A regular issue will be published at the next issue of the journal
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleRegularIssue}>Regular Issue</Button>
+          <Button onClick={handleSpecialIssue} autoFocus>
+            Special Issue
+          </Button>
+        </DialogActions>
+      </Dialog>
+        </div>
+              )
+            
+              } {...a11yProps(1)} />
+              {/* END ------------ This is a tab button to check if user wants special issue or regular issue */}
 
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab label="Edit Profile" {...a11yProps(2)} />
@@ -124,7 +195,8 @@ const ProfileDashboard = () => {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
 
-            {!userDetails?.user?.isAdmin && <SubmitManuscript user={user} />}
+            {(!userDetails?.user?.isAdmin && regularIssue) && <SubmitManuscript user={user} checked = {false} />}
+            {(!userDetails?.user?.isAdmin && specialIssue) && <SubmitManuscript user={user} checked={true} />}
             {userDetails?.user?.isAdmin && <SubmitIssue user={user} />}
 
 

@@ -16,7 +16,7 @@ import Snackbar from '@mui/material/Snackbar';
 
 
 import axios from 'axios';
-const SubmitManuscript = ({ user }) => {
+const SubmitManuscript = ({ user,checked }) => {
     const [open, setOpen] = useState(false);
     const [alertStatus, setAlertStatus] = useState('success');
     const [alertText, setAlertText] = useState('');
@@ -24,7 +24,7 @@ const SubmitManuscript = ({ user }) => {
     const navigate = useNavigate()
     const [authors, setAuthors] = useState([]) //collection of authors
     const [journalCategory, setJournalCategory] = useState([]);
-    const [checked, setChecked] = useState(true);
+    // const [checked, setChecked] = useState(true);
     const [userEmail, setUserEmail] = useState('')
     const [authorData, setAuthorData] = useState({
         authorTitle: '',
@@ -67,10 +67,10 @@ const SubmitManuscript = ({ user }) => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    const handleCheckBoxChange = (event) => {
-        console.log(event, 'checkbox event');
-        setChecked(event.target.checked);
-    }
+    // const handleCheckBoxChange = (event) => {
+    //     console.log(event, 'checkbox event');
+    //     setChecked(event.target.checked);
+    // }
 
     const handleAddMoreAuthor = () => {
 
@@ -214,8 +214,10 @@ const SubmitManuscript = ({ user }) => {
                                 <div>Is this a special review?</div>
                                 <Checkbox
                                     checked={checked}
-                                    onChange={handleCheckBoxChange}
-                                    inputProps={{ 'aria-label': 'controlled' }}
+                                    // onChange={handleCheckBoxChange}
+                                    inputProps={{ 'aria-label': 'controlled',
+                                    readOnly:true
+                                     }}
                                 />
                             </div>
                             <div className='flex flex-col md:flex-row justify-around items-center mb-5'>
