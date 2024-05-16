@@ -51,7 +51,7 @@ export const register = async (req, res, next) => {
         res.status(400).send('An error occoured')
     }
 }
-const createTransport = nodemailer.createTransport({
+export const createTransport = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.GMAIL_AUTH_USER,

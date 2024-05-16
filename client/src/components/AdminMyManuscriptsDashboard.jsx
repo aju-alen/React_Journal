@@ -26,19 +26,23 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
   const [open, setOpen] = React.useState(false);
   const [successOpen, setSuccessOpen] = React.useState(false);
   const [articleId, setArticleId] = React.useState();
+  const [emailId, setEmailId] = useState('');
   const [rejectionText, setRejectionText] = useState('');
   const [files, setFiles] = useState([]);
 
-  const handleClickOpen = (articleId) => {
+  const handleClickOpen = (articleId,emailId) => {
     setArticleId(articleId);
+    setEmailId(emailId);
     setOpen(true);
   };
 console.log(articleId, 'articleId state');
+console.log(emailId, 'emailId state');
   const handleClose = (id) => {
 
     setOpen(false);
   };
-  const handleClicSuccessOpen = (articleId) => {
+  const handleClicSuccessOpen = (articleId,emailId) => {
+    setEmailId(emailId);
     setArticleId(articleId);
     setSuccessOpen(true);
   };
@@ -69,7 +73,6 @@ console.log(articleId, 'articleId state');
       <div>No Manuscripts To Verify</div>
     );
   }
-
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -112,7 +115,7 @@ console.log(articleId, 'articleId state');
                 </TableCell>
 
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button variant='outlined' onClick={()=>handleClicSuccessOpen(row.id)} >
+                  <Button variant='outlined' onClick={()=>handleClicSuccessOpen(row.id,row.articleAuthors[0].authorEmail)} >
                     ✅
                   </Button>
 
@@ -140,7 +143,7 @@ console.log(articleId, 'articleId state');
 
 
 
-                  <Button variant="outlined" onClick={() => handleClickOpen(row.id)}>
+                  <Button variant="outlined" onClick={() => handleClickOpen(row.id,row.articleAuthors[0].authorEmail)}>
                     ❌
                   </Button>
                   <Dialog
@@ -168,7 +171,7 @@ console.log(articleId, 'articleId state');
                           const filesUrl = fileGet.data.files
               
                           axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-                          await axios.post(`${httpRoute}/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl})
+                          await axios.post(`${httpRoute}/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl, emailId})
                         }
                         catch (err) {
                           console.log(err);
