@@ -193,10 +193,10 @@ console.log(emailId, 'emailId state');
                         name="text"
                         label="Rejection Text Message Here"
                         type="text"
-                        fullWidth
+                        fullwidth
                         variant="standard"
                       />
-                      <Button fullWidth sx={{ mb: 3 }}
+                      <Button fullwidth sx={{ mb: 3 }}
 
                         component="label"
                         role={undefined}
@@ -209,7 +209,7 @@ console.log(emailId, 'emailId state');
                         Cover Letter
                         <VisuallyHiddenInput type="file" />
                       </Button>
-                      <Button fullWidth sx={{ mb: 3 }}
+                      <Button fullwidth sx={{ mb: 3 }}
 
                         component="label"
                         role={undefined}
@@ -222,7 +222,7 @@ console.log(emailId, 'emailId state');
                         Manuscript File
                         <VisuallyHiddenInput type="file" />
                       </Button>
-                      <Button fullWidth sx={{ mb: 3 }}
+                      <Button fullwidth sx={{ mb: 3 }}
 
                         component="label"
                         role={undefined}

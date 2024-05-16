@@ -194,7 +194,7 @@ const SubmitManuscript = ({ user }) => {
                 <div className="flex flex-col">
                     <div className="">
                         <Box sx={{ minWidth: 300 }}>
-                            <FormControl fullWidth>
+                            <FormControl fullwidth>
                                 <InputLabel id="demo-simple-select-label">Select A Journal</InputLabel>
                                 <Select
                                     labelId="demo-simple-select-label"
@@ -219,7 +219,7 @@ const SubmitManuscript = ({ user }) => {
                                 />
                             </div>
                             <div className='flex flex-col md:flex-row justify-around items-center mb-5'>
-                                <TextField fullWidth
+                                <TextField fullwidth
                                     id="outlined-controlled"
                                     label="Enter Your Article Title"
                                     value={formData.articleTitle}
@@ -232,11 +232,11 @@ const SubmitManuscript = ({ user }) => {
                                     value={formData.articleKeywords}
                                     name='articleKeywords'
                                     onChange={handleChange}
-                                    fullWidth
+                                    fullwidth
                                 />
 
                             </div>
-                            <TextField fullWidth
+                            <TextField fullwidth
 
                                 id="outlined-multiline-flexible"
                                 label="Abstract"
@@ -254,7 +254,7 @@ const SubmitManuscript = ({ user }) => {
             <div>
                 <h2 className="flex justify-center font-bold text-xl mb-5 ">Author Details</h2>
                 <Box sx={{ minWidth: 300 }}>
-                    <FormControl fullWidth>
+                    <FormControl fullwidth>
                         <InputLabel id="demo-simple-select-label">Title</InputLabel>
                         <Select
                             labelId="demo-simple-select-label"
@@ -271,7 +271,7 @@ const SubmitManuscript = ({ user }) => {
                             <MenuItem value={'Prof'}>Prof</MenuItem>
                         </Select>
                         <div className="mt-5">
-                            <TextField fullWidth
+                            <TextField fullwidth
                                 id="outlined-basic"
                                 label="Given Name"
                                 variant="outlined"
@@ -280,7 +280,7 @@ const SubmitManuscript = ({ user }) => {
                                 onChange={handleAuthorChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField id="outlined-basic" fullWidth label="Last Name" variant="outlined"
+                            <TextField id="outlined-basic" fullwidth label="Last Name" variant="outlined"
                                 name='authorLastName'
                                 value={authorData.authorLastName}
                                 onChange={handleAuthorChange}
@@ -288,14 +288,14 @@ const SubmitManuscript = ({ user }) => {
                         </div>
                         <div className="mt-5">
                             <TextField
-                                id="outlined-basic" fullWidth label="Email Address" variant="outlined"
+                                id="outlined-basic" fullwidth label="Email Address" variant="outlined"
                                 name='authorEmail'
                                 value={authorData.authorEmail}
                                 onChange={handleAuthorChange}
                             />
                         </div>
                         <div className="mt-5">
-                            <TextField id="outlined-basic" fullWidth label="Affiliaiton" variant="outlined"
+                            <TextField id="outlined-basic" fullwidth label="Affiliaiton" variant="outlined"
                                 name='authorAffiliation'
                                 value={authorData.authorAffiliation}
                                 onChange={handleAuthorChange}
@@ -313,7 +313,7 @@ const SubmitManuscript = ({ user }) => {
 
                 <h2 className=' text-center' >Upload Your Cover Letter</h2>
                 <div className=" md:mx-96">
-                    <Button fullWidth sx={{ mb: 3 }}
+                    <Button fullwidth sx={{ mb: 3 }}
                         component="label"
                         role={undefined}
                         variant="contained"
@@ -328,7 +328,7 @@ const SubmitManuscript = ({ user }) => {
                 </div>
                 <h2 className=' text-center'>Upload Your Manuscript File<span className=' text-red-500'>* (Mandatory Upload)</span></h2>
                 <div className=" md:mx-96">
-                    <Button fullWidth sx={{ mb: 3 }}
+                    <Button fullwidth sx={{ mb: 3 }}
 
                         component="label"
                         role={undefined}
@@ -344,7 +344,7 @@ const SubmitManuscript = ({ user }) => {
                 </div>
                 <h2 className=' text-center'>Upload Your Supplementary File</h2>
                 <div className=" md:mx-96">
-                    <Button fullWidth sx={{ mb: 3 }}
+                    <Button fullwidth sx={{ mb: 3 }}
 
                         component="label"
                         role={undefined}

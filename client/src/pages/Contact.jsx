@@ -54,10 +54,10 @@ const handleClose = (event, reason) => {
       <ImageHeader/>
       <h1 className='h2-class'>Contact</h1>
       <Box sx={{ minWidth: 300,  }} className='p-20'>
-                    <FormControl fullWidth>
+                    <FormControl fullwidth>
                       
                         <div className="mt-5">
-                            <TextField fullWidth
+                            <TextField fullwidth
                                 id="outlined-basic"
                                 label="Given Name"
                                 variant="outlined"
@@ -66,7 +66,7 @@ const handleClose = (event, reason) => {
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField fullWidth
+                            <TextField fullwidth
                                 id="outlined-basic"
                                 label="Email Address"
                                 variant="outlined"
@@ -75,7 +75,7 @@ const handleClose = (event, reason) => {
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField fullWidth
+                            <TextField fullwidth
                                 id="outlined-basic"
                                 label="Your Message"
                                 variant="outlined"
@@ -85,7 +85,7 @@ const handleClose = (event, reason) => {
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField fullWidth
+                            <TextField fullwidth
                                 id="outlined-basic"
                                 label="Contact Number"
                                 variant="outlined"

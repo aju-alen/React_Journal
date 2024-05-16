@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
 import createError from '../utils/createError.js'
 import dotenv from 'dotenv'
-import {emailVerifyBackendUrl, originUrl} from '../utils/cors.dev.js'
+import { emailVerifyBackendUrl, originUrl } from '../utils/cors.dev.js'
 dotenv.config()
 
 const prisma = new PrismaClient();
@@ -16,11 +16,21 @@ export const register = async (req, res, next) => {
     try {
         const finduser = await prisma.user.findUnique({
             where: {
-                email: req.body.email
+                email: req.body.email,
             }
         })
         if (finduser) {
-            return next(createError(400, 'User already exists'))
+            if (finduser.emailVerified === true) {
+                return next(createError(400, 'User already exists'))
+            }
+            else if (finduser.emailVerified === false) {
+                await prisma.user.delete({
+                    where: {
+                        email: req.body.email
+                    }
+                })
+                return next(createError(400, 'User already exists but verification link has expired. Please register again'))
+            }
         }
         console.log('this is the req from the client', req.body);
         const hash = await bcrypt.hash(req.body.password, 10);
@@ -29,16 +39,16 @@ export const register = async (req, res, next) => {
 
         const user = await prisma.user.create({
             data: {
-                email : req.body.email,
-                password : hash,
-                title : req.body.title,
-                surname : req.body.surname,
-                otherName : req.body.otherName,
-                affiliation : req.body.affiliation,
-                label : req.body.label,
-                value : req.body.value,
-                emailVerificationToken : emailVerificationToken,
-                marketingCommunications : req.body.marketingCommunications,
+                email: req.body.email,
+                password: hash,
+                title: req.body.title,
+                surname: req.body.surname,
+                otherName: req.body.otherName,
+                affiliation: req.body.affiliation,
+                label: req.body.label,
+                value: req.body.value,
+                emailVerificationToken: emailVerificationToken,
+                marketingCommunications: req.body.marketingCommunications,
             }
         })
         await prisma.$disconnect()
@@ -61,6 +71,9 @@ export const createTransport = nodemailer.createTransport({
 
 // not a route controller, function to send verification email
 const sendVerificationEmail = async (email, verificationToken, name) => {
+    const timestamp = Date.now(); // Current timestamp
+    const tokenWithTimestamp = `${verificationToken}.${timestamp}`; // Concatenate token and timestamp
+    console.log(email, 'email');
 
     const transporter = createTransport;
     const mailOptions = {
@@ -82,11 +95,11 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
             <br>
             <p>We just need to verify your email address before you can access your Scientific Journals Portal. Verifying your email address helps secure your account.</p>
             <br>
-            <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}">VERIFY YOUR EMAIL</a></p>
+            <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${tokenWithTimestamp}/${email}">VERIFY YOUR EMAIL</a></p>
             <br>
             <p>Cannot verify your email by clicking the button? Copy and paste the URL into your browser to verify your email.</p>
             <br>
-            <p>${emailVerifyBackendUrl}/api/auth/verify/${verificationToken}</p>
+            <p>${emailVerifyBackendUrl}/api/auth/verify/${tokenWithTimestamp}/${email}</p>
         </div>
     </body>
     </html>`
@@ -104,20 +117,33 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
 
 export const verifyEmail = async (req, res) => {
     try {
-
+        console.log(req.params, 'req.params');
         const emailVerificationToken = req.params.token;
-        console.log(emailVerificationToken, 'emailVerificationToken');
-       const userToken = await prisma.user.findFirst({
+        const emailId = req.params.emailId;
+        const expirationTime = 48 * 60 * 60 * 1000; // 48 hours in milliseconds
+        const currentTime = Date.now();
+
+        if (currentTime - emailVerificationToken.split('.')[1] > expirationTime) {
+
+            await prisma.user.delete({
+                where: {
+                    email: emailId
+                }
+            })
+
+            return res.status(400).json({ message: 'Link Expired. Please register again.' })
+        }
+        const userToken = await prisma.user.findFirst({
             where: {
-                emailVerificationToken: emailVerificationToken
+                emailVerificationToken: emailVerificationToken.split('.')[0]
             }
         })
         console.log(userToken, 'userToken');
         if (!userToken) {
             return res.status(400).json({ message: 'Invalid token' })
         }
-    
-       const updatedUser =  await prisma.user.update({
+
+        const updatedUser = await prisma.user.update({
             where: {
                 id: userToken.id
             },
@@ -127,7 +153,7 @@ export const verifyEmail = async (req, res) => {
             }
         })
         await prisma.$disconnect()
-            sendWelcomeEmail(updatedUser.email, updatedUser.surname);
+        sendWelcomeEmail(updatedUser.email, updatedUser.surname);
         console.log(updatedUser, 'updatedUser');
         res.status(200).json({ message: 'Email verified' })
     }
@@ -137,7 +163,7 @@ export const verifyEmail = async (req, res) => {
     }
 }
 
-const sendWelcomeEmail = async (email,name) => {
+const sendWelcomeEmail = async (email, name) => {
 
     const transporter = createTransport;
     const mailOptions = {
@@ -202,7 +228,7 @@ export const login = async (req, res, next) => {
         }
         let isCorrect = bcrypt.compareSync(req.body.password, finduser.password)
         if (!isCorrect) {
-            return res.status(400).json({message:'Wrong password or username'})
+            return res.status(400).json({ message: 'Wrong password or username' })
         }
         const token = jwt.sign(
             { id: finduser.id },
@@ -226,38 +252,40 @@ export const logout = async (req, res) => {
     res.clearCookie("accessToken", { sameSite: 'none', secure: true }).status(200).json({ message: "User logged out" })
 }
 
-export const forgetPassword = async (req, res,next) => {
-    try{
+export const forgetPassword = async (req, res, next) => {
+    try {
         const user = await prisma.user.findUnique({
-            where:{
-                email:req.body.email
+            where: {
+                email: req.body.email
             }
 
         })
-        if(!user){
+        if (!user) {
             return next(createError(400, 'User does not exists'))
         }
         const resetToken = crypto.randomBytes(32).toString('hex');
         await prisma.user.update({
-            where:{
-                email:req.body.email
+            where: {
+                email: req.body.email
             },
-            data:{
-                resetToken:resetToken
+            data: {
+                resetToken: resetToken
             }
         })
         console.log("reached");
         await prisma.$disconnect()
-        console.log(req.body.email,resetToken,user.surname, 'user in forget password');
+        console.log(req.body.email, resetToken, user.surname, 'user in forget password');
         sendResetPassword(req.body.email, resetToken, user.surname);
-        res.status(200).json({message:'Password reset link sent to your email'})
+        res.status(200).json({ message: 'Password reset link sent to your email' })
     }
-    catch(err){
+    catch (err) {
         console.log(err);
         res.status(400).send('An error occoured')
     }
 }
 const sendResetPassword = async (email, resetToken, name) => {
+
+
 
     const transporter = createTransport;
     const mailOptions = {
@@ -273,7 +301,7 @@ const sendResetPassword = async (email, resetToken, name) => {
         <div>
             <p>Hi ${name},</p>
             <p>Click to reset your password:</p>
-            <p><a href="https://scientificjournalsportal.com/reset-password/${resetToken}">Reset Password</a></p>
+            <p><a href="https://scientificjournalsportal.com/reset-password/${tokenWithTimestamp}">Reset Password</a></p>
         </div>
     </body>
     </html>`
@@ -298,22 +326,22 @@ export const resetPassword = async (req, res) => {
             where: {
                 resetToken,
             }
-          });
+        });
 
-        if(!user){
-            return res.status(400).json({message:'Invalid token'})
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid token' })
         }
         const hash = await bcrypt.hash(req.body.password, 10);
         await prisma.user.update({
-            where:{
-                resetToken:resetToken,
+            where: {
+                resetToken: resetToken,
             },
-            data:{
-                password:hash,
+            data: {
+                password: hash,
             }
         })
         await prisma.$disconnect()
-        res.status(200).json({message:'Password reset successful'}) 
+        res.status(200).json({ message: 'Password reset successful' })
 
     }
     catch (err) {
@@ -321,5 +349,80 @@ export const resetPassword = async (req, res) => {
         res.status(400).send('An error occoured')
     }
 
-       
+
+}
+
+export const sendMarkettingEmail = async (req, res) => {
+    console.log(req.body, 'req.body');
+    const subject = req.body.subject;
+    const emailParagraph1 = req.body.emailParagraph1;
+    const emailParagraph2 = req.body.emailParagraph2;
+    const emailParagraph3 = req.body.emailParagraph3;
+
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                email: true
+            },
+            where: {
+                marketingCommunications: true
+            }
+        })
+        console.log(users, 'users');
+
+        const emailAddresses = users.map(entry => entry.email);
+
+        // Join email addresses separated by commas
+        const allEmailIds = emailAddresses.join(',');
+        sendMarkettingEmailFinal(allEmailIds, emailParagraph1, emailParagraph2, emailParagraph3,subject);
+
+
+        res.status(200).json({ message: 'Email sent successfully' })
+    }
+    catch (err) {
+        console.log(err);
+        res.status(400).send('An error occoured')
+    }
+
+}
+
+ const sendMarkettingEmailFinal = async (emails, emailParagraph1,emailParagraph2,emailParagraph3,subject) => {
+
+
+
+    const transporter = createTransport;
+    const mailOptions = {
+        from: process.env.GMAIL_AUTH_USER,
+        subject: subject,
+        html: `
+    <html>
+    <body>
+        <div>
+            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+        </div>
+        <div>
+            <p>Hi there,</p>
+            <br>
+            <p>${emailParagraph1}</p>
+            <br>
+            <p>${emailParagraph2}</p>
+            <br>
+            <p>${emailParagraph3}</p>
+            <br>
+            <p>Warm Regards</p>
+            <p>Scientific Journals Team</p>
+        </div>
+    </body>
+    </html>`,
+    bcc: emails
+    }
+
+    //send the mail
+    try {
+        const response = await transporter.sendMail(mailOptions);
+        console.log("Reset Password email sent", response);
+    }
+    catch (err) {
+        console.log("Err sending Reset Password email", err);
+    }
 }

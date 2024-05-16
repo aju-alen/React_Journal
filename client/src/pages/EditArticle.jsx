@@ -101,7 +101,7 @@ const EditArticle = () => {
             <h2 className='h2-class' >EditArticle Your Article</h2 >
             <div>
                 <Box sx={{ minWidth: 300 }}>
-                    <FormControl fullWidth>
+                    <FormControl fullwidth>
                         
 
                             <TextField sx={{ mb: 4 }}
@@ -130,7 +130,7 @@ const EditArticle = () => {
 <div className=" flex flex-col md:flex-row md:justify-center md:items-center">
 <div className=" mx-2 ">
                         <Button sx={{ mb: 4}} 
-                        fullWidth
+                        fullwidth
                             component="label"
                             role={undefined}
                             variant="contained"
@@ -146,7 +146,7 @@ const EditArticle = () => {
 
                         <div className=" mx-2 ">
                         <Button sx={{ mb: 4 }}
-                        fullWidth
+                        fullwidth
                             component="label"
                             role={undefined}
                             variant="contained"
@@ -161,7 +161,7 @@ const EditArticle = () => {
                         </div>
                         <div className=" mx-2">
                         <Button sx={{ mb: 4 }}
-                        fullWidth
+                        fullwidth
                             component="label"
                             role={undefined}
                             variant="contained"
