@@ -96,6 +96,7 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
             <p>We just need to verify your email address before you can access your Scientific Journals Portal. Verifying your email address helps secure your account.</p>
             <br>
             <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${tokenWithTimestamp}/${email}">VERIFY YOUR EMAIL</a></p>
+            <p>Note: This link will expire in 48 hours.</p>
             <br>
             <p>Cannot verify your email by clicking the button? Copy and paste the URL into your browser to verify your email.</p>
             <br>
@@ -284,6 +285,9 @@ export const forgetPassword = async (req, res, next) => {
     }
 }
 const sendResetPassword = async (email, resetToken, name) => {
+    const timestamp = Date.now(); // Current timestamp
+    const resetTokenWithTimestamp = `${resetToken}.${timestamp}`; // Concatenate token and timestamp
+    console.log(email, 'email');
 
 
 
@@ -301,7 +305,12 @@ const sendResetPassword = async (email, resetToken, name) => {
         <div>
             <p>Hi ${name},</p>
             <p>Click to reset your password:</p>
-            <p><a href="https://scientificjournalsportal.com/reset-password/${resetToken}">Reset Password</a></p>
+            <br>
+            <p><a href="${emailVerifyBackendUrl}/api/auth/reset-password/${resetTokenWithTimestamp}">Reset Your Password</a></p>
+            <p>Note: This link will expire in 30 minutes. If expired, you can create a forget password request again.</p>
+            <br>
+            <p>Warm Regards</p>
+            <p>Scientific Journals Team</p>
         </div>
     </body>
     </html>`
@@ -315,6 +324,27 @@ const sendResetPassword = async (email, resetToken, name) => {
     catch (err) {
         console.log("Err sending Reset Password email", err);
     }
+}
+
+export const verifyResetPassword = async (req, res) => {
+    const resetTokenWithTimestamp = req.params.resetTokenWithTimestamp;
+    try{
+        const expirationTime = 30* 60 * 1000; // 30 mins in milliseconds
+        const currentTime = Date.now();
+        if (currentTime - resetTokenWithTimestamp.split('.')[1] > expirationTime) {
+            return res.status(400).json({ message: 'Link Expired. You can try again.' })
+        }
+        else{
+            return res.redirect(`${originUrl}/reset-password/${resetTokenWithTimestamp.split('.')[0]}`)
+        }
+
+
+    }
+    catch(err){
+        console.log(err);
+        res.status(400).send('An error occoured')
+    
+}
 }
 
 export const resetPassword = async (req, res) => {
