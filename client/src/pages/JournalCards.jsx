@@ -86,7 +86,7 @@ const JournalCards = () => {
                     )
                 })}
             </div>
-            <FullIssueHome />
+            <FullIssueHome purchase={true} />
         </div>
     )
 }

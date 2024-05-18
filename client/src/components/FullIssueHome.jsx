@@ -5,7 +5,7 @@ import { httpRoute, axiosTokenHeader } from '../helperFunctions'
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
 
-const FullIssueHome = () => {
+const FullIssueHome = ({purchase}) => {
     const [imageUrl, setImageUrl] = useState('')
     const [pdfUrl, setPdfUrl] = useState('')
     const [fullIssueId, setFullIssueId] = useState('')
@@ -68,8 +68,8 @@ const FullIssueHome = () => {
     return (
         <>
             {(imageUrl && pdfUrl) && (
-                <div className=" flex flex-col items-center justify-center p-10">
-                    <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1>
+                <div className=" flex flex-col items-center justify-center">
+                    {purchase && <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1>}
                     {userId === undefined ? (
 
                         <img src={imageUrl} alt="cloud" className='w-64 h-64' onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
