@@ -6,6 +6,7 @@ import { DNA } from 'react-loader-spinner'
 import { getDates } from '../helperFunctions'
 import { httpRoute } from '../helperFunctions.js'
 import FullIssueHome from '../components/FullIssueHome.jsx'
+import AccordianReccomended from '../components/AccordianReccomended.jsx'
 
 const JournalCards = () => {
     const [articles, setArticles] = useState([])
@@ -50,6 +51,7 @@ const JournalCards = () => {
         );
     }
     console.log(journalCategory, 'journal category data called');
+    const reccomendedArticles = articles.slice(0, 3)
     return (
         <div className="h-auto w-auto bg-slate-200 ">
             <ImageHeader />
@@ -60,33 +62,36 @@ const JournalCards = () => {
                     {journalCategory[0]?.journalDescription}
                 </p>
             </div>
-            <div className=" md:w-4/6 mx-auto  ">
-                {articles?.map(journal => {
-                    return (
-                        <div key={journal.id} className=" bg-white rounded-md flex flex-col gap-2 mt-8 h-auto  ">
-                            <h3 className=' font-medium mx-6 mt-10 '>{journal?.articleTitle}</h3>
-                            <div className=" flex flex-col justify-center items-center">
-                                <p className=' mx-6 text-sm text-justify'> Published on: {getDates(journal.articlePublishedDate)}</p>
-                                <p className=' mx-6 p-2 text-sm'>Authors: {journal.articleAuthors.map((author, idx) => (
-                                    <React.Fragment key={idx}>| {author.authorGivenName}  {author.authorLastName}  </React.Fragment>
-                                ))}</p>
-
-                                <p className='  mx-6'>
-                                    {/* <span>doi: testlive.com</span> | */}
-                                    <span> Article Number - A000{journal.id.split('').splice(4, journal.id.length - 5 - 27).join('')}</span>
-                                </p>
-                            </div>
-                            <Link to={`/journal/EIJER/${journal.id}`} >
-                                <div className="flex justify-center items-center">
-
-                                    <button className='  font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm: text-center  mb-4'  >View Article</button>
+            <div className="flex flex-col md:flex-row">
+                <div className="md:w-9/12 mx-auto">
+                    {articles?.map(journal => {
+                        return (
+                            <div key={journal.id} className="bg-white rounded-md flex flex-col gap-2 mt-8 h-auto md:w-11/12 md:mx-auto">
+                                <h3 className='font-medium mx-6 mt-10'>{journal?.articleTitle}</h3>
+                                <div className="flex flex-col justify-center items-center">
+                                    <p className='mx-6 text-sm text-justify'>Published on: {getDates(journal.articlePublishedDate)}</p>
+                                    <p className='mx-6 p-2 text-sm'>Authors: {journal.articleAuthors.map((author, idx) => (
+                                        <React.Fragment key={idx}>| {author.authorGivenName} {author.authorLastName} </React.Fragment>
+                                    ))}</p>
+                                    <p className='mx-6'>
+                                        <span>Article Number - A000{journal.id.split('').splice(4, journal.id.length - 5 - 27).join('')}</span>
+                                    </p>
                                 </div>
-                            </Link>
-                        </div>
-                    )
-                })}
+                                <Link to={`/journal/EIJER/${journal.id}`}>
+                                    <div className="flex justify-center items-center">
+                                        <button className='font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm:text-center mb-4'>View Article</button>
+                                    </div>
+                                </Link>
+                            </div>
+                        )
+                    })}
+                </div>
+                <div className=" md:w-3/12 mt-8 md:mx:auto">
+                    <AccordianReccomended articles={reccomendedArticles} />
+                </div>
             </div>
-            <FullIssueHome purchase={true} />
+
+            {/* <FullIssueHome purchase={true} /> */}
         </div>
     )
 }

@@ -40,6 +40,31 @@ export const wordLimit = (journalAbstract) => {
   
 }
 
+export const wordLimitReccomendedAbstract = (journalAbstract) => {
+  const string = journalAbstract
+  let finalString = ''
+  const tempArray = string.split(' ')
+  if(tempArray.length >=30){
+      tempArray.splice(30)
+      finalString = tempArray.join(' ') + "..."
+      return finalString
+  }
+  else return string
+  
+}
+export const wordLimitReccomendedTitle = (journalAbstract) => {
+  const string = journalAbstract
+  let finalString = ''
+  const tempArray = string.split(' ')
+  if(tempArray.length >=5){
+      tempArray.splice(5)
+      finalString = tempArray.join(' ') + "..."
+      return finalString
+  }
+  else return string
+  
+}
+
 export const axiosTokenHeader =() => {
   const token = JSON.parse(localStorage.getItem('currentUser')).token
        return  `Bearer ${token}`
