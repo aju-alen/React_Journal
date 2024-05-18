@@ -110,7 +110,7 @@ export default function Article() {
                 <div>
                     <ImageHeaderArticle />
                     <div className="flex justify-center items-center w-9/12 mx-auto">
-    <div className="w-72 justify-center items-center hidden md:block">
+    <div className="w-52 justify-center items-center hidden md:block">
         <img src="./images/logo.png" />
     </div>
     <div className="flex-1">
