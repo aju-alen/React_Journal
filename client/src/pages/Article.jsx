@@ -109,35 +109,36 @@ export default function Article() {
             </div>)) : (
                 <div>
                     <ImageHeaderArticle />
-                    <div className=" flex justify-center items-center w-9/12  mx-auto ">
-                        <div className=" w-72 justify-center items-center">
-                            <img src="./images/logo.png" />
-                        </div>
-                        <div className="">
-                            <h2 className=' p-2 md:px-12 text-center font-medium text-xl md:text-lg'>
-                                {journal.articleTitle}
-                            </h2>
-                            <div className="flex gap-2 md:gap-12 justify-center mt-2 font-bold   ">
-                                {journal?.articleAuthors?.map((author, idx) => (
-                                    <p key={idx} className=' text-md md:text-xl '>
-                                        {author.authorGivenName + author.authorLastName}</p>
-                                ))}
-                            </div>
-                            <div className="flex gap-2 md:gap-3 justify-center mt-2 ">
-                                <span> Article Number - A000{journal?.id?.split('').splice(4, journal.id.length - 5 - 27).join('')}  | </span>
-                                <span> Vol-{journal?.articleVolume} Issue-{journal?.articleIssue}   </span>
+                    <div className="flex justify-center items-center w-9/12 mx-auto">
+    <div className="w-72 justify-center items-center hidden md:block">
+        <img src="./images/logo.png" />
+    </div>
+    <div className="flex-1">
+        <h2 className='p-2 md:px-12 text-center font-medium text-xl md:text-lg'>
+            {journal.articleTitle}
+        </h2>
+        <div className="flex gap-2 md:gap-12 justify-center mt-2 font-bold">
+            {journal?.articleAuthors?.map((author, idx) => (
+                <p key={idx} className='text-md md:text-xl'>
+                    {author.authorGivenName + author.authorLastName}
+                </p>
+            ))}
+        </div>
+        <div className="flex gap-2 md:gap-3 justify-center mt-2">
+            <span> Article Number - A000{journal?.id?.split('').splice(4, journal.id.length - 5 - 27).join('')}  | </span>
+            <span> Vol-{journal?.articleVolume} Issue-{journal?.articleIssue} </span>
+        </div>
+        <div className="text-center mt-2 text-sm md:text-lg">
+            <span>Received: {getDates(journal.articleReceivedDate)} | </span>
+            <span>Accepted: {getDates(journal.articleAcceptedDate)} | </span>
+            <span>Published: {getDates(journal.articlePublishedDate)}</span>
+        </div>
+    </div>
+    <div className="w-48 py-8 hidden md:block">
+        <FullIssueHome purchase={false} />
+    </div>
+</div>
 
-                            </div>
-                            <div className=" text-center  mt-2  text-sm md:text-lg">
-                                <span>Recieved: {getDates(journal.articleReceivedDate)} | </span>
-                                <span> Accepted: {getDates(journal.articleAcceptedDate)} |</span>
-                                <span>Published: {getDates(journal.articlePublishedDate)}</span>
-                            </div>
-                        </div>
-                        <div className=" w-48 py-8">
-                        <FullIssueHome purchase={false} />
-                        </div>
-                    </div>
                     <Box sx={{ width: '100%', typography: 'body1' }}>
                         <TabContext value={value}>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
