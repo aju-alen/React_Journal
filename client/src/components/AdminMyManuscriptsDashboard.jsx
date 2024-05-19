@@ -66,7 +66,7 @@ console.log(emailId, 'emailId state');
     handleSuccessClose();
   }
 
-  console.log(user, 'verify details');
+  console.log(user, 'verify detailsssssss');
   if (!Array.isArray(user) || user.length === 0) {
     // Handle empty or non-array user prop
     return (

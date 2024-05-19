@@ -22,9 +22,15 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Badge from '@mui/material/Badge';
 
 
-
+const shapeStyles = { bgcolor: 'primary.main', width: 40, height: 40 };
+const shapeCircleStyles = { borderRadius: '50%' };
+const rectangle = <Box component="span" sx={shapeStyles} />;
+const circle = (
+  <Box component="span" sx={{ ...shapeStyles, ...shapeCircleStyles }} />
+);
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -67,6 +73,9 @@ const ProfileDashboard = () => {
   const { profileId } = useParams()
   const [userDetails, setUserDetails] = useState({})
   const [user, setUser] = useState({})
+  const [userCount, setUserCount] = useState(0)
+  const [userSpecialReview, setUserSpecialReview] = useState({})
+  const [userSpecialReviewCount, setUserSpecialReviewCount] = useState(0)
   const [loading, setLoading] = useState(true)
   let [searchParams, setSearchParams] = useSearchParams();
   const value = Number(searchParams.get("tab") || 0);
@@ -116,7 +125,13 @@ const ProfileDashboard = () => {
         }
         else {
           const resp = await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
-          setUser(resp.data)
+          console.log(resp.data, 'special review full log');
+          setUser(resp.data.filter((item) => item.specialReview === false))
+          setUserCount(resp.data.filter((item) => item.specialReview === false).length)
+
+          setUserSpecialReview(resp.data.filter((item) => item.specialReview === true))
+          setUserSpecialReviewCount(resp.data.filter((item) => item.specialReview === true).length)
+
           setLoading(false)
         }
       }
@@ -129,7 +144,8 @@ const ProfileDashboard = () => {
   }, [])
   console.log(userDetails, 'zzzzzz');
 
-  console.log(user, 'userDetails');
+  console.log(user, 'user not special review');
+  console.log(userSpecialReview, 'user yesss special review');
 
   return (
     <div>
@@ -139,8 +155,18 @@ const ProfileDashboard = () => {
         <Box sx={{ width: '100%' }} >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-              <Tab label={userDetails?.user?.isAdmin ? "Verify Manuscripts" : "My Manuscripts"} {...a11yProps(0)} />
-
+            <Tab
+                  label={
+                    userDetails?.user?.isAdmin ? (
+                      <Badge color="primary" badgeContent={userCount} overlap='circular' max={10}>
+                        Verify Regular Issue
+                      </Badge>
+                    ) : (
+                      "My Manuscripts"
+                    )
+                  }
+                  {...a11yProps(0)}
+                />
               {/* START ------------ This is a tab button to check if user wants special issue or regular issue */}
               <Tab label={userDetails?.user?.isAdmin ? "Submit Issue" : 
               
@@ -182,9 +208,19 @@ const ProfileDashboard = () => {
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab label="Edit Profile" {...a11yProps(2)} />
 
-              <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION}><Tab label="Manage Payments" {...a11yProps(3)} /></a>
+              <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION} className=' flex items-center'><Tab label="Manage Payments" {...a11yProps(3)} /></a>
               <Tab label={userDetails?.user?.isAdmin && "Create new journal" } {...a11yProps(4)} />
               <Tab label={userDetails?.user?.isAdmin && "Send a marketting email" } {...a11yProps(5)} />
+              <Tab
+                  label={
+                    userDetails?.user?.isAdmin && (
+                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={10} >
+                        Verify Special Issue
+                      </Badge>
+                    )
+                  }
+                  {...a11yProps(6)}
+                />
             </Tabs>
 
           </Box>
@@ -218,6 +254,10 @@ const ProfileDashboard = () => {
             <CreateMarkettingEmail />
 
           </CustomTabPanel>
+          <CustomTabPanel value={value} index={6}>
+          <AdminMyManuscriptsDashboard user={userSpecialReview}/>
+
+          </CustomTabPanel>
         </Box>
 
       </div>) :
@@ -237,3 +277,5 @@ const ProfileDashboard = () => {
 }
 
 export default ProfileDashboard
+
+
