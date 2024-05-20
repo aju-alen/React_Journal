@@ -95,7 +95,7 @@ console.log(emailId, 'emailId state');
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
-                  {row.articleAuthors[0].authorEmail}
+                  {row.articleAuthors[0] ?row.articleAuthors[0].authorEmail : ''}
                 </TableCell>
                 <TableCell align="center">{row.articleTitle}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="justify">{row.articleAbstract}</TableCell>
