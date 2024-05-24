@@ -120,7 +120,9 @@ const handleClose = (event, reason) => {
         </Typography>
         <Typography sx={{ mb: 1.5 }} color="text.secondary">
         Dubai International Financial Centre,
-          <br />
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        Dubai, UAE
         </Typography>
         <Typography variant='caption' color='blue' >
         Email - talktous@scientificjournalsportal.com
