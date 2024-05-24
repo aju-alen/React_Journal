@@ -20,6 +20,7 @@ const Footer = () => {
           <Link to='/reviewers_guidelines' className=' '>Reviewers Guidelines</Link>
           <Link to='/peer_review' className=' '>Peer Review Process</Link>
           <Link to='/for_editors' className=' '>Editors</Link>
+          <Link to='/editorial-board' className=' '>Editorial board</Link>
         </div>
         <div className="flex flex-col gap-6 text-center mb-6">
           <Link  className=' font-bold '>General </Link>

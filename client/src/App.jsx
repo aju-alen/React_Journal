@@ -32,6 +32,7 @@ import ComingSoon from './components/ComingSoon'
 import ConferencesPage from './pages/ConferencesPage'
 import ResetPassword from './pages/ResetPassword'
 import ForgetPassword from './pages/ForgetPassword'
+import EditorialBoard from './pages/EditorialBoard'
 
 
 
@@ -163,6 +164,10 @@ function App() {
       {
         path: '/reset-password/:resetToken',
         element: <ResetPassword/>,
+      },
+      {
+        path: '/editorial-board',
+        element: <EditorialBoard/>,
       },
      
     ]

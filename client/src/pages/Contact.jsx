@@ -4,15 +4,14 @@ import Snackbar from '@mui/material/Snackbar';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
 import axios from 'axios';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
 import Alert from '@mui/material/Alert';
-import CheckIcon from '@mui/icons-material/Check';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { styled } from '@mui/material/styles';
-import { v4 as uuidv4 } from 'uuid';
 import ImageHeader from '../components/ImageHeader'
 import { httpRoute } from '../helperFunctions';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
 
 const Contact = () => {
   const [open, setOpen] = useState(false);
@@ -54,10 +53,10 @@ const handleClose = (event, reason) => {
       <ImageHeader/>
       <h1 className='h2-class'>Contact</h1>
       <Box sx={{ minWidth: 300,  }} className='p-20'>
-                    <FormControl fullwidth>
+                    <FormControl fullWidth>
                       
                         <div className="mt-5">
-                            <TextField fullwidth
+                            <TextField fullWidth
                                 id="outlined-basic"
                                 label="Given Name"
                                 variant="outlined"
@@ -66,7 +65,7 @@ const handleClose = (event, reason) => {
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField fullwidth
+                            <TextField fullWidth
                                 id="outlined-basic"
                                 label="Email Address"
                                 variant="outlined"
@@ -75,7 +74,7 @@ const handleClose = (event, reason) => {
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField fullwidth
+                            <TextField fullWidth
                                 id="outlined-basic"
                                 label="Your Message"
                                 variant="outlined"
@@ -85,7 +84,7 @@ const handleClose = (event, reason) => {
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">
-                            <TextField fullwidth
+                            <TextField fullWidth
                                 id="outlined-basic"
                                 label="Contact Number"
                                 variant="outlined"
@@ -96,6 +95,40 @@ const handleClose = (event, reason) => {
                         
                         <Button className='mt-5' variant="contained" onClick={handleSubmitContact}>Send Message</Button>
                     </FormControl>
+
+                    
+                    <Card sx={{  width: { xs:'100%',  md: 5 / 6, },
+                    marginX: 'auto',
+                    marginY: 2,
+                    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)', // Add shadow
+                    borderRadius: 2, }}>
+      <CardContent sx={{
+        display: {xs:'', md:'flex'},
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      
+      }}>
+        <Typography variant='h4' color="text.secondary" gutterBottom>
+        Scientific Journals Portal,
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        201/Level 1/GA/SZ
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        Al Mustaqbaal Street,
+        </Typography>
+        <Typography sx={{ mb: 1.5 }} color="text.secondary">
+        Dubai International Financial Centre,
+          <br />
+        </Typography>
+        <Typography variant='caption' color='blue' >
+        Email - talktous@scientificjournalsportal.com
+          <br />
+        </Typography>
+      </CardContent>
+    
+    </Card>
                 </Box>
                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                     <Alert
