@@ -10,14 +10,8 @@ import Typography from '@mui/material/Typography';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import { Icon } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
-import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
+
 
 
 
@@ -27,18 +21,25 @@ import MailIcon from '@mui/icons-material/Mail';
 const EditorialBoard = () => {
     const [open, setOpen] = React.useState(false);
     const [about, setAbout] = React.useState('');
+    const [contactDetails, setContactDetails] = React.useState('');
 
-    const toggleDrawer = (newOpen,about) => () => {
+    const toggleDrawer = (newOpen,about,contact) => () => {
+        console.log(about,contact);
         setOpen(newOpen);
         setAbout(about);
+        setContactDetails(contact);
     };
 
     const DrawerList = (
         <Box sx={{ width: {xs:300,md:500} }} role="presentation" onClick={toggleDrawer(false)}>
             <Typography variant='h4' sx={{ textAlign: 'center', marginY: 2 }}>Biography</Typography>
             <Divider />
-            <p className=' text-xs md:text-sm font-light w-5/6 mx-auto '>
+            <p className=' text-xs md:text-sm font-light w-5/6 mx-auto mt-3 '>
                 {about}
+            </p>
+            <br />
+            <p className=' text-xs md:text-sm font-light w-5/6 mx-auto text-blue-600'>
+                Contact Details: {contactDetails}
             </p>
             
         </Box>
@@ -77,7 +78,7 @@ const EditorialBoard = () => {
 
                     }}>
                         <Button size="small"
-                            onClick={toggleDrawer(true,editor.about)}
+                            onClick={toggleDrawer(true,editor.about,editor.contact_details)}
                         >
                             View full biography
                             <Icon sx={{
