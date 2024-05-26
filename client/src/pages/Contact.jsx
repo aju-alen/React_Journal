@@ -126,6 +126,12 @@ const handleClose = (event, reason) => {
         </Typography>
         <Typography variant='caption' color='blue' >
         Email - talktous@scientificjournalsportal.com
+        </Typography>
+        <Typography variant='caption' color='black' sx={{
+          fontWeight: 'bold',
+          fontSize: '10px',
+        }} >
+        Scientific Journals Portal(SJP) is the publishing brand for Right Intellectual Services Enterprise(RISE) Ltd., DIFC, Dubai, UAE.
           <br />
         </Typography>
       </CardContent>
