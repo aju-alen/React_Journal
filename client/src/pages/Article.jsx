@@ -109,26 +109,26 @@ export default function Article() {
             </div>)) : (
                 <div>
                     <ImageHeaderArticle />
-                    <div className="flex justify-center items-center w-9/12 mx-auto">
+                    <div className="flex justify-center items-center w-12/12 mx-auto ">
     <div className="w-52 justify-center items-center hidden md:block">
         <img src="./images/logo.png" />
     </div>
-    <div className="flex-1">
-        <h2 className='p-2 md:px-12 text-center font-medium text-xl md:text-lg'>
+    <div className="flex-1 w-full ">
+        <h2 className='p-2 md:px-12 text-left font-medium text-xl md:text-lg'>
             {journal.articleTitle}
         </h2>
-        <div className="flex gap-2 md:gap-12 justify-center mt-2 font-bold">
+        <div className="flex gap-2 md:gap-12 justify-center px-12 mt-2 font-bold">
             {journal?.articleAuthors?.map((author, idx) => (
-                <p key={idx} className='text-md md:text-xl'>
+                <p key={idx} className='text-md md:text-xl '>
                     {author.authorGivenName + author.authorLastName}
                 </p>
             ))}
         </div>
-        <div className="flex gap-2 md:gap-3 justify-center mt-2">
+        <div className="flex gap-2 md:gap-3 justify-center mt-2 px-12 ">
             <span> Article Number - A000{journal?.id?.split('').splice(4, journal.id.length - 5 - 27).join('')}  | </span>
             <span> Vol-{journal?.articleVolume} Issue-{journal?.articleIssue} </span>
         </div>
-        <div className="text-center mt-2 text-sm md:text-lg">
+        <div className="text-center mt-2 text-sm md:text-md px-12">
             <span>Received: {getDates(journal.articleReceivedDate)} | </span>
             <span>Accepted: {getDates(journal.articleAcceptedDate)} | </span>
             <span>Published: {getDates(journal.articlePublishedDate)}</span>

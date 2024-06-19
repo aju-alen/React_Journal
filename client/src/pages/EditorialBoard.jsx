@@ -22,18 +22,21 @@ const EditorialBoard = () => {
     const [open, setOpen] = React.useState(false);
     const [about, setAbout] = React.useState('');
     const [contactDetails, setContactDetails] = React.useState('');
+    const [profileImage, setProfileImage] = React.useState('');
 
-    const toggleDrawer = (newOpen,about,contact) => () => {
+    const toggleDrawer = (newOpen,about,contact,profileImage) => () => {
         console.log(about,contact);
         setOpen(newOpen);
         setAbout(about);
         setContactDetails(contact);
+        setProfileImage(profileImage);
     };
 
     const DrawerList = (
         <Box sx={{ width: {xs:300,md:500} }} role="presentation" onClick={toggleDrawer(false)}>
             <Typography variant='h4' sx={{ textAlign: 'center', marginY: 2 }}>Biography</Typography>
             <Divider />
+            <img src={profileImage} alt='profile' className='w-[250px] h-[190px] mx-auto' />
             <p className=' text-xs md:text-sm font-light w-5/6 mx-auto mt-3 '>
                 {about}
             </p>
@@ -78,7 +81,7 @@ const EditorialBoard = () => {
 
                     }}>
                         <Button size="small"
-                            onClick={toggleDrawer(true,editor.about,editor.contact_details)}
+                            onClick={toggleDrawer(true,editor.about,editor.contact_details,editor.profileImg)}
                         >
                             View full biography
                             <Icon sx={{

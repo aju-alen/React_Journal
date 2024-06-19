@@ -54,7 +54,6 @@ const handleClose = (event, reason) => {
       <h1 className='h2-class'>Contact</h1>
       <Box sx={{ minWidth: 300,  }} className='p-20'>
                     <FormControl fullWidth>
-                      
                         <div className="mt-5">
                             <TextField fullWidth
                                 id="outlined-basic"
@@ -95,6 +94,7 @@ const handleClose = (event, reason) => {
                         
                         <Button className='mt-5' variant="contained" onClick={handleSubmitContact}>Send Message</Button>
                     </FormControl>
+                    </Box>
 
                     
                     <Card sx={{  width: { xs:'100%',  md: 5 / 6, },
@@ -127,6 +127,7 @@ const handleClose = (event, reason) => {
         <Typography variant='caption' color='blue' >
         Email - talktous@scientificjournalsportal.com
         </Typography>
+        <br />
         <Typography variant='caption' color='black' sx={{
           fontWeight: 'bold',
           fontSize: '10px',
@@ -137,7 +138,7 @@ const handleClose = (event, reason) => {
       </CardContent>
     
     </Card>
-                </Box>
+                
                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
                     <Alert
                         onClose={handleClose}
