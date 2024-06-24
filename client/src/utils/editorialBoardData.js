@@ -37,7 +37,7 @@ export const editorialBoardData = [
         about:`Dr. Reem Haranki is a member of the Editorial Board at the Scientific Journals Portal (SJP). Dr Haranki contributes to the maintenance of the journal's integrity, quality, and alignment with SJP's publishing guidelines. Her responsibilities include advising on editorial policy, upholding ethical standards, and supporting the peer review process. Dr. Haranki collaborates with editors, authors, and reviewers to ensure scientific rigour and transparency in research. Dr Haranki also represents the journal externally, helps promote its vision, and contributes to its strategic development. She has extensive experience in academic publishing, and strong collaborative skills and is committed to advancing scientific knowledge
         and practice.`,
         contact_details:"drreem@scientificjournalsportal.com",
-        profileImg:''
+        profileImg:'https://i.postimg.cc/50nJZZ70/reem.png'
 
     },
     {
