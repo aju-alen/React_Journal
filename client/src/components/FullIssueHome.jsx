@@ -4,8 +4,10 @@ import axios from 'axios'
 import { httpRoute, axiosTokenHeader } from '../helperFunctions'
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
+import { useNavigate } from 'react-router-dom';
 
 const FullIssueHome = ({purchase}) => {
+    const navigate = useNavigate()
     const [imageUrl, setImageUrl] = useState('')
     const [pdfUrl, setPdfUrl] = useState('')
     const [fullIssueId, setFullIssueId] = useState('')
@@ -22,6 +24,7 @@ const FullIssueHome = ({purchase}) => {
 
     const handleClick = (newState) => () => {
         setState({ ...newState, open: true });
+        navigate('/login')
     };
 
     const handleClose = () => {
@@ -93,7 +96,7 @@ const FullIssueHome = ({purchase}) => {
                     anchorOrigin={{ vertical, horizontal }}
                     open={open}
                     onClose={handleClose}
-                    message="Pldease Login to Purchase Full Issue"
+                    message="Please Login to Purchase Full Issue"
                     key={vertical + horizontal}
                 />
             </Box>

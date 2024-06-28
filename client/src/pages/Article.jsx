@@ -111,7 +111,7 @@ export default function Article() {
                     <ImageHeaderArticle />
                     <div className="flex justify-center items-center w-12/12 mx-auto ">
     <div className="w-52 justify-center items-center hidden md:block">
-        <img src="./images/logo.png" />
+        <img src="./images/logo.jpeg" />
     </div>
     <div className="flex-1 w-full ">
         <h2 className='p-2 md:px-12 text-left font-medium text-xl md:text-lg'>

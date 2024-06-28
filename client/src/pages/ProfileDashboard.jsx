@@ -158,9 +158,11 @@ const ProfileDashboard = () => {
             <Tab
                   label={
                     userDetails?.user?.isAdmin ? (
-                      <Badge color="primary" badgeContent={userCount} overlap='circular' max={10}>
-                        Verify Regular Issue
+                      <div>
+                      Verify Regular Issue
+                      <Badge color="primary" badgeContent={userCount} overlap='circular' max={5} sx={{mb:5}} >
                       </Badge>
+                      </div>
                     ) : (
                       "My Manuscripts"
                     )
@@ -214,9 +216,11 @@ const ProfileDashboard = () => {
               <Tab
                   label={
                     userDetails?.user?.isAdmin && (
-                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={10} >
+                      <div>
                         Verify Special Issue
+                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{mb:5}} >
                       </Badge>
+                      </div>
                     )
                   }
                   {...a11yProps(6)}

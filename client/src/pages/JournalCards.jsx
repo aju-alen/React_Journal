@@ -51,14 +51,14 @@ const JournalCards = () => {
         );
     }
     console.log(journalCategory, 'journal category data called');
-    const reccomendedArticles = articles.slice(0, 3)
+    const reccomendedArticles = articles.slice(7)
     return (
         <div className="h-auto w-auto bg-slate-200 ">
             <ImageHeader />
             <h1 className='text-center font-bold text-4xl mt-6'>Emirates International Journal Of Empirical Research (EIJER)</h1>
             <div className="flex flex-col items-center mt-4 ">
                 <h3 className='mx-10 text-lg mb-3 font-medium '>Journal description</h3>
-                <p className=' text-justify mx-10 text-xs md:w-3/4'>
+                <p className=' text-justify mx-10 text-sm md:w-3/4'>
                     {journalCategory[0]?.journalDescription}
                 </p>
             </div>

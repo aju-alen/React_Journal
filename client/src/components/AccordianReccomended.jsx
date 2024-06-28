@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { wordLimitReccomendedTitle, wordLimitReccomendedAbstract } from '../helperFunctions';
 import FullIssueHome from './FullIssueHome';
+import { Link } from 'react-router-dom';
 
 export default function AccordianReccomended({articles}) {
     const [reccomendedArticles, setReccomendedArticles] = useState([])
@@ -33,7 +34,7 @@ export default function AccordianReccomended({articles}) {
        {
        reccomendedArticles.map((article,index)=>(
         <div className="">
-        <a href={`/journal/EIJER/${article.id}`} >
+        <Link to={`/journal/EIJER/${article.id}`} >
         <Typography key={index} sx={{
             cursor:'pointer',
             fontSize:'1.3rem',
@@ -42,7 +43,7 @@ export default function AccordianReccomended({articles}) {
         }}>
             {wordLimitReccomendedTitle(article.articleTitle)}
         </Typography>
-        </a>
+        </Link>
         <Typography sx={{
             fontSize:'.9rem',
             color:'gray'
