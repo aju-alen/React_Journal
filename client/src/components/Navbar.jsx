@@ -78,7 +78,9 @@ const Navbar = () => {
 
       {/* Mobile Navbar Overlay  */}
       <div className='md:hidden'>
+      <Link className="text-black text-lg font-light" to="/">
       <img src="./images/logo.png" alt="ScientificJournalsPortal" className=' h-20  object-cover' />
+      </Link>
         {/* Hamburger icon */}
         <div className=" absolute top-0 right-0 p-3  ">
           <img src='./images/mobile-hamburger.png' width="30px" height="10px" onClick={handleMobileNavBar} />
