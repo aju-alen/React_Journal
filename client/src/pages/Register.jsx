@@ -6,10 +6,16 @@ import Checkbox from '@mui/material/Checkbox';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageHeader from '../components/ImageHeader';
 import { httpRoute } from '../helperFunctions.js';
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 
 const Register = () => {
   const navigate = useNavigate()
+  const [open, setOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertColor, setAlertColor] = useState('');
   const [formData, setFormData] = useState({
 
     email: '',
@@ -34,6 +40,19 @@ const Register = () => {
     setValue(value)
     console.log(value);
   }
+
+  const handleClick = () => {
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,15 +89,21 @@ const Register = () => {
       const res = await axios.post(`${httpRoute}/api/auth/register`, mergeForm)
       console.log(res);
       if (res.status === 201) {
-        navigate('/login')
-      }
-      else {
-        alert('Registration failed')
+        handleClick();
+          setAlertMessage(res.data.message);
+          setAlertColor('success');
+
+        setTimeout(() => {
+          navigate('/login')
+        }, 3000);
       }
 
     }
     catch (err) {
-      console.log(err);
+      console.log(err,'error');
+      handleClick();
+      setAlertMessage(err.response.data);
+      setAlertColor('error');
     }
     console.log('Form submitted:', mergeForm);
   };
@@ -230,6 +255,16 @@ const Register = () => {
           </form>
         </div>
       </div>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+        <Alert
+          onClose={handleClose}
+          severity={alertColor}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   )
 }

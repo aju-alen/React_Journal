@@ -156,7 +156,8 @@ export const verifyEmail = async (req, res) => {
         await prisma.$disconnect()
         sendWelcomeEmail(updatedUser.email, updatedUser.surname);
         console.log(updatedUser, 'updatedUser');
-        res.status(200).json({ message: 'Email verified' })
+        // res.status(200).json({ message: 'Email verified' })
+        res.redirect(`${originUrl}/login`)
     }
     catch (err) {
         console.log(err);

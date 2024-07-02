@@ -36,7 +36,7 @@ const EditorialBoard = () => {
         <Box sx={{ width: {xs:300,md:500} }} role="presentation" onClick={toggleDrawer(false)}>
             <Typography variant='h4' sx={{ textAlign: 'center', marginY: 2 }}>Biography</Typography>
             <Divider />
-            <img src={profileImage} alt='profile' className='w-[180px] h-[190px] mx-auto' />
+            <img src={profileImage} alt='profile' className='w-[170px] h-[240px] mx-auto' />
             <p className=' text-xs md:text-sm font-light w-5/6 mx-auto mt-3 '>
                 {about}
             </p>
