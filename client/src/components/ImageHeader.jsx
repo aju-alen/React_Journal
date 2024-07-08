@@ -1,10 +1,14 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const ImageHeader = () => {
   return (
 <div className=" w-auto ">
     <img src="./images/desert.jpg" alt="cloud" className=' w-full h-80 relative object-cover' />
-    <img src="./images/advert.jpeg" alt="cloud" className=' w-full ' />
+    <Link to='/register'>
+    <img src="./images/advert.jpeg" alt="cloud" className=' w-full sm:h-72 md:h-auto ' />
+    </Link>
+
     </div>
   )
 }

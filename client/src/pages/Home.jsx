@@ -3,13 +3,16 @@ import ServicesHome from '../components/ServicesHome'
 import LatestJournalsHome from '../components/LatestJournalsHome'
 import EthicsOfPublicationCards from '../components/EthicsOfPublicationCards'
 import FullIssueHome from '../components/FullIssueHome'
+import { Link } from 'react-router-dom'
 const Home = () => {
 
   return (
     
     <div>
       <HeaderImage />
+      <Link to='/register'>
       <img src="./images/advert.jpeg" alt="cloud" className=' w-full ' />
+      </Link>
       <ServicesHome />
       <div className='mt-4'>
      
