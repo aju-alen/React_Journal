@@ -9,9 +9,10 @@ const Home = () => {
     
     <div>
       <HeaderImage />
-
+      <img src="./images/advert.jpeg" alt="cloud" className=' w-full ' />
       <ServicesHome />
       <div className='mt-4'>
+     
         <h2 className=" text-center font-bold text-3xl">About Us</h2>
         <p className=' text-justify p-10 md:px-44'>Scientific Journals Portal (SJP) is the publishing brand of Right
 Intellectual Services Enterprise (RISE) Ltd., DIFC, Dubai, UAE. SJP
