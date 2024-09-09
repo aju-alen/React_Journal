@@ -35,7 +35,7 @@ const circle = (
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
 
-  
+
 
 
   return (
@@ -82,7 +82,7 @@ const ProfileDashboard = () => {
 
   const [open, setOpen] = React.useState(false);
   const [specialIssue, setSpecialIssue] = React.useState(false);
-  const [regularIssue, setRegularIssue ] = React.useState(false);
+  const [regularIssue, setRegularIssue] = React.useState(false);
 
   const handleSpecialIssue = async () => {
     setOpen(false);
@@ -155,55 +155,55 @@ const ProfileDashboard = () => {
         <Box sx={{ width: '100%' }} >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab
-                  label={
-                    userDetails?.user?.isAdmin ? (
-                      <div>
+              <Tab
+                label={
+                  userDetails?.user?.isAdmin ? (
+                    <div>
                       Verify Regular Issue
-                      <Badge color="primary" badgeContent={userCount} overlap='circular' max={5} sx={{mb:5}} >
+                      <Badge color="primary" badgeContent={userCount} overlap='circular' max={5} sx={{ mb: 5 }} >
                       </Badge>
-                      </div>
-                    ) : (
-                      "My Manuscripts"
-                    )
-                  }
-                  {...a11yProps(0)}
-                />
+                    </div>
+                  ) : (
+                    "My Manuscripts"
+                  )
+                }
+                {...a11yProps(0)}
+              />
               {/* START ------------ This is a tab button to check if user wants special issue or regular issue */}
-              <Tab label={userDetails?.user?.isAdmin ? "Submit Issue" : 
-              
-              (
-                <div>
-              <Button variant="text" onClick={handleClickOpen}>
-              Submit Manuscript
-            </Button>
-            <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-            <DialogTitle id="alert-dialog-title">
-          {"Submit this manuscript as a special issue?"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-           Special Issue - A special issue will be published at the current issue of the journal
-          </DialogContentText>
-          <DialogContentText id="alert-dialog-description">
-            Regular Issue - A regular issue will be published at the next issue of the journal
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleRegularIssue}>Regular Issue</Button>
-          <Button onClick={handleSpecialIssue} autoFocus>
-            Special Issue
-          </Button>
-        </DialogActions>
-      </Dialog>
-        </div>
-              )
-            
+              <Tab label={
+
+                (
+                  <div>
+                    <Button variant="text" onClick={handleClickOpen}>
+                      Submit Manuscript
+                    </Button>
+                    <Dialog
+                      open={open}
+                      onClose={handleClose}
+                      aria-labelledby="alert-dialog-title"
+                      aria-describedby="alert-dialog-description"
+                    >
+                      <DialogTitle id="alert-dialog-title">
+                        {"Submit this manuscript as a special issue?"}
+                      </DialogTitle>
+                      <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                          Special Issue - A special issue will be published at the current issue of the journal
+                        </DialogContentText>
+                        <DialogContentText id="alert-dialog-description">
+                          Regular Issue - A regular issue will be published at the next issue of the journal
+                        </DialogContentText>
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={handleRegularIssue}>Regular Issue</Button>
+                        <Button onClick={handleSpecialIssue} autoFocus>
+                          Special Issue
+                        </Button>
+                      </DialogActions>
+                    </Dialog>
+                  </div>
+                )
+
               } {...a11yProps(1)} />
               {/* END ------------ This is a tab button to check if user wants special issue or regular issue */}
 
@@ -211,20 +211,32 @@ const ProfileDashboard = () => {
               <Tab label="Edit Profile" {...a11yProps(2)} />
 
               <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION} className=' flex items-center'><Tab label="Manage Payments" {...a11yProps(3)} /></a>
-              <Tab label={userDetails?.user?.isAdmin && "Create new journal" } {...a11yProps(4)} />
-              <Tab label={userDetails?.user?.isAdmin && "Send a marketting email" } {...a11yProps(5)} />
+              <Tab label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
+              <Tab label={userDetails?.user?.isAdmin && "Send a marketting email"} {...a11yProps(5)} />
               <Tab
-                  label={
-                    userDetails?.user?.isAdmin && (
-                      <div>
-                        Verify Special Issue
-                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{mb:5}} >
+                label={
+                  userDetails?.user?.isAdmin && (
+                    <div>
+                      Verify Special Issue
+                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
                       </Badge>
-                      </div>
-                    )
-                  }
-                  {...a11yProps(6)}
-                />
+                    </div>
+                  )
+                }
+                {...a11yProps(6)}
+              />
+              <Tab
+                label={
+                  userDetails?.user?.isAdmin && (
+                    <div>
+                      Submit Issue
+                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
+                      </Badge>
+                    </div>
+                  )
+                }
+                {...a11yProps(7)}
+              />
             </Tabs>
 
           </Box>
@@ -235,9 +247,9 @@ const ProfileDashboard = () => {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
 
-            {(!userDetails?.user?.isAdmin && regularIssue) && <SubmitManuscript user={user} checked = {false} />}
-            {(!userDetails?.user?.isAdmin && specialIssue) && <SubmitManuscript user={user} checked={true} />}
-            {userDetails?.user?.isAdmin && <SubmitIssue user={user} />}
+            {( regularIssue) && <SubmitManuscript user={user} checked={false} />}
+            {(specialIssue) && <SubmitManuscript user={user} checked={true} />}
+            
 
 
           </CustomTabPanel>
@@ -259,8 +271,11 @@ const ProfileDashboard = () => {
 
           </CustomTabPanel>
           <CustomTabPanel value={value} index={6}>
-          <AdminMyManuscriptsDashboard user={userSpecialReview}/>
+            <AdminMyManuscriptsDashboard user={userSpecialReview} />
 
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={7}>
+            {userDetails?.user?.isAdmin && <SubmitIssue user={user} />}
           </CustomTabPanel>
         </Box>
 
