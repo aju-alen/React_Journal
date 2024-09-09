@@ -26,6 +26,7 @@ const SubmitManuscript = ({ user,checked }) => {
     const [journalCategory, setJournalCategory] = useState([]);
     // const [checked, setChecked] = useState(true);
     const [userEmail, setUserEmail] = useState('')
+    const [userId, setUserId] = useState('')
     const [authorData, setAuthorData] = useState({
         authorTitle: '',
         authorGivenName: '',
@@ -60,6 +61,11 @@ const SubmitManuscript = ({ user,checked }) => {
             publicPdfName.current = event.target.files[0].name
         }
     };
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('currentUser'))        
+        setUserId(user?.user?.id)
+    }, [])
     console.log(publicPdfName, 'public pdf name');
     const handleChange = (event) => {
         const { name, value } = event.target
@@ -140,7 +146,7 @@ const SubmitManuscript = ({ user,checked }) => {
             const volume = articleYear-journalYear+1;
 
 
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { userId: user.id }, { filesUrl }, { awsId }, { publicPdfName: publicPdfName.current },{articleIssue:issue},{articleVolume:volume})
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { filesUrl }, { awsId }, { publicPdfName: publicPdfName.current },{articleIssue:issue},{articleVolume:volume},{userId:userId})
             console.log(mergeForm, 'final form data');
             
             //create publicPdfurl deets

@@ -237,6 +237,18 @@ const ProfileDashboard = () => {
                 }
                 {...a11yProps(7)}
               />
+              <Tab
+                label={
+                  userDetails?.user?.isAdmin && (
+                    <div>
+                      My Manuscripts
+                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
+                      </Badge>
+                    </div>
+                  )
+                }
+                {...a11yProps(8)}
+              />
             </Tabs>
 
           </Box>
@@ -276,6 +288,9 @@ const ProfileDashboard = () => {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={7}>
             {userDetails?.user?.isAdmin && <SubmitIssue user={user} />}
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={8}>
+            {userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
           </CustomTabPanel>
         </Box>
 
