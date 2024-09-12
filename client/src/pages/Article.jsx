@@ -135,7 +135,8 @@ export default function Article() {
         </div>
     </div>
     <div className="w-48 py-8 hidden md:block">
-        <FullIssueHome purchase={false} />
+        {/* <FullIssueHome purchase={false} /> */}
+        <img src="./images/vol1_issue2.jpg"  className= 'w-full' />
     </div>
 </div>
 
