@@ -317,7 +317,7 @@ export const getPublsihedJournalArticle = async (req, res, next) => {
                 isPublished: true
             }, 
             orderBy: {
-                createdAt: 'desc'
+                articlePublishedDate: 'desc'
             }
         });
         console.log(journalArticle);
