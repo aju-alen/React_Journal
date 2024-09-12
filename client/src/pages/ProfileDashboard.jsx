@@ -169,11 +169,14 @@ const ProfileDashboard = () => {
                     "My Manuscripts"
                   )
                 }
+                wrapped
                 {...a11yProps(0)}
               />
               {/* START ------------ This is a tab button to check if user wants special issue or regular issue */}
-              <Tab label={
-
+              <Tab
+              wrapped
+              label={
+                
                 (
                   <div>
                     <Button variant="text" onClick={handleClickOpen}>
@@ -210,12 +213,12 @@ const ProfileDashboard = () => {
               {/* END ------------ This is a tab button to check if user wants special issue or regular issue */}
 
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
-              <Tab label="Edit Profile" {...a11yProps(2)} />
+              <Tab wrapped label="Edit Profile" {...a11yProps(2)} />
 
               <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION} ><Tab label="Manage Payments" {...a11yProps(3)} /></a>
-              <Tab label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
-              <Tab label={userDetails?.user?.isAdmin && "Send a marketting email"} {...a11yProps(5)} />
-              <Tab
+              <Tab wrapped label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
+              <Tab wrapped label={userDetails?.user?.isAdmin && "Send a marketting email"} {...a11yProps(5)} />
+              <Tab wrapped
                 label={
                   userDetails?.user?.isAdmin && (
                     <div>
@@ -228,6 +231,7 @@ const ProfileDashboard = () => {
                 {...a11yProps(6)}
               />
               <Tab
+              wrapped
                 label={
                   userDetails?.user?.isAdmin && (
                     <div>
@@ -242,6 +246,7 @@ const ProfileDashboard = () => {
                 {...a11yProps(7)}
               />
               <Tab
+              wrapped
                 label={
                   userDetails?.user?.isAdmin && (
                     <div>
