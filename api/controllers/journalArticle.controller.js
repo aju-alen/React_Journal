@@ -25,7 +25,7 @@ export const createJournalArticle = async (req, res, next) => {
             articleIssue: req.body.articleIssue,
             articleVolume: req.body.articleVolume,
           },
-        });
+        });        
       
         const updatedJournal = await prisma.journal.update({
           where: { id: req.body.journalId },
@@ -225,6 +225,30 @@ export const getSinglePublishedArticle = async (req, res, next) => {
     catch (err) {
         console.log(err);
         return next(createError(400, 'An error occurred'));
+        
+    }
+}
+
+export const deleteArticle = async (req, res, next) => {
+    const {articleId} = req.params;
+    console.log(articleId, 'articleId');
+    console.log(req.userId, 'req.userId');
+    if(req.userId !== req.params.userId){
+        return next(createError(401, 'Not authorized to delete article'));
+    }
+    try{
+        const article = await prisma.article.delete({
+            where: {
+                id: articleId,
+                userId: req.userId
+            },
+        });        
+        res.status(200).json({message: 'Article deleted successfully', title:article.articleTitle});
+    }
+    catch{
+        console.log(err);
+        return next(createError(400, 'An error occurred'));
+
         
     }
 }

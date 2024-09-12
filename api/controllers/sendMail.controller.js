@@ -15,12 +15,13 @@ export const contactUs = async (req, res) => {
     
   
     let transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'mail.privateemail.com',
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.GMAIL_AUTH_USER,
-        pass: process.env.GMAIL_AUTH_PASS
+          user: process.env.GMAIL_AUTH_USER,
+          pass: process.env.GMAIL_AUTH_PASS
       }
-  
     })
     let mailOptions = {
       from: from,
