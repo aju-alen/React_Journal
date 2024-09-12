@@ -33,6 +33,7 @@ import ConferencesPage from './pages/ConferencesPage'
 import ResetPassword from './pages/ResetPassword'
 import ForgetPassword from './pages/ForgetPassword'
 import EditorialBoard from './pages/EditorialBoard'
+import FullIssueHome from './components/FullIssueHome'
 
 
 
@@ -45,6 +46,9 @@ function App() {
       <Navbar />
       <div style={{ flex: 1 }}>
         <Outlet className='' />
+        <div className="p-10">
+    <FullIssueHome purchase={true} />
+</div>
       </div>
       <Footer />
     </div>
