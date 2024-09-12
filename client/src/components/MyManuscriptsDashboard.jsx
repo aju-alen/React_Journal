@@ -1,4 +1,4 @@
-import {useEffect,useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import Button from '@mui/material/Button';
@@ -8,23 +8,52 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { Link } from 'react-router-dom';
-import { getPdfName } from '../helperFunctions';
+import { getPdfName, httpRoute } from '../helperFunctions';
+import axios from 'axios';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
- const MyManuscriptsDashboard=({user})=> {
+const MyManuscriptsDashboard = ({ user }) => {
   const [articles, setArticles] = useState(false);
   const [userId, setUserId] = useState('');
   const [emailId, setEmailId] = useState('');
-    useEffect(() => {
-      setArticles(prev=>!prev)
-    }, [user]);
+  const [articleId, setArticleId] = useState('');
+  const [open, setOpen] = React.useState(false);
 
-    useEffect(() => {
-      const getUser = JSON.parse(localStorage.getItem('currentUser'))
-      setUserId(getUser?.user?.id)
-      setEmailId(getUser?.user?.email)
-    }, []);
+  const handleClickOpen = (id) => {
+    setOpen(true);
+    setArticleId(id)
+  };
 
-    console.log(user,'user details');
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  useEffect(() => {
+    setArticles(prev => !prev)
+  }, [user]);
+
+  useEffect(() => {
+    const getUser = JSON.parse(localStorage.getItem('currentUser'))
+    setUserId(getUser?.user?.id)
+    setEmailId(getUser?.user?.email)
+  }, []);
+
+  const handleDeleteArticle = async () => {
+    try{
+      const response = await axios.delete(`${httpRoute}/api/journalArticle/delete-article/${articleId}/${userId}`)
+      handleClose()
+    }
+    catch(err){
+      console.log(err)
+      
+    }
+  }
+
+  console.log(user, 'user details');
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -37,12 +66,13 @@ import { getPdfName } from '../helperFunctions';
             <TableCell align="center">Edit</TableCell>
             <TableCell align="center">Correction Files</TableCell>
             <TableCell align="center">Payment</TableCell>
+            <TableCell align="center">Delete Manuscript</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {user?.articles?.map((row) =>{
-            console.log(row,'rowData');
-            return(
+          {user?.articles?.map((row) => {
+            console.log(row, 'rowData');
+            return (
               <TableRow
                 key={row.id}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -51,44 +81,73 @@ import { getPdfName } from '../helperFunctions';
                   {row.id}
                 </TableCell>
                 <TableCell align="center">{row.articleTitle}</TableCell>
-                <TableCell sx={{fontWeight:'bold'}} align="center">{row.rejectionText}</TableCell>
-                <TableCell sx={{fontWeight:'bold'}} align="center">{row.articleStatus}</TableCell>
-               {!row.isReview && !row.isPublished ? <TableCell sx={{fontWeight:'bold'}} align="center">
+                <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.rejectionText}</TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleStatus}</TableCell>
+                {!row.isReview && !row.isPublished ? <TableCell sx={{ fontWeight: 'bold' }} align="center">
                   <Link to={`/editManuscript/${row.userId}/${row.id}`}>
-                  <Button variant="contained" color="primary">
-                    Edit
-                  </Button>
+                    <Button variant="contained" color="primary">
+                      Edit
+                    </Button>
                   </Link>
                 </TableCell> : <TableCell></TableCell>}
 
-                {row.rejectionFilesURL.length !== 0 ?<TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize:10, display:'flex', flexDirection:"column",justifyContent:"center" }} align="center">
+                {row.rejectionFilesURL.length !== 0 ? <TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize: 10, display: 'flex', flexDirection: "column", justifyContent: "center" }} align="center">
                   <Link to={row.rejectionFilesURL[0]} className='mx-2 bg-indigo-100 rounded-md'
-                  target="_blank" rel="noopener noreferrer">
-                  {row.rejectionFilesURL[0] ? `📄${getPdfName(row.rejectionFilesURL[0])} `:'' }
+                    target="_blank" rel="noopener noreferrer">
+                    {row.rejectionFilesURL[0] ? `📄${getPdfName(row.rejectionFilesURL[0])} ` : ''}
                   </Link>
                   <br></br>
                   <Link to={row.rejectionFilesURL[1]} className='mx-2 bg-indigo-100 rounded-md'
-                  target="_blank" rel="noopener noreferrer">
-                  {row.rejectionFilesURL[1] ? `📄${getPdfName(row.rejectionFilesURL[1])} `:'' }
+                    target="_blank" rel="noopener noreferrer">
+                    {row.rejectionFilesURL[1] ? `📄${getPdfName(row.rejectionFilesURL[1])} ` : ''}
                   </Link>
                   <br />
                   <Link to={row.rejectionFilesURL[2]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                     {row.rejectionFilesURL[2] ? `📄${getPdfName(row.rejectionFilesURL[2])} `:'' }
+                    {row.rejectionFilesURL[2] ? `📄${getPdfName(row.rejectionFilesURL[2])} ` : ''}
                   </Link>
-                </TableCell>:<TableCell></TableCell>}
+                </TableCell> : <TableCell></TableCell>}
 
-                {!row.paymentStatus ?<TableCell sx={{fontWeight:'bold'}} align="center">
+                {!row.paymentStatus ? <TableCell sx={{ fontWeight: 'bold' }} align="center">
                   <Link to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}`}>
-                  <Button variant="contained" color="primary">
-                    Pay Here
-                  </Button>
+                    <Button variant="contained" color="primary">
+                      Pay Here
+                    </Button>
                   </Link>
-                </TableCell>: <TableCell sx={{fontWeight:'bold', color:'green', fontSize:20}} align="center">Payment Complete</TableCell>}
+                </TableCell> : <TableCell sx={{ fontWeight: 'bold', color: 'green', fontSize: 20 }} align="center">Payment Complete</TableCell>}
+
+                <TableCell sx={{ fontWeight: 'bold' }} align="center">
+                  <Button variant="contained" color="error" onClick={()=>handleClickOpen(row.id)}>
+                    Delete
+                  </Button>
+                  {/* Delete Manuscript Dialogue Box */}
+                  <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      {"This action will delete the Manuscript. Are you sure?"}
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Deleting the Manuscript will remove it from the system. This action cannot be undone.
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleClose}>Cancel</Button>
+                      <Button onClick={ handleDeleteArticle} autoFocus>
+                        Delete
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                  {/* End Of delete dialog */}
+                </TableCell>
 
               </TableRow>
-              
+
             )
-          } )}
+          })}
         </TableBody>
       </Table>
     </TableContainer>
