@@ -63,7 +63,7 @@ const JournalCards = () => {
                 </p>
             </div>
             <div className="flex flex-col md:flex-row">
-                <div className="md:w-9/12 mx-auto">
+                <div className="md:w-9/12 mx-auto pb-10">
                     {articles?.map(journal => {
                         return (
                             <div key={journal.id} className="bg-white rounded-md flex flex-col gap-2 mt-8 h-auto md:w-11/12 md:mx-auto">

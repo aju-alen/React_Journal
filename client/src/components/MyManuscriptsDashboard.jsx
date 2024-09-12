@@ -80,7 +80,7 @@ const MyManuscriptsDashboard = ({ user }) => {
                 <TableCell component="th" scope="row">
                   {row.id}
                 </TableCell>
-                <TableCell align="center">{row.articleTitle}</TableCell>
+                <TableCell align="left">{row.articleTitle}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.rejectionText}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleStatus}</TableCell>
                 {!row.isReview && !row.isPublished ? <TableCell sx={{ fontWeight: 'bold' }} align="center">

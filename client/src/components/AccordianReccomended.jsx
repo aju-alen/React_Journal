@@ -20,8 +20,7 @@ export default function AccordianReccomended({articles}) {
     console.log(reccomendedArticles, 'reccomended articles');
    
   return (
-    <div className=' md:w-9/12 ml-auto '>
-    
+    <div>
     <Accordion defaultExpanded >
       <AccordionSummary
         expandIcon={<ArrowDropDownIcon />}
