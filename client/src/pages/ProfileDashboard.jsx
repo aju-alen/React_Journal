@@ -156,7 +156,11 @@ const ProfileDashboard = () => {
         <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${userDetails?.user?.title} ${userDetails?.user?.surname}`}</h1>
         <Box sx={{ width: '100%' }} >
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
-            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tabs value={value} onChange={handleChange}  
+            variant="scrollable"
+            scrollButtons="auto"
+            aria-label="scrollable auto tabs example"
+            >
               <Tab
                 label={
                   userDetails?.user?.isAdmin ? (
