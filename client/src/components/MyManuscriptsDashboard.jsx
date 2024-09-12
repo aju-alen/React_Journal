@@ -70,7 +70,7 @@ const MyManuscriptsDashboard = ({ user }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {user?.articles?.map((row) => {
+          {user?.map((row) => {
             console.log(row, 'rowData');
             return (
               <TableRow

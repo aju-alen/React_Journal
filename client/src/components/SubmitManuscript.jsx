@@ -27,6 +27,11 @@ const SubmitManuscript = ({ user,checked }) => {
     // const [checked, setChecked] = useState(true);
     const [userEmail, setUserEmail] = useState('')
     const [userId, setUserId] = useState('')
+    console.log(user, 'user in submit manuscript');
+    console.log(userId, 'userId in submit manuscript');
+    
+    
+
     const [authorData, setAuthorData] = useState({
         authorTitle: '',
         authorGivenName: '',
@@ -157,7 +162,7 @@ const SubmitManuscript = ({ user,checked }) => {
             setAlertStatus('success')
             setAlertText('Manuscript Submitted Successfully. Redirecting to your dashboard')
             setTimeout(() => {
-                navigate(`/dashboard/${user.id}?tab=0`)
+                navigate(`/dashboard/${userId}?tab=0`)
             }, 3000)
             setSubmitButtonDisabled(false)
         }
