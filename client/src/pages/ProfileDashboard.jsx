@@ -118,7 +118,7 @@ const ProfileDashboard = () => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${getUser.token}`
       try {
 
-        if (!getUser.user.isAdmin) {
+        if (getUser.user.isAdmin) {
           const resp = await axios.get(`${httpRoute}/api/users/${profileId}`)
           setUser(resp.data)
           setLoading(false)
@@ -210,7 +210,7 @@ const ProfileDashboard = () => {
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab label="Edit Profile" {...a11yProps(2)} />
 
-              <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION} className=' flex items-center'><Tab label="Manage Payments" {...a11yProps(3)} /></a>
+              <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION} ><Tab label="Manage Payments" {...a11yProps(3)} /></a>
               <Tab label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
               <Tab label={userDetails?.user?.isAdmin && "Send a marketting email"} {...a11yProps(5)} />
               <Tab

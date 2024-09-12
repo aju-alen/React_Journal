@@ -5,6 +5,8 @@ import ImageHeader from '../components/ImageHeader';
 import { httpRoute } from '../helperFunctions.js';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 // To stop the links being rendered (Replace the Link Component with MemoizedLinks) 
 
 // const MemoizedLink = memo(({ to, className, children }) => (
@@ -15,7 +17,7 @@ import Alert from '@mui/material/Alert';
 const Login = () => {
     const navigate = useNavigate()
     const [open, setOpen] = useState(false);
-
+    const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
 
         email: '',
@@ -82,15 +84,19 @@ const Login = () => {
                   <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
                     Password
                   </label>
+                  <div className=" flex flex-row justify-center items-center">
                   <input
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     id="password"
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500 "
                     required
                   />
+                  {!showPassword?<VisibilityOffIcon onClick={() => setShowPassword(!showPassword)} className=" absolute right-52 " />:<VisibilityIcon onClick={() => setShowPassword(!showPassword)} className=" absolute right-52 "/>}  
+                  </div>
+                  
                 </div>
 
                 <div className=""></div>

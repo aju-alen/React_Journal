@@ -80,6 +80,7 @@ const handleClose = (event, reason) => {
                                 name='message'
                                 value={formData.message}
                                 rows={4}
+                                multiline
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">

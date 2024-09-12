@@ -20,6 +20,8 @@ const ResetPassword = () => {
   const [open, setOpen] = React.useState(false);
   const [alertStatus, setAlertStatus] = React.useState('success');
   const [alertText, setAlertText] = React.useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [isValid, setIsValid] = useState(false);
 
 
   const handleClose = (event, reason) => {
@@ -34,6 +36,10 @@ const ResetPassword = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
+    if (name === 'password') {
+      validatePassword(value);
+    }
+    console.log(formData, e);
   };
 
   const handleSubmit = async (e) => {
@@ -62,6 +68,15 @@ const ResetPassword = () => {
     }
    
   };
+  const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-={}[\]:;"'<>,.?/])(?=.{8,})/;
+    if (!passwordRegex.test(password)) {
+      setPasswordError('Password must contain at least one uppercase letter, one special character, and have a minimum length of 8 characters.');
+    } else {
+      setPasswordError('');
+      setIsValid(true);
+    }
+  };
   
 
   return (
@@ -85,6 +100,7 @@ const ResetPassword = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
                 required
               />
+              {passwordError && <p style={{ color: 'red' }}>{passwordError}</p>}
             </div>
             <div className="mb-6">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
@@ -105,6 +121,7 @@ const ResetPassword = () => {
             <button
               type="submit"
               className="bg-indigo-500 text-white px-4 py-2 rounded focus:outline-none hover:bg-indigo-600 w-full"
+              disabled={!isValid}
             >
               Reset Password
             </button>

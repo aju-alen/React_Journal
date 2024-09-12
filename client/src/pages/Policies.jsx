@@ -16,17 +16,17 @@ const Policies = () => {
                 </div>
                 <div className="">
                     <h2 className='h2-class'>CrossRef Policy</h2>
-                    <p className='p-class'>Crossref [http://www.crossref.org/] is an organisation comprising publishers that has devised the Digital Object Identification (DOI) system for the distinctive identification of published materials. Scientific Journals Portal, as a member of Crossref, employs the DOI system to assign unique identifiers to all its published articles. http://crossref.org/crosscheck.html
+                    <p className='p-class'><a href='http://www.crossref.org/'>Crossref</a>  is an organisation comprising publishers that has devised the Digital Object Identification (DOI) system for the distinctive identification of published materials. Scientific Journals Portal, as a member of Crossref, employs the DOI system to assign unique identifiers to all its published articles.
                     </p>
                 </div>
                 <div className="">
                     <h2 className='h2-class'>SimilarityCheck</h2>
-                    <p className='p-class'>The initiative known as SimilarityCheck [http://www.crossref.org/crosscheck/index.html], which is supported by Crossref, aims to facilitate the active participation of its members in combating scholarly and professional plagiarism. Scientific Journals Portal proudly stands as a member of SimilarityCheck.
+                    <p className='p-class'>The initiative known as <a href='http://www.crossref.org/crosscheck/index.html'>SimilarityCheck</a>, which is supported by Crossref, aims to facilitate the active participation of its members in combating scholarly and professional plagiarism. Scientific Journals Portal proudly stands as a member of SimilarityCheck.
                     </p>
                 </div>
                 <div className="">
                     <h2 className='h2-class'>Digital Archiving</h2>
-                    <p className='p-class'>The Scientific Journals Portal is dedicated to ensuring the enduring preservation of its content. All articles that are published by the journal are safeguarded by Portico [https://www.portico.org/publishers/ajournals/]. Furthermore, the journal encourages authors to store the published version of their articles in their institutional repositories and on our other suitable websites.
+                    <p className='p-class'>The Scientific Journals Portal is dedicated to ensuring the enduring preservation of its content. All articles that are published by the journal are safeguarded by <a href='https://www.portico.org/publishers/ajournals/'>Portico</a> . Furthermore, the journal encourages authors to store the published version of their articles in their institutional repositories and on our other suitable websites.
                     </p>
                 </div>
                 <div className="">
@@ -40,7 +40,7 @@ const Policies = () => {
                     <p className='p-class'>When an article is published on the Scientific Journals Portal, the copyright ownership of the published article is retained by the authors and not by the portal. This means that authors have the right to republish their articles as part of a book or other materials. However, in order for authors to maintain copyright ownership of a published article, they must adhere to the following conditions:
                         <p>• Properly cite the original source of the publication when reusing the article.</p>
                         <p>• Acknowledge that the article will remain published on the Scientific Journals Portal website, except in the event of a retraction of the article.</p>
-                        <p>• The article is licensed under the Creative Commons Attribution 4.0 International License [http://creativecommons.org/licenses/by/4.0/].</p>
+                        <p>• The article is licensed under the <a href='http://creativecommons.org/licenses/by/4.0/'>Creative Commons Attribution 4.0 International License</a>.</p>
                         <p>• The article is published open access.</p>
                     </p>
                 </div>
