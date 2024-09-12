@@ -20,7 +20,7 @@ export default function AccordianReccomended({articles}) {
     console.log(reccomendedArticles, 'reccomended articles');
    
   return (
-    <div className=' md:w-10/12 mx:auto'>
+    <div className=' md:w-9/12 ml-auto '>
     
     <Accordion defaultExpanded >
       <AccordionSummary
