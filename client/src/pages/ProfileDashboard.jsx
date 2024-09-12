@@ -76,6 +76,7 @@ const ProfileDashboard = () => {
   const [userCount, setUserCount] = useState(0)
   const [userSpecialReview, setUserSpecialReview] = useState({})
   const [userSpecialReviewCount, setUserSpecialReviewCount] = useState(0)
+  const [verificationArticle, setVerificationArticle] = useState({})
   const [loading, setLoading] = useState(true)
   let [searchParams, setSearchParams] = useSearchParams();
   const value = Number(searchParams.get("tab") || 0);
@@ -119,22 +120,22 @@ const ProfileDashboard = () => {
       axios.defaults.headers.common['Authorization'] = `Bearer ${getUser.token}`
       try {
 
-        if (getUser.user.isAdmin) {
           const resp = await axios.get(`${httpRoute}/api/users/${profileId}`)
           setUser(resp.data)
           setLoading(false)
-        }
-        else {
-          const resp = await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
-          console.log(resp.data, 'special review full log');
-          setUser(resp.data.filter((item) => item.specialReview === false))
-          setUserCount(resp.data.filter((item) => item.specialReview === false).length)
 
-          setUserSpecialReview(resp.data.filter((item) => item.specialReview === true))
-          setUserSpecialReviewCount(resp.data.filter((item) => item.specialReview === true).length)
+        if (resp.data.isAdmin) {
+          const verifyResp = await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
+          console.log(verifyResp.data, 'special review full log');
+          setVerificationArticle(verifyResp.data.filter((item) => item.specialReview === false))
+          setUserCount(verifyResp.data.filter((item) => item.specialReview === false).length)
+
+          setUserSpecialReview(verifyResp.data.filter((item) => item.specialReview === true))
+          setUserSpecialReviewCount(verifyResp.data.filter((item) => item.specialReview === true).length)
 
           setLoading(false)
         }
+        
       }
       catch (err) {
         console.log(err)
@@ -231,7 +232,9 @@ const ProfileDashboard = () => {
                   userDetails?.user?.isAdmin && (
                     <div>
                       Submit Issue
-                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
+                      <Badge color="primary" 
+                      // badgeContent={userSpecialReviewCount}
+                       overlap='circular' max={5} sx={{ mb: 5 }} >
                       </Badge>
                     </div>
                   )
@@ -254,7 +257,7 @@ const ProfileDashboard = () => {
 
           </Box>
           <CustomTabPanel value={value} index={0}>
-            {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={user} />}
+            {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={verificationArticle} />}
             {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
 
           </CustomTabPanel>

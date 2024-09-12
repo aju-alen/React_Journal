@@ -29,6 +29,8 @@ const AdminMyManuscriptsDashboard = ({ user }) => {
   const [emailId, setEmailId] = useState('');
   const [rejectionText, setRejectionText] = useState('');
   const [files, setFiles] = useState([]);
+console.log(user, 'user data in admin my manuscript dashboard');
+
 
   const handleClickOpen = (articleId,emailId) => {
     setArticleId(articleId);
@@ -73,6 +75,9 @@ console.log(emailId, 'emailId state');
       <div>No Manuscripts To Verify</div>
     );
   }
+
+  console.log(user, 'user data in admin my manuscript dashboard');
+  
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
