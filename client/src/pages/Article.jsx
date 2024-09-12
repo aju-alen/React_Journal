@@ -120,7 +120,7 @@ export default function Article() {
         <div className="flex gap-2 md:gap-12 justify-center px-12 mt-2 font-bold">
             {journal?.articleAuthors?.map((author, idx) => (
                 <p key={idx} className='text-md md:text-xl '>
-                    {author.authorGivenName + author.authorLastName}
+                    {author.authorGivenName +' '+ author.authorLastName}
                 </p>
             ))}
         </div>

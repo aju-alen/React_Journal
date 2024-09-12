@@ -26,6 +26,7 @@ const SubmitManuscript = ({ user,checked }) => {
     const [journalCategory, setJournalCategory] = useState([]);
     // const [checked, setChecked] = useState(true);
     const [userEmail, setUserEmail] = useState('')
+    const [userAdmin, setUserAdmin] = useState()
     const [userId, setUserId] = useState('')
     console.log(user, 'user in submit manuscript');
     console.log(userId, 'userId in submit manuscript');
@@ -68,10 +69,13 @@ const SubmitManuscript = ({ user,checked }) => {
     };
 
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem('currentUser'))        
+        const user = JSON.parse(localStorage.getItem('currentUser'))
+        setUserAdmin(user?.user?.isAdmin)
         setUserId(user?.user?.id)
     }, [])
     console.log(publicPdfName, 'public pdf name');
+    console.log(userAdmin, 'user admin in submit manuscript');
+    
     const handleChange = (event) => {
         const { name, value } = event.target
         console.log(name, value, 'name and value');
@@ -86,7 +90,7 @@ const SubmitManuscript = ({ user,checked }) => {
     const handleAddMoreAuthor = () => {
 
         try {
-            if (authorData.authorTitle === '' || authorData.authorGivenName === '' || authorData.authorLastName === '' || authorData.authorEmail === '' || authorData.authorAffiliation === '') {
+            if (authorData.authorTitle === '' || authorData.authorGivenName === '' || authorData.authorLastName === '' || (!userAdmin && authorData.authorEmail === '') || authorData.authorAffiliation === '') {
                 setAlertStatus('error')
                 setAlertText('Please fill all the fields to add an author')
                 setOpen(true);
