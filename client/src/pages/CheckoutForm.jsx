@@ -10,14 +10,16 @@ const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 import { useParams } from "react-router-dom";
 import { httpRoute } from "../helperFunctions.js";
 const CheckoutForm = () => {
-    const {articleId,checkoutStatus,userId,emailId} = useParams()
+    const {articleId,checkoutStatus,userId,emailId,stripeLookupId} = useParams()
+    console.log(stripeLookupId,'stripeLookupId');
+    
 
     const [clientSecret, setClientSecret] = useState('');
 
     useEffect(() => {
      
       const getStripeCheckoutSession = async () => {
-          const resp = await axios.post(`${httpRoute}/api/stripe/create-checkout-session`,{articleId,checkoutStatus,userId,emailId} ) 
+          const resp = await axios.post(`${httpRoute}/api/stripe/create-checkout-session`,{articleId,checkoutStatus,userId,emailId,stripeLookupId} ) 
           setClientSecret(resp.data.clientSecret)
           console.log(resp.data.clientSecret,'clientSecret in checkout');
       }

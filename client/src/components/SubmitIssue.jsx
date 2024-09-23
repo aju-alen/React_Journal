@@ -33,6 +33,8 @@ export default function SubmitIssue() {
     journalId: '',
     issuePrice: '',
     issueNumber: '',
+    stripeName: '',
+    stripeDescription: '',
   });
 
   const handleChange = (event) => {
@@ -124,6 +126,7 @@ export default function SubmitIssue() {
         </Select>
         <TextField
           id="outlined-basic"
+          type='number'
           value={formData.issueVolume}
           name='issueVolume'
           label="Issue Volume"
@@ -131,6 +134,7 @@ export default function SubmitIssue() {
           onChange={handleFormChange} />
         <TextField
           id="outlined-basic"
+          type='number'
           value={formData.issueNumber}
           name='issueNumber'
           label="Issue Number"
@@ -138,9 +142,26 @@ export default function SubmitIssue() {
           onChange={handleFormChange} />
         <TextField
           id="outlined-basic"
+          type='number'
           value={formData.issuePrice}
           name='issuePrice'
           label="Issue Price"
+          variant="outlined"
+          onChange={handleFormChange} />
+
+        <TextField
+          id="outlined-basic"
+          value={formData.stripeName}
+          name='stripeName'
+          label="Stipe Product Name"
+          variant="outlined"
+          onChange={handleFormChange} />
+
+        <TextField
+          id="outlined-basic"
+          value={formData.stripeDescription}
+          name='stripeDescription'
+          label="Write a description for stripe"
           variant="outlined"
           onChange={handleFormChange} />
 

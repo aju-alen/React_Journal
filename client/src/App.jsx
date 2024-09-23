@@ -34,7 +34,7 @@ import ResetPassword from './pages/ResetPassword'
 import ForgetPassword from './pages/ForgetPassword'
 import EditorialBoard from './pages/EditorialBoard'
 import FullIssueHome from './components/FullIssueHome'
-
+import FullIssueSearch from './components/FullIssueSearch'
 
 
 
@@ -48,6 +48,7 @@ function App() {
         <Outlet className='' />
         <div className="p-10">
     <FullIssueHome purchase={true} />
+    {/* <FullIssueSearch /> */}
 </div>
       </div>
       <Footer />
@@ -102,7 +103,7 @@ function App() {
         element: <EditArticle />,
       },
       {
-        path: '/checkout/:articleId/:checkoutStatus/:userId/:emailId',
+        path: '/checkout/:articleId/:checkoutStatus/:userId/:emailId/:stripeLookupId',
         element: <CheckoutForm />,
       },
       {

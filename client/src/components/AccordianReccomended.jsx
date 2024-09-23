@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import { wordLimitReccomendedTitle, wordLimitReccomendedAbstract } from '../helperFunctions';
 import FullIssueHome from './FullIssueHome';
+import FullIssueSearch from './FullIssueSearch';
 import { Link } from 'react-router-dom';
 
 export default function AccordianReccomended({articles}) {
@@ -57,7 +58,7 @@ export default function AccordianReccomended({articles}) {
       </AccordionDetails>
       
     </Accordion>
-    <Accordion>
+    {/* <Accordion>
       <AccordionSummary
         expandIcon={<ArrowDropDownIcon />}
         aria-controls="panel2-content"
@@ -67,6 +68,20 @@ export default function AccordianReccomended({articles}) {
       </AccordionSummary>
       <AccordionDetails>
       <FullIssueHome purchase={false} />
+      </AccordionDetails>
+      
+    </Accordion> */}
+
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ArrowDropDownIcon />}
+        aria-controls="panel2-content"
+        id="panel2-header"
+      >
+        <Typography>Purchase Full Issue</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+      <FullIssueSearch purchase={false}/>
       </AccordionDetails>
       
     </Accordion>
