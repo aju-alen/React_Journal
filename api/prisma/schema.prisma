@@ -114,6 +114,7 @@ model FullIssue{
   issueDoccumentURL String
   issuePrice String
   journalId String
+  stripe_lookupId String
   issueJournal Journal @relation(fields: [journalId], references: [id])
   issueVolume Int
   issueNumber Int

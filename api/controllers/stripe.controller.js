@@ -1,6 +1,6 @@
-import dotenv from 'dotenv'
 import stripe from 'stripe';
 import { stripeDomain } from '../utils/cors.dev.js';
+import dotenv from 'dotenv'
 dotenv.config()
 
 
@@ -12,17 +12,17 @@ const YOUR_DOMAIN = stripeDomain;
 
 export const createCheckoutSession = async (req, res, next) => {
   let price;
-  let {articleId,checkoutStatus,userId,emailId} = req.body;
+  let {articleId,checkoutStatus,userId,emailId,stripeLookupId} = req.body;
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
   if (checkoutStatus === "publisharticle" ){
     price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
   }
   else if (checkoutStatus === "fullIssue"){
     const prices = await Stripe.prices.list({
-      lookup_keys: ['vol1Issue1'],
+      lookup_keys: [`${stripeLookupId}`],
     });
 
-     price = prices.data[0].id;
+     price = prices.data[0]?.id;
   }
   try{
     console.log(price, 'price in stripe');
