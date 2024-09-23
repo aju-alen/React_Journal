@@ -18,7 +18,11 @@ export const createCheckoutSession = async (req, res, next) => {
     price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
   }
   else if (checkoutStatus === "fullIssue"){
-    price = process.env.STRIPE_FULL_ISSUE_PRICEID
+    const prices = await Stripe.prices.list({
+      lookup_keys: ['vol1Issue1'],
+    });
+
+     price = prices.data[0].id;
   }
   try{
     console.log(price, 'price in stripe');
