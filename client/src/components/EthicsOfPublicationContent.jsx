@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import CardActionArea from '@mui/material/CardActionArea';
 import { Container, Link, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 
 const EthicsOfPublicationContent = () => {
   const { ethicalSlug } = useParams()
@@ -68,21 +69,87 @@ const EthicsOfPublicationContent = () => {
   
             {/* Commitments */}
             <Box mt={3}>
-              <Typography variant="h6" sx={{ color: 'primary.main', fontWeight: 'bold' }}>
-                Scientific Journals Portal makes the following commitments:
-              </Typography>
-              <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1, lineHeight: 1.6 }}>
-                <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
-                  <li>• Ensure and maintain the editorial freedom of editors</li>
-                  <li>• Providing support to specific journal editors to run their journals ethically,
-                      independently, and transparently</li>
-                  <li>• Promoting accuracy of publishing records, including academic records, identity
-                      records, publishing, corrections, and retractions</li>
-                </ul>
-              </Typography>
-  
-             
-            </Box>
+      <Typography 
+        variant="h6" 
+        sx={{ color: 'primary.main', fontWeight: 'bold', mb: 2 }}
+      >
+        Scientific Journals Portal makes the following commitments:
+      </Typography>
+      
+      <Grid container spacing={2} justifyContent="center">
+        <Grid item xs={12} sm={6} md={4}>
+          <Card 
+            sx={{ 
+              maxWidth: 345,
+              height: 100, 
+              borderRadius: 4, 
+              boxShadow: 3, 
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.03)',
+                boxShadow: 6,
+              },
+            }}
+          >
+            <CardActionArea>
+              <CardContent>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Ensure and maintain the editorial freedom of editors
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <Card 
+            sx={{ 
+              maxWidth: 345, 
+              height: 100,
+              borderRadius: 4, 
+              boxShadow: 3, 
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.03)',
+                boxShadow: 6,
+              },
+            }}
+          >
+            <CardActionArea>
+              <CardContent>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Providing support to specific journal editors to run their journals ethically, independently, and transparently
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4}>
+          <Card 
+            sx={{ 
+              maxWidth: 345, 
+              height: 100,
+              borderRadius: 4, 
+              boxShadow: 3, 
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+              '&:hover': {
+                transform: 'scale(1.03)',
+                boxShadow: 6,
+              },
+            }}
+          >
+            <CardActionArea>
+              <CardContent>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Promoting accuracy of publishing records, including academic records, identity records, publishing, corrections, and retractions
+                </Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+        </Grid>
+      </Grid>
+    </Box>
           </Container>
   
           <Container>
