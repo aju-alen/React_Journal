@@ -392,7 +392,7 @@ export const EthicsOfPublicationdata =[
 export const ethicalpractice = [
     {
         title: "Ethical Practice",
-        content: "The adherence to ethical standards in publishing is essential for maintaining the integrity and credibility of scientific articles. Consequently, Scientific Journals require all authors to comply with ethical guidelines when preparing their manuscripts."
+        contentz: "The adherence to ethical standards in publishing is essential for maintaining the integrity and credibility of scientific articles. Consequently, Scientific Journals require all authors to comply with ethical guidelines when preparing their manuscripts."
     },
     {
         title: "Plagiarism",

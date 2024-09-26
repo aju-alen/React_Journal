@@ -11,7 +11,7 @@ const Home = () => {
     <div>
       <HeaderImage />
       <Link to='/register'>
-      <img src="./images/advert.jpeg" alt="cloud" className=' w-full ' />
+      <img src="./images/advertVol1Issue3.jpeg" alt="cloud" className=' w-full ' />
       </Link>
       <ServicesHome />
       <div className='mt-4'>
