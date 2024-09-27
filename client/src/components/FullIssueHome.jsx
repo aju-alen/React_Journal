@@ -77,40 +77,58 @@ const FullIssueHome = ({ purchase }) => {
     return (
         <>
             {/* <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1> */}
-            <div className=" flex justify-center align-middle">
-            <Carousel className='' width={'240px'} showThumbs={false} showArrows={true} infiniteLoop="true" >
-                {allFullIssue.map((issue) => (
-                    
-                    userId === undefined ? (
+            <div className="flex justify-center align-middle">
+  <Carousel
+    className=""
+    width="240px"
+    showThumbs={false}
+    showArrows={true}
+    infiniteLoop={true} // Turn off infinite loop
+  >
+    {allFullIssue.map((issue, index) => (
+      <div key={index}> {/* Ensure each element has a unique key */}
+        {userId === undefined ? (
+          <img
+            src={issue?.issueImageURL}
+            alt="cloud"
+            className="w-64 h-64"
+            onClick={handleClick({ vertical: 'top', horizontal: 'center' })}
+          />
+        ) : (
+          ifUserPurchasedFullIssue.length === 1 ? (
+            <Link to={issue?.issueDoccumentURL}>
+              <img
+                src={issue?.issueImageURL}
+                alt="cloud"
+                className="w-64 h-64"
+              />
+            </Link>
+          ) : (
+            <Link
+              to={`/checkout/${fullIssueId}/fullIssue/${userId}/${emailId}/vol${issue.issueVolume}Issue${issue.issueNumber}`}
+            >
+              <img
+                src={issue?.issueImageURL}
+                alt="cloud"
+                className="w-64 h-64"
+              />
+            </Link>
+          )
+        )}
+      </div>
+    ))}
 
-                        <img src={issue?.issueImageURL} alt="cloud" className='w-64 h-64' onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
-
-                    ) : (
-                        ifUserPurchasedFullIssue.length === 1 ? (
-                            <Link to={issue?.issueDoccumentURL}>
-                                <img src={issue?.issueImageURL} alt="cloud" className='w-64 h-64' />
-                            </Link>
-                        ) : (
-                            <Link to={`/checkout/${fullIssueId}/fullIssue/${userId}/${emailId}/vol${issue.issueVolume}Issue${issue.issueNumber}`}>
-                                <img src={issue?.issueImageURL} alt="cloud" className='w-64 h-64' />
-                            </Link>
-                        )
-                    )
-
-                ))}
-
-                <Box sx={{ width: 500 }}>
-
-                    <Snackbar
-                        anchorOrigin={{ vertical, horizontal }}
-                        open={open}
-                        onClose={handleClose}
-                        message="Please Login to Purchase Full Issue"
-                        key={vertical + horizontal}
-                    />
-                </Box>
-            </Carousel>
-            </div>
+    <Box sx={{ width: 500 }}>
+      <Snackbar
+        anchorOrigin={{ vertical, horizontal }}
+        open={open}
+        onClose={handleClose}
+        message="Please Login to Purchase Full Issue"
+        key={vertical + horizontal}
+      />
+    </Box>
+  </Carousel>
+</div>
         </>
     )
 
