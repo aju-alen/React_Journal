@@ -109,7 +109,7 @@ const JournalCards = () => {
                             margin: '10px 0' 
                      }} >
                      <Pagination count={Math.ceil(articles.length/10)} shape="rounded"   page={currentPage}
-        onChange={handlePageChange} />
+        onChange={handlePageChange} color='primary' />
                      </Stack>
                 </div>
                 <div className=" md:w-3/12 mt-8 md:mx:auto">
