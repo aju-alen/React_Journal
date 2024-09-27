@@ -31,7 +31,7 @@ const EthicsOfPublicationContent = () => {
           </Typography>
         </Stack>
           <Container >
-            <Box mb={2}>
+            <Box mb={2} mt={10}>
               <Typography 
                 gutterBottom 
                 variant="h5"
@@ -55,11 +55,11 @@ const EthicsOfPublicationContent = () => {
               The overall value of research and academic publishing is the sum total of the behaviors
               of people within the field including authors and reviewers. SJP will outline the expected
               ethical practices herein to give a broad outlook – the entity encourages all authors to
-              refer to the <Link href='https://publicationethics.org/' target="_blank" underline="hover">Committee on Publication Ethics (COPE)</Link> 
+              refer to the <Link href='https://publicationethics.org/' target="_blank" underline="hover">Committee on Publication Ethics (COPE) </Link> 
               for further guidelines on ethical practice in academic publishing. Interested parties are directed to pay special attention
               to the Principles of Transparency and Best Practices in Scholarly Publishing as outlined by
               COPE. To safeguard knowledge and ensure perpetual access to knowledge outputs in
-              the case an SJP journal ceases publication, SJP has an arrangement with <Link href='https://clockss.org/' target="_blank" underline="hover">CLOCKS</Link> 
+              the case an SJP journal ceases publication, SJP has an arrangement with <Link href='https://clockss.org/' target="_blank" underline="hover">CLOCKS </Link> 
               to preserve scholarship for posterity. SJP reiterates the importance of ethics in scholarly
               publication and reaffirms that it subscribes to the ethical guidelines outlined by COPE,
               encouraging any party to review the guidelines in case they have concerns about an ethical

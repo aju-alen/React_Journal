@@ -7,10 +7,25 @@ import { getDates } from '../helperFunctions'
 import { httpRoute } from '../helperFunctions.js'
 import FullIssueHome from '../components/FullIssueHome.jsx'
 import AccordianReccomended from '../components/AccordianReccomended.jsx'
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 const JournalCards = () => {
     const [articles, setArticles] = useState([])
     const [journalCategory, setJournalCategory] = useState([])
+    const [currentPage, setCurrentPage] = useState(1);
+    const [slicedArticles, setSlicedArticles] = useState([])
+
+    useEffect(() => {
+        setSlicedArticles(articles.slice((currentPage - 1) * 10, currentPage * 10))
+    }, [currentPage])
+
+    const handlePageChange = (event, value) => {
+        console.log(value, 'value--value');
+        
+        setCurrentPage(value);
+      };
+
     useEffect(() => {
         const getPublishedArticles = async () => {
             try {
@@ -64,7 +79,7 @@ const JournalCards = () => {
             </div>
             <div className="flex flex-col md:flex-row">
                 <div className="md:w-9/12 mx-auto pb-10">
-                    {articles?.map(journal => {
+                    {slicedArticles?.map(journal => {
                         return (
                             <div key={journal.id} className="bg-white rounded-md flex flex-col gap-2 mt-8 h-auto md:w-11/12 md:mx-auto">
                                 <h3 className='font-medium mx-6 mt-10'>{journal?.articleTitle}</h3>
@@ -83,8 +98,19 @@ const JournalCards = () => {
                                     </div>
                                 </Link>
                             </div>
+                            
                         )
+                        
                     })}
+                     <Stack spacing={2} sx={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            margin: '10px 0' 
+                     }} >
+                     <Pagination count={Math.ceil(articles.length/10)} shape="rounded"   page={currentPage}
+        onChange={handlePageChange} />
+                     </Stack>
                 </div>
                 <div className=" md:w-3/12 mt-8 md:mx:auto">
                     <AccordianReccomended articles={reccomendedArticles} />
