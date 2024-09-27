@@ -16,6 +16,8 @@ const JournalCards = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [slicedArticles, setSlicedArticles] = useState([])
 
+    
+
     useEffect(() => {
         setSlicedArticles(articles.slice((currentPage - 1) * 10, currentPage * 10))
     }, [currentPage])
@@ -31,6 +33,9 @@ const JournalCards = () => {
             try {
                 const resp = await axios.get(`${httpRoute}/api/journalArticle/publishedArticle`)
                 setArticles(resp.data)
+                console.log(resp.data, 'published articles--');
+                setSlicedArticles(resp.data.slice(0, 10))
+                
             }
             catch (error) {
                 console.log(error);
