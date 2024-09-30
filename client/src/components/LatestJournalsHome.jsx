@@ -26,7 +26,7 @@ const LatestJournalsHome = ({width}) => {
         <div className=' h-auto w-auto '>
             <h2 className=' text-center font-bold text-3xl my-4'>View Latest Journal</h2>
             <div className=' flex justify-center h-auto'>
-                 <Carousel className='' width={width} showThumbs={false}  showArrows={true} infiniteLoop="true">
+                 <Carousel className='' width={width} showThumbs={false}  showArrows={true} >
                     {articles.map(journal => (
                         <React.Fragment key={journal.id}>
                             <div className=' max-h-auto overflow-y-auto border-2 border-black h-2/3 '>

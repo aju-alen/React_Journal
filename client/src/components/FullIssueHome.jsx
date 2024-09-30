@@ -78,12 +78,7 @@ const FullIssueHome = ({ purchase }) => {
         <>
             {/* <h1 className="text-center text-3xl font-bold p-4 ">Purchase Full Issue</h1> */}
             <div className="flex justify-center align-middle">
-  <Carousel
-    className=""
-    width="240px"
-    showThumbs={false}
-    showArrows={true}
-    infiniteLoop={true} // Turn off infinite loop
+ <Carousel className='' width={"240px"} showThumbs={false}  showArrows={true} infiniteLoop={true} autoPlay={true} interval={3000}
   >
     {allFullIssue.map((issue, index) => (
       <div key={index}> {/* Ensure each element has a unique key */}
