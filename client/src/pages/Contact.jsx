@@ -1,4 +1,4 @@
-import React,{ useState} from 'react'
+import React,{ useEffect, useState} from 'react'
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material'
@@ -12,8 +12,10 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Typography from '@mui/material/Typography';
+import { useParams } from 'react-router-dom';
 
 const Contact = () => {
+  const { subject} = useParams();
   const [open, setOpen] = useState(false);
   const [alertStatus, setAlertStatus] = useState('success');
   const [alertText, setAlertText] = useState('');
@@ -22,7 +24,14 @@ const Contact = () => {
     email: '',
     message: '',
     contact: '',
+    subject:'',
   });
+  useEffect(() => {
+    if (subject && subject === 'sjp') {
+        setFormData((prevData) => ({ ...prevData, subject:'SJP Author Services' }));
+    }
+  }, [])
+
   const handleFormChange = (event) => {
     const { name, value } = event.target
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -70,6 +79,15 @@ const handleClose = (event, reason) => {
                                 variant="outlined"
                                 name='email'
                                 value={formData.email}
+                                onChange={handleFormChange} />
+                        </div>
+                        <div className="mt-5">
+                            <TextField fullWidth
+                                id="outlined-basic"
+                                label="Subject"
+                                variant="outlined"
+                                name='subject'
+                                value={formData.subject}
                                 onChange={handleFormChange} />
                         </div>
                         <div className="mt-5">

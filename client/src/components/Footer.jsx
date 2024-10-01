@@ -33,7 +33,7 @@ const Footer = () => {
          <div className="flex flex-col gap-6 sm:text-start md:text-start">
            <Link  className=' font-bold '>General </Link>
            <Link to='/policies' className=' '>Policies </Link>
-           <Link to='/contact' className=' '>Contact Us </Link>
+           <Link to='/contact/new' className=' '>Contact Us </Link>
            <Link to='/all_articles.rss' className=' '>Subscribe to RSS </Link>
            <Link to='/terms' className=' '>Terms of Use </Link>
          </div>
@@ -223,7 +223,7 @@ const Footer = () => {
             fontWeight: 'normal',
           }}
         >
-          <Link to='/contact' className=''>Contact Us</Link>
+          <Link to='/contact/new' className=''>Contact Us</Link>
         </Typography>
       </Grid>
       <Grid item xs={6} sm={6}>

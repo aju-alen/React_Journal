@@ -5,7 +5,7 @@ dotenv.config()
 export const contactUs = async (req, res) => {
     let from = req.body.email;
     let to = process.env.GMAIL_AUTH_USER;
-    let subject = 'journal query';
+    let subject = req.body.subject;
     let message = `
     Sent From : ${req.body.email}
     Message : ${req.body.message}

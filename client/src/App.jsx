@@ -155,7 +155,7 @@ function App() {
         element: <Policies/>,
       },
       {
-        path: '/contact',
+        path: '/contact/:subject',
         element: <Contact/>,
       },
       {
