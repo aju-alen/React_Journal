@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer'
 import dotenv from 'dotenv'
 dotenv.config()
 export const contactUs = async (req, res) => {
-    let from = req.body.email;
+    let from = process.env.GMAIL_AUTH_USER;
     let to = process.env.GMAIL_AUTH_USER;
     let subject = req.body.subject;
     let message = `
@@ -11,8 +11,7 @@ export const contactUs = async (req, res) => {
     Message : ${req.body.message}
     Contact : ${req.body.contact}
     Username : ${req.body.username}
-    `;
-    
+    `;    
   
     let transporter = nodemailer.createTransport({
       host: 'mail.privateemail.com',
