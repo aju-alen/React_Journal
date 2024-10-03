@@ -28,6 +28,7 @@ const EthicsOfPublicationContent = () => {
               variant="h2"
               component="div"
               sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center' }}
+              fontSize={30}
             >
               Ethical Practice
             </Typography>
@@ -36,12 +37,13 @@ const EthicsOfPublicationContent = () => {
           <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
       <CardActionArea>
         <CardContent>
-            <Box mb={2} mt={10}>
+            <Box mb={2}>
               <Typography
                 gutterBottom
                 variant="h5"
                 component="div"
                 sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                fontSize={20}
               >
                 Ethical Responsibility
               </Typography>
@@ -79,6 +81,7 @@ const EthicsOfPublicationContent = () => {
               <Typography
                 variant="h6"
                 sx={{ color: 'primary.main', fontWeight: 'bold', mb: 2 }}
+                fontSize={20}
               >
                 Scientific Journals Portal makes the following commitments:
               </Typography>
@@ -183,7 +186,7 @@ const EthicsOfPublicationContent = () => {
                 The ethical responsibilities for authors are as follows: -
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1, lineHeight: 1.6 }}>
-                <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
+                <ul style={{  marginTop: '0.5rem' }}>
                   <li>• Ensure originality and rights ownership of submitted manuscripts</li>
                   <li>• Transparency on whether the works have been published elsewhere and/or whether
                     the works have been submitted to other journal – SJP prefers journals that have not
@@ -238,7 +241,7 @@ const EthicsOfPublicationContent = () => {
                 The ethical responsibilities of reviewers are as follows:
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1, lineHeight: 1.6 }}>
-                <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
+                <ul style={{  marginTop: '0.5rem' }}>
                   <li>• Keep the review process as confidential as possible</li>
                   <li>• Ensure that all communication with authors is done using the official trackable
                     channels and refrain from any direct communication with authors in order to
@@ -285,7 +288,7 @@ const EthicsOfPublicationContent = () => {
                 The ethical responsibilities for editors are as follows:-
               </Typography>
               <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1, lineHeight: 1.6 }}>
-                <ul style={{ paddingLeft: '1.5rem', marginTop: '0.5rem' }}>
+                <ul style={{ marginTop: '0.5rem' }}>
                   <li>•Oversee the consistent practice and implementation of conventional ethical
                     policies for journals</li>
                   <li>• Act to enforce ethical policies as need may arise to safeguard the ethical integrity of
@@ -340,7 +343,7 @@ const EthicsOfPublicationContent = () => {
                 transparency on conflicts of interests and/or funding positions. The above being the
                 case, SJP disclaims that content published in any of its affiliate journals represents
                 the opinions of the author(s) and that it does not in any way reflect the position of
-                the journal not of any of the affiliated organizations. SJP supports author, reviewer
+                the journal nor of any of the affiliated organizations. SJP supports author, reviewer
                 and editorial independence, which leaves the editors with the last call on what to
                 publish. Accordingly, it is reiterated herein that SJP is committed to publishing
                 content that is founded on sound scientific or theoretical principles and remains a
@@ -374,7 +377,7 @@ const EthicsOfPublicationContent = () => {
               gutterBottom
               variant="h2"
               component="div"
-              sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center' }}
+              sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center', fontSize: 30 }}
             >
               Submission of Manuscripts
             </Typography>
