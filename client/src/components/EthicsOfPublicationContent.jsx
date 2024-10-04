@@ -29,6 +29,7 @@ const EthicsOfPublicationContent = () => {
               component="div"
               sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center' }}
               fontSize={30}
+              mt={4}
             >
               Ethical Practice
             </Typography>
@@ -43,7 +44,7 @@ const EthicsOfPublicationContent = () => {
                 variant="h5"
                 component="div"
                 sx={{ fontWeight: 'bold', color: 'primary.main' }}
-                fontSize={20}
+
               >
                 Ethical Responsibility
               </Typography>
@@ -170,7 +171,7 @@ const EthicsOfPublicationContent = () => {
       <CardActionArea>
         <CardContent>
 
-            <Box mb={2} mt={4}>
+            <Box mb={2} >
               <Typography
                 gutterBottom
                 variant="h5"
@@ -225,7 +226,7 @@ const EthicsOfPublicationContent = () => {
           <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
       <CardActionArea>
         <CardContent>
-            <Box mb={2} mt={4} >
+            <Box mb={2}  >
               <Typography
                 gutterBottom
                 variant="h5"
@@ -272,7 +273,7 @@ const EthicsOfPublicationContent = () => {
           <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
       <CardActionArea>
         <CardContent>
-            <Box mb={2} mt={4}>
+            <Box mb={2} >
               <Typography
                 gutterBottom
                 variant="h5"
@@ -323,7 +324,7 @@ const EthicsOfPublicationContent = () => {
           <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
       <CardActionArea>
         <CardContent>
-            <Box mb={2} mt={4}>
+            <Box mb={2} >
               <Typography
                 gutterBottom
                 variant="h5"
@@ -377,7 +378,7 @@ const EthicsOfPublicationContent = () => {
               gutterBottom
               variant="h2"
               component="div"
-              sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center', fontSize: 30 }}
+              sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center', fontSize: 30, mt: 4 }}
             >
               Submission of Manuscripts
             </Typography>
@@ -444,7 +445,7 @@ const EthicsOfPublicationContent = () => {
     <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
       <CardActionArea>
         <CardContent>
-        <Box mt={3}>
+        <Box >
               <Typography
                 variant="h6"
                 sx={{ color: 'primary.main', fontWeight: 'bold', mb: 2 }}
@@ -493,7 +494,7 @@ const EthicsOfPublicationContent = () => {
             <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
       <CardActionArea>
         <CardContent>
-            <Box mt={3}>
+            <Box >
               <Typography
                 variant="h6"
                 sx={{ color: 'primary.main', fontWeight: 'bold', mb: 2 }}
