@@ -161,7 +161,7 @@ export default function SubmitIssue() {
           id="outlined-basic"
           value={formData.stripeDescription}
           name='stripeDescription'
-          label="Write a description"
+          label="Description"
           variant="outlined"
           onChange={handleFormChange} />
 

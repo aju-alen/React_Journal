@@ -362,12 +362,322 @@ const EthicsOfPublicationContent = () => {
       }
 
 
-      {ethicalSlug === 'authorship' && authorship.map(data => (
-        <div key={data.title} className=' flex flex-col'>
-          <h2 className='  h2-class'>{data.title}</h2>
-          <p className='p-class'>{data.content}</p>
-        </div>
-      ))}
+      {ethicalSlug === 'authorship' && 
+      <Container maxWidth='lg'>
+      <Stack>
+        <Typography
+          gutterBottom
+          variant="h2"
+          component="div"
+          sx={{ fontWeight: 'bold', color: 'primary.black', textAlign: 'center' }}
+          fontSize={30}
+          mt={4}
+        >
+          Authorship
+        </Typography>
+      </Stack>
+      <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+                Authorship
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+              
+            
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      Scientific Journals Portal acknowledges that rights, copyrights and due recognition for
+                      authors is critical to the health of the research and knowledge sharing field and
+                      discipline. As such, the entity adopts the International Committee of Medical Journal
+                      Editors (ICMJE) protocol on the principle of authorship in order to realize fairness and
+                      transparency in the process of publication by attributing rights accordingly. In this
+                      section, is a delineation of the key guidelines that guide our authorship approach and
+                      policy.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+                Authorship Criteria
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      Authors listed in a submitted manuscript as contributors must meet the following
+                      requirements: -
+              </Typography>
+              <Typography variant="body1" sx={{ color: 'text.secondary', mt: 1, lineHeight: 1.6 }}>
+                <ul style={{  marginTop: '0.5rem' }}>
+                        <li>• Have significantly contributed to the presented research through conceptualization,
+                          design, the acquisition or the analysis, and interpretation of the data in the research</li>
+                        <li>• Provided critical intellectual support to the presented article through drafting, writing and revising the written content into a composed body of work</li>
+                        <li>•Consent to have approved the final output of the document for submission to publication</li>
+                        <li>• Consented to be held accountable for all aspects of the submitted work including committing to resolving any issues related to the integrity or accuracy of the provided work.</li>
+                </ul>
+              </Typography>
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      Noteworthy, in the interests of copyright, the requirements bullet two and three do not
+                      discredit those who have made substantial contribution to the work for instance in
+                      requirement one. This criterion of authorship forms the core consideration of authorship
+                      consideration across all SJP journals. Nonetheless, some of the journal editors may in
+                      their own assessment require a breakdown of the contribution of all authors on the
+                      submitted manuscript for purposes of ensuring compliance with copyright and
+                      transparency. If this is required of the corresponding author in one or any of the SJP
+                      journals, then the author(s) must submit such a breakdown for proper record keeping.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+                Author Roles
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      Clear understanding of the roles of authors is necessary for the purpose of establishing
+                      transparency. For SJP and all its affiliate journals, the author who submits the
+                      manuscript for review and publication becomes the ‘submitting author’. This author is
+                      responsible for adding all the other authors including their addresses (where
+                      applicable), as co-authors in the submitted manuscript. The information must be
+                      correct, and the author may be required as well to present a description or breakdown of
+                      the contribution of the submitted author names and affiliation details, in order to ensure
+                      that they meet the authorship criteria.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+               Group Authorship
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      To encourage collaboration in research paying attention to the benefit that it can bring to
+                      outputs of research, SJP encourages and supports authorship consortia and groups.
+                      These teams are listed clearly in terms of their group names and the individual team
+                      members who can take responsibility for a research output are clearly stipulated in line
+                      with their roles in the said output. In this way, authorship group or consortia members
+
+                      who do not fit into the authorship criteria are then listed in the acknowledgements
+                      section of the manuscript.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+               Author Affiliations
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      SJP requires that the primary affiliation listed by the author is where the research was
+                      conducted. This stands even if the author moves institutions during the conduct of the
+                      research, with the institution from where most of the research was conducted being
+                      required for listing. The author is allowed to add the current institution using a note in
+
+                      the research output. All affiliations by authors and author groups must be double-
+                      checked for accuracy by the author as this cannot be changed post publication.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+               Authorship Changes
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      SJP understand that in certain instances there may be need to change authors, though
+                      this should happen rarely. Accordingly, any subsequent changes of authorship,
+                      including addition or deletion of authors or changes in the corresponding author must
+                      be supported by a signed consent from the original list of authors. A request must be
+                      submitted to the SJP affiliate journal editor and with this, the process of change of
+                      authors can be initiated. The form must be duly filled in and signed and any instances of
+                      incomplete forms will be returned, while any actions raising suspicion including flimsy
+                      authorship changes reasons may result in the wholesome rejection of the submission.
+                      Please note that SJP and its affiliate journals are not liable to accept any changes in
+                      authorship after acceptance of a submission for publication.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+             Deceased and/or Incapacitated Authors
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      In the unfortunate event that a co-author dies during peer review and the article is
+                      accepted, and the rest of the authors concur to retain their contribution to the
+                      submission by line, they must seek consent from the deceased next of kin or legal
+                      representative to proceed with publication. In the case that the deceased was a sole
+                      author, and the manuscript is accepted, the journal editor and SJP editorial team will
+                      make all attempts to reach out to the next of kin or the deceased legal representatives to
+                      seek consent to proceed with publication.
+              </Typography>
+
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      On the other hand, in cases where a co-author falls acutely ill or is incapacitated to the
+                      extent that they are unable to support the review process by providing consent during
+                      the submission process or peer review stage for publication, SJP and the specific
+                      journal’s editorial team will make all attempts to reach out to their next of kin for
+                      approval. If this does not work, the SJP team and individual journal’s editorial teams will
+                      place the submission on hold and wait until the co-author is able to provide approval for
+                      publication.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+          <Container>
+          <Card sx={{ mt: 2, p: 2, boxShadow: 3 }}>
+      <CardActionArea>
+        <CardContent>
+            <Box mb={2}  >
+              <Typography
+                gutterBottom
+                variant="h5"
+                component="div"
+                sx={{ fontWeight: 'bold', color: 'primary.main' }}
+              >
+            Authorship Disputes
+              </Typography>
+            </Box>
+
+            <Box mt={3}>
+             
+             
+              <Typography variant="body1" sx={{ color: 'text.secondary', lineHeight: 1.6, marginTop: 2 }}>
+                      Any authorship disputes that may arise during the process of publication of a
+                      manuscript are of serious concern to SJP. If SJP becomes aware of an authorship
+                      wrangle during the process of manuscript submission and review for publication, the
+                      editorial team will automatically place the manuscript on hold and look forward to the
+                      resolution of the dispute. An unresolved dispute will necessitate the return of the
+                      manuscript to the authors. Any authorship disputes arising from post publication will be
+                      referred to the institution where the research was conducted. SJP does not have
+
+                      jurisdiction nor the infrastructure to adjudicate author disputes raised at any stage of
+                      the publication and assumes no responsibility for any damages and loss of copyright
+                      that may arise thereof.
+              </Typography>
+            </Box>
+            </CardContent>
+            </CardActionArea>
+            </Card>
+          </Container>
+
+
+      </Container>
+        
+
+      }
 
       {/* -------------------------------------------Submit Manuscript Content ----------- */}
       {ethicalSlug === 'submission' &&
