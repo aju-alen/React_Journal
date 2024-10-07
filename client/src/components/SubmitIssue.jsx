@@ -153,7 +153,7 @@ export default function SubmitIssue() {
           id="outlined-basic"
           value={formData.stripeName}
           name='stripeName'
-          label="Stipe Product Name"
+          label="Product Name"
           variant="outlined"
           onChange={handleFormChange} />
 
@@ -161,7 +161,7 @@ export default function SubmitIssue() {
           id="outlined-basic"
           value={formData.stripeDescription}
           name='stripeDescription'
-          label="Write a description for stripe"
+          label="Write a description"
           variant="outlined"
           onChange={handleFormChange} />
 
