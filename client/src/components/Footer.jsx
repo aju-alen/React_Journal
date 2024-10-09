@@ -14,7 +14,7 @@ const Footer = () => {
        <div className='md:flex-row flex flex-col  w-full h-full justify-around md:items-start items-start sm:gap-5 sm:text-xs font-extralight text-white md:my-6 text-md'>
          <div className="flex flex-col gap-6 sm:text-start md:text-start ">
           
-           <Link  className='flex justify-center font-bold   '>Authors</Link>
+           <Link  className='flex  font-bold   '>Authors</Link>
            <Link to='/mansucript_handling_fee' className='  '>Fee for Publication</Link>
            <Link to='/faq/authorfaq' className='  '>FAQ for Authors </Link>
            <Link to='/waiver_policy' className='  '>Policy on Waivers</Link>
