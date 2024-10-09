@@ -18,15 +18,16 @@ const Footer = () => {
            <Link to='/mansucript_handling_fee' className='  '>Fee for Publication</Link>
            <Link to='/faq/authorfaq' className='  '>FAQ for Authors </Link>
            <Link to='/waiver_policy' className='  '>Policy on Waivers</Link>
+           <Link to='/peer_review' className=' '>Peer Review Process</Link>
 
          </div>
-         <div className=" flex flex-col gap-6 sm:text-start md:text-start mb-6 mt-6">
+         <div className=" flex flex-col gap-6 sm:text-start md:text-start mb-6">
            <Link to='/waiver_policy' className=' font-bold '>Editors & Reviewers</Link>
           
            <Link to='/faq/reviewfaq' className='  '>FAQ for Reviewers</Link>
            <Link to='/faq/editorfaq' className=' '>FAQ for Editors </Link>
            <Link to='/reviewers_guidelines' className=' '>Reviewers Guidelines</Link>
-           <Link to='/peer_review' className=' '>Peer Review Process</Link>
+           
            <Link to='/for_editors' className=' '>Editors</Link>
            <Link to='/editorial-board' className=' '>Editorial board</Link>
          </div>
@@ -87,7 +88,17 @@ const Footer = () => {
           <Link to='/faq/authorfaq' className=''>FAQ for Authors</Link>
         </Typography>
       </Grid>
-      <Grid item xs={12} sm={6}>
+      <Grid item xs={6} sm={6}>
+        <Typography
+          sx={{
+            fontSize: '15px',
+            fontWeight: 'normal',
+          }}
+        >
+          <Link to='/peer_review' className=''>Peer Review Process</Link>
+        </Typography>
+      </Grid>
+      <Grid item xs={6} sm={6}>
         <Typography
           sx={{
             fontSize: '15px',
@@ -97,6 +108,7 @@ const Footer = () => {
           <Link to='/waiver_policy' className=''>Policy on Waivers</Link>
         </Typography>
       </Grid>
+    
       {/* Add more Grid items as needed */}
     </Grid> 
         <Typography  sx={{
@@ -167,16 +179,7 @@ const Footer = () => {
           <Link to='/reviewers_guidelines' className=''>Reviewers Guidelines</Link>
         </Typography>
       </Grid>
-      <Grid item xs={6} sm={6}>
-        <Typography
-          sx={{
-            fontSize: '15px',
-            fontWeight: 'normal',
-          }}
-        >
-          <Link to='/peer_review' className=''>Peer Review Process</Link>
-        </Typography>
-      </Grid>
+     
       <Grid item xs={6} sm={6}>
         <Typography
           sx={{
