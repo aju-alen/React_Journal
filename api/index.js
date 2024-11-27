@@ -17,6 +17,7 @@ import stripe from 'stripe';
 import sendMailRotue from './routes/sendMail.route.js'
 import { PrismaClient } from '@prisma/client'
 import { originUrl } from './utils/cors.dev.js'
+import riseRoutes from './routes/rise-route.js'
 const prisma = new PrismaClient()
 dotenv.config()
 
@@ -162,6 +163,7 @@ app.use('/api/send-email', sendMailRotue)
 app.use('/api/user-fullissue', userFullIssueRoute)
 app.use('/api/subscription', subscriptionROute)
 
+app.use('/api/rise',riseRoutes)
 
 
 app.use(errorHandler)
