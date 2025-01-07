@@ -65,6 +65,8 @@ const MyManuscriptsDashboard = ({ user }) => {
             <TableCell align="center">Status</TableCell>
             <TableCell align="center">Edit</TableCell>
             <TableCell align="center">Correction Files</TableCell>
+            <TableCell align="center">Download PDF</TableCell>
+            <TableCell align="center">Download Certificate</TableCell>
             <TableCell align="center">Payment</TableCell>
             <TableCell align="center">Delete Manuscript</TableCell>
           </TableRow>
@@ -106,6 +108,17 @@ const MyManuscriptsDashboard = ({ user }) => {
                     {row.rejectionFilesURL[2] ? `📄${getPdfName(row.rejectionFilesURL[2])} ` : ''}
                   </Link>
                 </TableCell> : <TableCell></TableCell>}
+
+                <TableCell sx={{ fontWeight: 'bold' }} align="center">
+                <Link to={row.filesURL[0]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                    {row.isPublished ? `📄${getPdfName(row.filesURL[0])} ` : ''}
+                  </Link>
+                </TableCell>
+                <TableCell sx={{ fontWeight: 'bold' }} align="center">
+                <Link to={row.filesURL[1]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                    {row.isPublished ? `📄${getPdfName(row.filesURL[1])} ` : ''}
+                  </Link>
+                </TableCell>
 
                 {!row.paymentStatus ? <TableCell sx={{ fontWeight: 'bold' }} align="center">
                   <Link to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}`}>
