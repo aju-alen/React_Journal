@@ -10,9 +10,9 @@ const Home = () => {
     
     <div>
       <HeaderImage />
-      <Link to='/register'>
+      {/* <Link to='/register'>
       <img src="./images/advertVol1Issue3.jpeg" alt="cloud" className=' w-full ' />
-      </Link>
+      </Link> */}
       <ServicesHome />
       <div className='mt-4'>
      
