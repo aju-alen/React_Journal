@@ -15,8 +15,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import { useNavigate } from 'react-router-dom';
 
 const MyManuscriptsDashboard = ({ user }) => {
+  const navigate = useNavigate()
   const [articles, setArticles] = useState(false);
   const [userId, setUserId] = useState('');
   const [emailId, setEmailId] = useState('');
@@ -43,13 +45,12 @@ const MyManuscriptsDashboard = ({ user }) => {
   }, []);
 
   const handleDeleteArticle = async () => {
+ //There exist a delete article route in the backend which is not implemented in the frontend
     try{
-      const response = await axios.delete(`${httpRoute}/api/journalArticle/delete-article/${articleId}/${userId}`)
-      handleClose()
+      navigate('/contact/new')
     }
     catch(err){
       console.log(err)
-      
     }
   }
 
@@ -140,17 +141,17 @@ const MyManuscriptsDashboard = ({ user }) => {
                     aria-describedby="alert-dialog-description"
                   >
                     <DialogTitle id="alert-dialog-title">
-                      {"This action will delete the Manuscript. Are you sure?"}
+                      {"Want to delete this manuscript?"}
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        Deleting the Manuscript will remove it from the system. This action cannot be undone.
+                        Deleting this manuscript can only done by the support team.Contact support team for further assistance.
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
                       <Button onClick={handleClose}>Cancel</Button>
                       <Button onClick={ handleDeleteArticle} autoFocus>
-                        Delete
+                        Contact Support
                       </Button>
                     </DialogActions>
                   </Dialog>
