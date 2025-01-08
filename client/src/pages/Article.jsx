@@ -113,26 +113,41 @@ export default function Article() {
     <div className="w-52 justify-center items-center hidden md:block">
         <img src="./images/logo.jpeg" />
     </div>
-    <div className="flex-1 w-full ">
-        <h2 className='p-2 md:px-12 text-left font-medium text-xl md:text-lg'>
-            {journal.articleTitle}
-        </h2>
-        <div className="flex gap-2 md:gap-12 justify-center px-12 mt-2 font-bold">
-            {journal?.articleAuthors?.map((author, idx) => (
-                <p key={idx} className='text-md md:text-xl '>
-                    {author.authorGivenName +' '+ author.authorLastName}
-                </p>
-            ))}
-        </div>
-        <div className="flex gap-2 md:gap-3 justify-center mt-2 px-12 ">
-            <span> Article Number - A000{journal?.id?.split('').splice(4, journal.id.length - 5 - 27).join('')}  | </span>
-            <span> Vol-{journal?.articleVolume} Issue-{journal?.articleIssue} </span>
-        </div>
-        <div className="text-center mt-2 text-sm md:text-md px-12">
-            <span>Received: {getDates(journal.articleReceivedDate)} | </span>
-            <span>Accepted: {getDates(journal.articleAcceptedDate)} | </span>
-            <span>Published: {getDates(journal.articlePublishedDate)}</span>
-        </div>
+    <div className="flex-1 w-full px-4 md:px-12 py-4">
+      {/* Article Title */}
+      <h2 className="text-lg md:text-xl lg:text-2xl font-medium text-left mb-4">
+        {journal.articleTitle}
+      </h2>
+
+      {/* Authors */}
+      <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4">
+        {journal?.articleAuthors?.map((author, idx) => (
+          <p key={idx} className="text-sm md:text-base font-bold">
+            {author.authorGivenName + ' ' + author.authorLastName}
+            {idx < journal.articleAuthors.length - 1 && <span className="ml-1">•</span>}
+          </p>
+        ))}
+      </div>
+
+      {/* Article Details */}
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-2 text-sm md:text-base mb-4">
+        <span>
+          Article Number - A000{journal?.id?.split('').splice(4, journal.id.length - 5 - 27).join('')}
+        </span>
+        <span className="hidden sm:inline">|</span>
+        <span>
+          Vol-{journal?.articleVolume} Issue-{journal?.articleIssue}
+        </span>
+      </div>
+
+      {/* Dates */}
+      <div className="flex flex-col sm:flex-row justify-center items-center gap-2 text-xs md:text-sm text-gray-600">
+        <span>Received: {getDates(journal.articleReceivedDate)}</span>
+        <span className="hidden sm:inline">|</span>
+        <span>Accepted: {getDates(journal.articleAcceptedDate)}</span>
+        <span className="hidden sm:inline">|</span>
+        <span>Published: {getDates(journal.articlePublishedDate)}</span>
+      </div>
     </div>
     <div className="w-48 py-8 hidden md:block">
         {/* <FullIssueHome purchase={false} /> */}
