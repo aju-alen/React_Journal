@@ -7,7 +7,7 @@ import jwt from 'jsonwebtoken'
 import cookieParser from 'cookie-parser'
 import createError from '../utils/createError.js'
 import dotenv from 'dotenv'
-import { emailVerifyBackendUrl, originUrl } from '../utils/cors.dev.js'
+import { emailVerifyBackendUrl, emailUrl } from '../utils/cors.dev.js'
 dotenv.config()
 
 const prisma = new PrismaClient();
@@ -87,10 +87,10 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
-        </div>
+        </div>S
         <div>
             <p>Hi ${name},</p>
             <p>You're almost there.</p>
@@ -159,7 +159,7 @@ export const verifyEmail = async (req, res) => {
         sendWelcomeEmail(updatedUser.email, updatedUser.surname);
         console.log(updatedUser, 'updatedUser');
         // res.status(200).json({ message: 'Email verified' })
-        res.redirect(`${originUrl}/login`)
+        res.redirect(`${emailUrl}/login`)
     }
     catch (err) {
         console.log(err);
@@ -179,28 +179,28 @@ const sendWelcomeEmail = async (email, name) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>
         <div>
-            <p>welcome ${name},</p>
+            <p>Welcome ${name},</p>
             <p>With your Scientific Journals Portal account you can sign in, edit your details and make institutional connections for a range of the Scientific Journals Portal products.</p>
             <br>
             <p>The Scientific Journals Team</p>
             <br>
-            <p><a href="${originUrl}">View Your Scientific Journals Portal Account</a></p>
+            <p><a href="${emailUrl}">View Your Scientific Journals Portal Account</a></p>
             <br>
             <p>--------------------</p>
             <p>Copyright © 2024, Scientific Journals Portal, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
             <br>
-            <p> <a href="${originUrl}">About SJP</a></p>
+            <p> <a href="${emailUrl}">About SJP</a></p>
             <br>
-            <p><a href="${originUrl}/terms">Terms and conditions</a></p>
+            <p><a href="${emailUrl}/terms">Terms and conditions</a></p>
             <br>
-            <p> <a href="${originUrl}/policies">Privacy policy</a></p>
+            <p> <a href="${emailUrl}/policies">Privacy policy</a></p>
             <br>
-            <p> <a href="${originUrl}/contact">Help</a></p>
+            <p> <a href="${emailUrl}/contact">Help</a></p>
             <br>
             <p>We use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
         </div>
@@ -303,7 +303,7 @@ const sendResetPassword = async (email, resetToken, name) => {
     <html>
     <body>
         <div>
-            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
         <div>
             <p>Hi ${name},</p>
@@ -338,7 +338,7 @@ export const verifyResetPassword = async (req, res) => {
             return res.status(400).json({ message: 'Link Expired. You can try again.' })
         }
         else{
-            return res.redirect(`${originUrl}/reset-password/${resetTokenWithTimestamp.split('.')[0]}`)
+            return res.redirect(`${emailUrl}/reset-password/${resetTokenWithTimestamp.split('.')[0]}`)
         }
 
 
@@ -431,7 +431,7 @@ export const sendMarkettingEmail = async (req, res) => {
     <html>
     <body>
         <div>
-            <img src="https://i.postimg.cc/nr8B09zy/Scientific-Journals-Portal-04.png" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
         <div>
             <p>Hi there,</p>
