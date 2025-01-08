@@ -320,7 +320,6 @@ export const getPublsihedJournalArticle = async (req, res, next) => {
                 articlePublishedDate: 'desc'
             }
         });
-        console.log(journalArticle);
         res.status(200).json(journalArticle);
     }
     catch (err) {
