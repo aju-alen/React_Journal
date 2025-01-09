@@ -26,8 +26,9 @@ const s3 = new S3({
         s3: s3,
         bucket: BUCKET_NAME,
         metadata: function (req, file, cb) {
+            const date = new Date().toISOString();
             console.log(file, 'file in metadata');
-            cb(null, { fieldName: file.fieldname });
+            cb(null, { fieldName: file.fieldname,uploadDate:date });
         },
         key: function (req, file, cb) {
             const userId = req.userId;
@@ -113,7 +114,9 @@ const uploadWithMulterAdmin = (awsId,id) => multer({
         s3: s3,
         bucket: BUCKET_NAME,
         metadata: function (req, file, cb) {
-            cb(null, { fieldName: file.fieldname });
+            const date = new Date().toISOString();
+            console.log(file, 'file in metadata');
+            cb(null, { fieldName: file.fieldname,uploadDate:date });
         },
         key: function (req, file, cb) {
             const userId = req.userId;
@@ -194,8 +197,9 @@ const uploadWithMulterFullIssue = (awsId) => multer({
         s3: s3,
         bucket: BUCKET_NAME,
         metadata: function (req, file, cb) {
+            const date = new Date().toISOString();
             console.log(file, 'file in metadata');
-            cb(null, { fieldName: file.fieldname });
+            cb(null, { fieldName: file.fieldname,uploadDate:date });
         },
         key: function (req, file, cb) {
             console.log(file, 'file in key');
