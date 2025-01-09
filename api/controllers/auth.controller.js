@@ -87,7 +87,7 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>S
@@ -180,7 +180,7 @@ const sendWelcomeEmail = async (email, name) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>
@@ -304,7 +304,7 @@ const sendResetPassword = async (email, resetToken, name) => {
     <html>
     <body>
         <div>
-            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
         <div>
             <p>Hi ${name},</p>
@@ -432,7 +432,7 @@ export const sendMarkettingEmail = async (req, res) => {
     <html>
     <body>
         <div>
-            <img src="https://i.postimg.cc/1t8pRMxx/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
         <div>
             <p>Hi there,</p>
