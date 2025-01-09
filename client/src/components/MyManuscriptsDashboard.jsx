@@ -117,7 +117,7 @@ const MyManuscriptsDashboard = ({ user }) => {
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
                 <Link to={row.filesURL[1]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                    {row.isPublished ? `📄${getPdfName(row.filesURL[1])} ` : ''}
+                    {row.isPublished && row.filesURL[1] ? `📄${getPdfName(row.filesURL[1])} ` : ''}
                   </Link>
                 </TableCell>
 
