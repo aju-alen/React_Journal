@@ -127,7 +127,8 @@ export const verifyEmail = async (req, res) => {
         const currentTime = Date.now();
 
         if (currentTime - emailVerificationToken.split('.')[1] > expirationTime) {
-
+            console.log('inside verify if to see if time expired');
+            
             await prisma.user.delete({
                 where: {
                     email: emailId
