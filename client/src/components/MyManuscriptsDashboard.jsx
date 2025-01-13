@@ -127,7 +127,11 @@ const MyManuscriptsDashboard = ({ user }) => {
                       Pay Here
                     </Button>
                   </Link>
-                </TableCell> : <TableCell sx={{ fontWeight: 'bold', color: 'green', fontSize: 20 }} align="center">Payment Complete</TableCell>}
+                </TableCell> : <TableCell>
+                <Button variant='text' size='small' color="success">
+                    Payment Complete
+                  </Button>
+                  </TableCell>}
 
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
                   <Button variant="contained" color="error" onClick={()=>handleClickOpen(row.id)}>

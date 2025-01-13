@@ -87,7 +87,7 @@ const sendVerificationEmail = async (email, verificationToken, name) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>S
@@ -180,7 +180,7 @@ const sendWelcomeEmail = async (email, name) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>
@@ -304,7 +304,7 @@ const sendResetPassword = async (email, resetToken, name) => {
     <html>
     <body>
         <div>
-            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
         <div>
             <p>Hi ${name},</p>
@@ -387,76 +387,87 @@ export const resetPassword = async (req, res) => {
 }
 
 export const sendMarkettingEmail = async (req, res) => {
+    const {subject, emailContent, emailType, recipientEmail} = req.body;
     console.log(req.body, 'req.body');
-    const subject = req.body.subject;
-    const emailParagraph1 = req.body.emailParagraph1;
-    const emailParagraph2 = req.body.emailParagraph2;
-    const emailParagraph3 = req.body.emailParagraph3;
 
     try {
-        const users = await prisma.user.findMany({
-            select: {
-                email: true
-            },
-            where: {
-                marketingCommunications: true
-            }
-        })
-        console.log(users, 'users');
+        if (emailType === 'marketing') {
+            console.log('inside if marketting');
+            
+            const users = await prisma.user.findMany({
+                select: {
+                    email: true
+                },
+                where: {
+                    marketingCommunications: true
+                }
+            });
+            console.log(users, 'users');
+    
+            const emailAddresses = users.map(entry => entry.email);
+            const allEmailIds = emailAddresses.join(',');
+            sendMarkettingEmailFinal(allEmailIds, emailContent, subject);
+        }
+        else if (emailType === 'specific') {
+            sendMarkettingEmailFinal(recipientEmail, emailContent, subject);
+        }
 
-        const emailAddresses = users.map(entry => entry.email);
-
-        // Join email addresses separated by commas
-        const allEmailIds = emailAddresses.join(',');
-        sendMarkettingEmailFinal(allEmailIds, emailParagraph1, emailParagraph2, emailParagraph3,subject);
-
-
-        res.status(200).json({ message: 'Email sent successfully' })
+        res.status(200).json({ message: 'Email sent successfully' });
     }
     catch (err) {
         console.log(err);
-        res.status(400).send('An error occoured')
+        res.status(400).send('An error occurred');
     }
+};
 
-}
+const formatEmailText = (text) => {
+    if (!text) return '';
+    return text
+        .replace(/\n/g, '<br>')
+        .replace(/ {2,}/g, match => '&nbsp;'.repeat(match.length));
+};
 
- const sendMarkettingEmailFinal = async (emails, emailParagraph1,emailParagraph2,emailParagraph3,subject) => {
-
-
-
+const sendMarkettingEmailFinal = async (emails, emailContent, subject) => {
     const transporter = createTransport;
+    
+    const formattedContent = formatEmailText(emailContent);
+
     const mailOptions = {
         from: process.env.GMAIL_AUTH_USER,
         subject: subject,
         html: `
     <html>
+    <head>
+        <style>
+            .email-content {
+                font-family: Arial, sans-serif;
+                line-height: 1.6;
+                white-space: pre-line;
+            }
+            .paragraph {
+                margin-bottom: 15px;
+            }
+        </style>
+    </head>
     <body>
         <div>
-            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
-        <div>
-            <p>Hi there,</p>
-            <br>
-            <p>${emailParagraph1}</p>
-            <br>
-            <p>${emailParagraph2}</p>
-            <br>
-            <p>${emailParagraph3}</p>
-            <br>
+        <div class="email-content">
+            <div class="paragraph">${formattedContent}</div>
             <p>Warm Regards</p>
-            <p>Scientific Journals Team</p>
+            <p><a href="https://scientificjournalsportal.com/">Scientific Journals Team</a></p>
         </div>
     </body>
     </html>`,
-    bcc: emails
-    }
+        bcc: emails
+    };
 
-    //send the mail
     try {
         const response = await transporter.sendMail(mailOptions);
-        console.log("Reset Password email sent", response);
+        console.log("Emails sent", response);
     }
     catch (err) {
         console.log("Err sending Reset Password email", err);
     }
-}
+};

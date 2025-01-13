@@ -67,7 +67,7 @@ const sendArticleSubmittedEmail = async (email) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>
@@ -166,7 +166,7 @@ const sendArticleRejectionEmail = async (email) => {
     <body>
         <div>
 
-            <img src="https://i.postimg.cc/44M0PRYR/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
+            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
             <p>Scientific Journals Portal</p>
 
         </div>

@@ -8,7 +8,7 @@ router.post('/login',login)
 router.get('/logout',logout)
 router.post('/forget-password',forgetPassword)
 router.post('/reset/:resetToken',resetPassword)
-router.post('/send-marketting-email',sendMarkettingEmail)
+router.post('/send-marketing-email',sendMarkettingEmail)
 router.get('/reset-password/:resetTokenWithTimestamp',verifyResetPassword)
 
 
