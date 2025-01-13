@@ -8,7 +8,10 @@ import {
   FormControlLabel,
   Radio,
   FormControl,
-  FormLabel
+  FormLabel,
+  Paper,
+  Typography,
+  Divider
 } from '@mui/material';
 import axios from 'axios';
 import { httpRoute } from '../helperFunctions';
@@ -21,18 +24,29 @@ const CreateMarketingEmail = () => {
   const [open, setOpen] = useState(false);
   const [alertStatus, setAlertStatus] = useState('success');
   const [alertText, setAlertText] = useState('');
+  const [formData, setFormData] = useState({
+    subject: '',
+    emailContent: ''
+  });
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async(event) => {
     event.preventDefault();
     try {
       setLoading(true);
-      const form = event.currentTarget;
       
       const registerForm = {
-        subject: form.subject.value,
-        emailContent: form.emailContent.value,
+        subject: formData.subject,
+        emailContent: formData.emailContent,
         emailType: emailType,
-        recipientEmail: emailType === 'specific' ? form.recipientEmail?.value : undefined,
+        recipientEmail: emailType === 'specific' ? event.currentTarget.recipientEmail?.value : undefined,
       };
 
       const endpoint = `${httpRoute}/api/auth/send-marketing-email`;
@@ -59,78 +73,152 @@ const CreateMarketingEmail = () => {
     setOpen(false);
   };
 
-  return (
-    <div>
-      <Box 
-        component="form" 
-        noValidate 
-        onSubmit={handleSubmit} 
-        sx={{ minWidth: "auto" }} 
-        className='md:p-20'
-      >
-        <Stack spacing={2}>
-          <FormControl>
-            <FormLabel>Email Type</FormLabel>
-            <RadioGroup
-              row
-              value={emailType}
-              onChange={(e) => setEmailType(e.target.value)}
-            >
-              <FormControlLabel 
-                value="marketing" 
-                control={<Radio />} 
-                label="Marketing Email (All Subscribers)" 
-              />
-              <FormControlLabel 
-                value="specific" 
-                control={<Radio />} 
-                label="Specific Person" 
-              />
-            </RadioGroup>
-          </FormControl>
+  const formatPreviewText = (text) => {
+    if (!text) return '';
+    console.log(text,'text');
+    
+    return text.split('\n').map((line, i) => {
+      console.log(line,'line');
+      
+      return(
+      <React.Fragment key={i}>
+        {line}
+        <br />
+      </React.Fragment>
+    )});
+  };
 
-          {emailType === 'specific' && (
+  return (
+    <Box className="md:p-20">
+      <Typography variant="h5" gutterBottom>
+        Create Marketing Email
+      </Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { md: '1fr 1fr' }, gap: 4 }}>
+        {/* Form Section */}
+        <Box 
+          component="form" 
+          noValidate 
+          onSubmit={handleSubmit} 
+        >
+          <Stack spacing={2}>
+            <FormControl>
+              <FormLabel>Email Type</FormLabel>
+              <RadioGroup
+                row
+                value={emailType}
+                onChange={(e) => setEmailType(e.target.value)}
+              >
+                <FormControlLabel 
+                  value="marketing" 
+                  control={<Radio />} 
+                  label="Marketing Email (All Subscribers)" 
+                />
+                <FormControlLabel 
+                  value="specific" 
+                  control={<Radio />} 
+                  label="Specific Person" 
+                />
+              </RadioGroup>
+            </FormControl>
+
+            {emailType === 'specific' && (
+              <TextField
+                fullWidth
+                label="Recipient Email"
+                variant="outlined"
+                name="recipientEmail"
+                type="email"
+              />
+            )}
+
             <TextField
               fullWidth
-              label="Recipient Email"
+              multiline
+              rows={4}
+              label="Subject"
               variant="outlined"
-              name="recipientEmail"
-              type="email"
+              name="subject"
+              value={formData.subject}
+              onChange={handleChange}
+              inputProps={{
+                style: { whiteSpace: 'pre-wrap' }
+              }}
             />
-          )}
+            <TextField
+              fullWidth
+              multiline
+              rows={8}
+              label="Email Content"
+              variant="outlined"
+              name="emailContent"
+              value={formData.emailContent}
+              onChange={handleChange}
+              inputProps={{
+                style: { whiteSpace: 'pre-wrap' }
+              }}
+            />
+            <Button 
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {loading ? 'Sending...' : 'Mailing'}
+            </Button>
+          </Stack>
+        </Box>
 
-          <TextField
-            fullWidth
-            multiline
-            rows={4}
-            label="Subject"
-            variant="outlined"
-            name="subject"
-            inputProps={{
-              style: { whiteSpace: 'pre-wrap' }
+        {/* Preview Section */}
+        <Box>
+          <Typography variant="h6" gutterBottom>
+            Email Preview
+          </Typography>
+          <Paper 
+            elevation={3} 
+            sx={{ 
+              p: 3, 
+              minHeight: '500px',
+              backgroundColor: '#fff',
+              fontFamily: 'Arial, sans-serif'
             }}
-          />
-          <TextField
-            fullWidth
-            multiline
-            rows={8}
-            label="Email Content"
-            variant="outlined"
-            name="emailContent"
-            inputProps={{
-              style: { whiteSpace: 'pre-wrap' }
-            }}
-          />
-          <Button 
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
           >
-            {loading ? 'Sending...' : 'Send Email'}
-          </Button>
-        </Stack>
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+              <img 
+                src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" 
+                alt="Scientific Journals" 
+                style={{ width: '50%', maxWidth: '200px' }}
+              />
+            </Box>
+            <Box sx={{ lineHeight: 1.6 }}>
+              <Typography variant="h6" gutterBottom>
+                {formData.subject || 'Subject'}
+              </Typography>
+              <Divider sx={{ my: 2 }} />
+              <Typography paragraph>Hi there,</Typography>
+              <Typography 
+                component="div" 
+                sx={{ 
+                  whiteSpace: 'pre-line',
+                  mb: 2,
+                  minHeight: '100px'
+                }}
+              >
+                {formatPreviewText(formData.emailContent)}
+              </Typography>
+              <Typography>Warm Regards</Typography>
+              <Typography>
+                <a 
+                  href="https://scientificjournalsportal.com/" 
+                  style={{ color: '#1976d2', textDecoration: 'none' }}
+                >
+                  Scientific Journals Team
+                </a>
+              </Typography>
+            </Box>
+          </Paper>
+        </Box>
       </Box>
+
       <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
@@ -141,7 +229,7 @@ const CreateMarketingEmail = () => {
           {alertText}
         </Alert>
       </Snackbar>
-    </div>
+    </Box>
   );
 };
 
