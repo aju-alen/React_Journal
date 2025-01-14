@@ -221,7 +221,7 @@ const ProfileDashboard = () => {
               <Tab wrapped label="Edit Profile" {...a11yProps(2)} />
 <Tab label="Manage Purchase" {...a11yProps(3)} />
               <Tab wrapped label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
-              <Tab wrapped label={userDetails?.user?.isAdmin && "Send a marketting email"} {...a11yProps(5)} />
+              <Tab wrapped label={userDetails?.user?.isAdmin && "Mailing"} {...a11yProps(5)} />
               <Tab wrapped
                 label={
                   userDetails?.user?.isAdmin && (
