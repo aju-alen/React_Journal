@@ -46,7 +46,7 @@ const Login = () => {
       <ImageHeader />
       
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
-        <div className="bg-white rounded-lg shadow-md w-full max-w-md p-6 sm:p-8">
+        <div className="bg-white rounded-lg shadow-md w-full max-w-2xl p-6 sm:p-8">
           <h2 className="text-xl sm:text-2xl font-semibold mb-6 text-center">
             Login Here to submit articles
           </h2>
