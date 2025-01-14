@@ -42,11 +42,11 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
   const sig = request.headers['stripe-signature'];
 
   let event;
-  console.log('Logged into webhook route for publish journal ');
+  //console.log('Logged into webhook route for publish journal ');
 
   try {
       event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-      console.log(event, 'event in stripe route webhook');
+      //console.log(event, 'event in stripe route webhook');
   } catch (err) {
       response.status(400).send(`Webhook Error: ${err.message}`);
       return;
@@ -59,7 +59,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
       case 'invoice.payment_succeeded':
           // Then define and call a function to handle the event invoice.payment_succeeded
           const invoicePaymentSucceeded = event.data.object;
-          // console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
+          // //console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
             const findCustomer = await prisma.subscription.findUnique({
                 where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
             });
@@ -78,7 +78,7 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
                   customerId: invoicePaymentSucceeded.subscription
                 }
               });
-              console.log(updateSubscription, 'updateSubscription in invoice succeed');
+              //console.log(updateSubscription, 'updateSubscription in invoice succeed');
             }
             else{
               const subscription = await prisma.subscription.create({
@@ -94,17 +94,18 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
                     customerId: invoicePaymentSucceeded.subscription
                 }
             });
-            console.log(subscription, 'subscription in invoice succeed');
+            //console.log(subscription, 'subscription in invoice succeed');
             }
               await prisma.$disconnect();
 
           break;
+  
       //---------------------------------checkout.session.completed-------------------------------------
       case 'checkout.session.completed':
          
-          console.log('3');
+          //console.log('3');
           const checkoutSessionCompleted = event.data.object;
-          console.log(checkoutSessionCompleted, 'checkoutSessionCompleted in stripe route webhookkkkkkkkkk');
+          //console.log(checkoutSessionCompleted, 'checkoutSessionCompleted in stripe route webhookkkkkkkkkk');
 
           if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'publisharticle') {
               const payment = await prisma.article.update({
@@ -116,27 +117,45 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
 
               await prisma.$disconnect();          }
           if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'fullIssue') {
-              const userFullIssue = await prisma.userFullIssue.create({
+            console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
+            
+              const userFullIssue = await prisma.userFullIssue.update({
+                where:{ payment_intent: checkoutSessionCompleted.payment_intent,},
                   data: {
                       userId: checkoutSessionCompleted.metadata.userId,
-                      fullIssueId: checkoutSessionCompleted.metadata.articleId
+                      fullIssueId: checkoutSessionCompleted.metadata.articleId,
                   }
               });
 
-              console.log(userFullIssue, 'user schema in database');
+
               await prisma.$disconnect();
-              // console.log(payment, 'payment in stripe route webhook');
           }
 
           if (checkoutSessionCompleted.mode === 'subscription') {
-              console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
-              console.log('checkoutSession updata db');
+              //console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
+              //console.log('checkoutSession updata db');
           }
           break;
-      //---------------------------------checkout.session.async_payment_failed-------------------------------------
+      //---------------------------------payment_intent.created-------------------------------------
+      case 'charge.succeeded':
+          console.log('charge.succeeded');
+          const paymentIntentCreated = event.data.object;
+          console.log(paymentIntentCreated,'z----z----z-z-z--z-z-z-z');
+          
+          const updateUserFullIssue = await prisma.userFullIssue.create({
+              
+              data: {
+                invoice_url: paymentIntentCreated.receipt_url,
+                payment_intent: paymentIntentCreated.payment_intent,
+              }
+          })
+          //console.log(paymentIntentCreated, 'charge.succeeded in stripe route webhook');
+          console.log(updateUserFullIssue, 'Database result');
+
+          break;
 
       default:
-          console.log(`Unhandled event type ${event.type}`);
+          //console.log(`Unhandled event type ${event.type}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event
@@ -170,5 +189,5 @@ app.use(errorHandler)
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 
-  console.log(`server listening at port ${PORT}`);
+  //console.log(`server listening at port ${PORT}`);
 })

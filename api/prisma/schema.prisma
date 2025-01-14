@@ -124,12 +124,17 @@ model FullIssue{
   createdAt                 DateTime @default(now())
 }
 model UserFullIssue{
-   userId      String
-  user        User      @relation(fields: [userId], references: [id])
+   userId      String?
+  user        User?      @relation(fields: [userId], references: [id])
 
-  fullIssueId String
-  fullIssue   FullIssue @relation(fields: [fullIssueId], references: [id])
+  fullIssueId String?
+  fullIssue   FullIssue? @relation(fields: [fullIssueId], references: [id])
 
-  @@id([userId, fullIssueId])
+  amountTotal String?
+  amountCurrency String? 
+  payment_intent String @unique
+  invoice_url String? 
+
+  @@id([payment_intent])
 }
 

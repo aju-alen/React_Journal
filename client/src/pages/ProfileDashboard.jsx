@@ -23,6 +23,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Badge from '@mui/material/Badge';
+import ManagePurchase from '../components/ManagePurchase';
 
 
 const shapeStyles = { bgcolor: 'primary.main', width: 40, height: 40 };
@@ -218,8 +219,7 @@ const ProfileDashboard = () => {
 
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab wrapped label="Edit Profile" {...a11yProps(2)} />
-
-              <a href={import.meta.env.VITE_STRIPE_MANAGE_SUBSCRIPTION} ><Tab label="Manage Payments" {...a11yProps(3)} /></a>
+<Tab label="Manage Purchase" {...a11yProps(3)} />
               <Tab wrapped label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
               <Tab wrapped label={userDetails?.user?.isAdmin && "Send a marketting email"} {...a11yProps(5)} />
               <Tab wrapped
@@ -284,7 +284,7 @@ const ProfileDashboard = () => {
           </CustomTabPanel>
 
           <CustomTabPanel value={value} index={3}>
-
+                <ManagePurchase />
 
           </CustomTabPanel>
           <CustomTabPanel value={value} index={4}>
