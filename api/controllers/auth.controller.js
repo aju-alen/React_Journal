@@ -454,8 +454,8 @@ const sendMarkettingEmailFinal = async (emails, emailContent, subject) => {
             <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
         </div>
         <div class="email-content">
+            <p>Hi there,</p>
             <div class="paragraph">${formattedContent}</div>
-            <p>Warm Regards</p>
             <p><a href="https://scientificjournalsportal.com/">Scientific Journals Team</a></p>
         </div>
     </body>

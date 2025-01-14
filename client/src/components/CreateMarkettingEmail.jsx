@@ -11,7 +11,8 @@ import {
   FormLabel,
   Paper,
   Typography,
-  Divider
+  Divider,
+  Switch,
 } from '@mui/material';
 import axios from 'axios';
 import { httpRoute } from '../helperFunctions';
@@ -24,6 +25,8 @@ const CreateMarketingEmail = () => {
   const [open, setOpen] = useState(false);
   const [alertStatus, setAlertStatus] = useState('success');
   const [alertText, setAlertText] = useState('');
+  const [isScheduled, setIsScheduled] = useState(false);
+  const [scheduledTime, setScheduledTime] = useState('');
   const [formData, setFormData] = useState({
     subject: '',
     emailContent: ''
@@ -47,6 +50,8 @@ const CreateMarketingEmail = () => {
         emailContent: formData.emailContent,
         emailType: emailType,
         recipientEmail: emailType === 'specific' ? event.currentTarget.recipientEmail?.value : undefined,
+        isScheduled: isScheduled,
+        scheduledTime: isScheduled ? new Date(scheduledTime).toISOString() : null
       };
 
       const endpoint = `${httpRoute}/api/auth/send-marketing-email`;
@@ -55,13 +60,13 @@ const CreateMarketingEmail = () => {
       console.log(resp.data);
       setLoading(false);
       setAlertStatus('success');
-      setAlertText('Email Sent');
+      setAlertText(isScheduled ? 'Email Scheduled Successfully' : 'Email Sent');
       setOpen(true);
     } catch (err) {
       console.log(err);
       setLoading(false);
       setAlertStatus('error');
-      setAlertText('Email not sent, Please try again.');
+      setAlertText(isScheduled ? 'Failed to schedule email' : 'Email not sent, Please try again.');
       setOpen(true);
     }
   };
@@ -75,14 +80,19 @@ const CreateMarketingEmail = () => {
 
   const formatPreviewText = (text) => {
     if (!text) return '';
-    return text.split('\n').map((line, i) => {
-      
-      return(
+    return text.split('\n').map((line, i) => (
       <React.Fragment key={i}>
         {line}
         <br />
       </React.Fragment>
-    )});
+    ));
+  };
+
+  // Get current datetime string for min attribute
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    return now.toISOString().slice(0, 16);
   };
 
   return (
@@ -113,7 +123,7 @@ const CreateMarketingEmail = () => {
                 <FormControlLabel 
                   value="specific" 
                   control={<Radio />} 
-                  label="Indivigual Email" 
+                  label="Individual Email" 
                 />
               </RadioGroup>
             </FormControl>
@@ -125,6 +135,32 @@ const CreateMarketingEmail = () => {
                 variant="outlined"
                 name="recipientEmail"
                 type="email"
+              />
+            )}
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isScheduled}
+                  onChange={(e) => setIsScheduled(e.target.checked)}
+                />
+              }
+              label="Schedule Email"
+            />
+
+            {isScheduled && (
+              <TextField
+                fullWidth
+                label="Schedule Time"
+                type="datetime-local"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                inputProps={{
+                  min: getCurrentDateTime()
+                }}
               />
             )}
 
@@ -159,8 +195,9 @@ const CreateMarketingEmail = () => {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={isScheduled && !scheduledTime}
             >
-              {loading ? 'Sending...' : 'Send Email'}
+              {loading ? 'Processing...' : (isScheduled ? 'Schedule Email' : 'Send Email')}
             </Button>
           </Stack>
         </Box>
@@ -202,7 +239,6 @@ const CreateMarketingEmail = () => {
               >
                 {formatPreviewText(formData.emailContent)}
               </Typography>
-              <Typography>Warm Regards</Typography>
               <Typography>
                 <a 
                   href="https://scientificjournalsportal.com/" 
