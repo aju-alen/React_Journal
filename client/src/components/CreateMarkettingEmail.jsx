@@ -75,10 +75,7 @@ const CreateMarketingEmail = () => {
 
   const formatPreviewText = (text) => {
     if (!text) return '';
-    console.log(text,'text');
-    
     return text.split('\n').map((line, i) => {
-      console.log(line,'line');
       
       return(
       <React.Fragment key={i}>
@@ -91,7 +88,7 @@ const CreateMarketingEmail = () => {
   return (
     <Box className="md:p-20">
       <Typography variant="h5" gutterBottom>
-        Create Marketing Email
+        Mailing
       </Typography>
       <Box sx={{ display: 'grid', gridTemplateColumns: { md: '1fr 1fr' }, gap: 4 }}>
         {/* Form Section */}
@@ -111,12 +108,12 @@ const CreateMarketingEmail = () => {
                 <FormControlLabel 
                   value="marketing" 
                   control={<Radio />} 
-                  label="Marketing Email (All Subscribers)" 
+                  label="Marketing Email (All users who opted to receive marketing emails)" 
                 />
                 <FormControlLabel 
                   value="specific" 
                   control={<Radio />} 
-                  label="Specific Person" 
+                  label="Indivigual Email" 
                 />
               </RadioGroup>
             </FormControl>
@@ -163,7 +160,7 @@ const CreateMarketingEmail = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              {loading ? 'Sending...' : 'Mailing'}
+              {loading ? 'Sending...' : 'Send Email'}
             </Button>
           </Stack>
         </Box>
