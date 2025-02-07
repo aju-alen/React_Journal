@@ -22,14 +22,23 @@ import { styled } from '@mui/material/styles';
 import { getPdfName } from '../helperFunctions';
 
 
-const AdminMyManuscriptsDashboard = ({ user }) => {
+const AdminMyManuscriptsDashboard = ({ user,onDelete }) => {
   const [open, setOpen] = React.useState(false);
-  const [successOpen, setSuccessOpen] = React.useState(false);
-  const [articleId, setArticleId] = React.useState();
+  const [successOpen, setSuccessOpen] = useState(false);
+  const [articleId, setArticleId] = useState();
   const [emailId, setEmailId] = useState('');
   const [rejectionText, setRejectionText] = useState('');
   const [files, setFiles] = useState([]);
-console.log(user, 'user data in admin my manuscript dashboard');
+  const [articleTitle, setArticleTitle] = useState('')
+  const [articleIssue,setArticleIssue] = useState('')
+  const [articleVolume,setArticleVolume] = useState('')
+  const [journalAbbreviation,setJournalAbbreviation] = useState('')
+  const [awsId,setAwsId] = useState('')
+  const [userId,setUserId] = useState('')
+  const [authorGivenName,setAuthorGivenName] = useState('')
+  const [publishedDate,setPublishedDate] = useState('')
+  const [pdfName,setPdfname] = useState('')
+  const [loading, setLoading] = useState(false);
 
 
   const handleClickOpen = (articleId,emailId) => {
@@ -43,10 +52,36 @@ console.log(emailId, 'emailId state');
 
     setOpen(false);
   };
-  const handleClicSuccessOpen = (articleId,emailId) => {
+
+
+  
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return date.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+  
+
+  const handleClicSuccessOpen = (articleId, emailId, articleTitle, articleIssue, articleVolume, awsId, userId, authorName, journalAbbreviation, pdfName,articlePublishedDate) => {
+    
     setEmailId(emailId);
     setArticleId(articleId);
+    setArticleTitle(articleTitle)
+    setArticleIssue(articleIssue)
+    setArticleVolume(articleVolume)
+    setAwsId(awsId)
+    setUserId(userId)
+    setAuthorGivenName(authorName)
+    setJournalAbbreviation(journalAbbreviation)
+    setPdfname(pdfName)
+    setPublishedDate(formatDate(articlePublishedDate))
+
+
     setSuccessOpen(true);
+  
   };
 
   const handleSuccessClose = () => {
@@ -55,20 +90,48 @@ console.log(emailId, 'emailId state');
   const handleFileChange = (event) => {
     setFiles([...files, event.target.files[0]]);
 };
+console.log(pdfName,'pdffffffNameeeee');
 
-  const handleAcceptManuscript = async (articleId) => {
+
+  const handleAcceptManuscript = async ( 
+    articleId,
+    articleTitle,
+    articleIssue,
+    articleVolume,
+    awsId,
+    userId,
+    authorGivenName,
+    journalAbbreviation,
+    pdfName,
+    publishedDate
+  ) => {
     console.log(articleId, 'articleId inside handleAcceptManuscript state');
     try {
+      setLoading(true);
+      const certificateData = {
+        articleId,
+        articleTitle,
+    articleIssue,
+    articleVolume,
+    awsId,
+    userId,
+    authorGivenName,
+    journalAbbreviation,
+    pdfName,
+    publishedDate
+      }
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
       await axios.put(`${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
+      await axios.post(`${httpRoute}/api/journalArticle/generate`,certificateData)
+      setLoading(false);
     }
     catch (err) {
       console.log(err);
     }
+    setLoading(false);
     handleSuccessClose();
   }
-
-  console.log(user, 'verify detailsssssss');
+  
   if (!Array.isArray(user) || user.length === 0) {
     // Handle empty or non-array user prop
     return (
@@ -84,6 +147,7 @@ console.log(emailId, 'emailId state');
         <TableHead>
           <TableRow>
             <TableCell>Manuscript Author</TableCell>
+            <TableCell>Last Update at</TableCell>
             <TableCell align="center">Article Title</TableCell>
             <TableCell align="center">Article Abstract</TableCell>
             <TableCell align="center">Article Keywords</TableCell>
@@ -102,6 +166,7 @@ console.log(emailId, 'emailId state');
                 <TableCell component="th" scope="row">
                   {row.articleAuthors[0] ?row.articleAuthors[0].authorEmail : ''}
                 </TableCell>
+                <TableCell align="center">{row.updatedAt}</TableCell>
                 <TableCell align="center">{row.articleTitle}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="justify">{row.articleAbstract}</TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleKeywords}</TableCell>
@@ -120,7 +185,20 @@ console.log(emailId, 'emailId state');
                 </TableCell>
 
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button variant='outlined' onClick={()=>handleClicSuccessOpen(row.id,row.articleAuthors[0].authorEmail)} >
+                  <Button variant='outlined' onClick={
+                    ()=>handleClicSuccessOpen(
+                      row.id,
+                      row.articleAuthors[0].authorEmail,
+                      row.articleTitle,
+                      row.articleIssue,
+                      row.articleVolume,
+                      row.awsId,
+                      row.userId,
+                      row.articleAuthors[0].authorGivenName,
+                      row.articlePublishedJournal.journalAbbreviation,
+                      row.publicPdfName,
+                      row.articlePublishedDate
+                    )} >
                     ✅
                   </Button>
 
@@ -139,7 +217,20 @@ console.log(emailId, 'emailId state');
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
-                      <Button onClick={() => handleAcceptManuscript(articleId)}>Accept</Button>
+                      <Button onClick={() => handleAcceptManuscript(
+                        articleId,
+                        articleTitle,
+                        articleIssue,
+                        articleVolume,
+                        awsId,
+                        userId,
+                        authorGivenName,
+                        journalAbbreviation,
+                        pdfName,
+                        publishedDate
+                        )}>{
+                        loading ? 'Loading...' : 'Accept Manuscript'
+                        }</Button>
                       <Button onClick={handleSuccessClose} autoFocus>
                         Discard
                       </Button>
@@ -160,6 +251,7 @@ console.log(emailId, 'emailId state');
                         event.preventDefault();
                         console.log(event.target[0].value, articleId, 'rejection text and article Id');
                         try {
+                          setLoading(true);
                           const fileData = new FormData();
                           for(const file of files){
                               console.log(file, 'file in submit');
@@ -177,9 +269,12 @@ console.log(emailId, 'emailId state');
               
                           axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
                           await axios.post(`${httpRoute}/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl, emailId})
+                          setLoading(false);
+                          onDelete();
                         }
                         catch (err) {
                           console.log(err);
+                          setLoading(false);
                         }
                         handleClose(row.id);
                       },
@@ -243,7 +338,9 @@ console.log(emailId, 'emailId state');
                     </DialogContent>
                     <DialogActions>
                       <Button onClick={() => handleClose(row.id)}>Cancel</Button>
-                      <Button type="submit">Send Rejection Message</Button>
+                      <Button type="submit">{
+                      loading?"Loading..." :"Send Rejection Message"
+                      }</Button>
                     </DialogActions>
                   </Dialog>
 

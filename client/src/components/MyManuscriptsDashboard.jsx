@@ -116,8 +116,8 @@ const MyManuscriptsDashboard = ({ user }) => {
                   </Link>
                 </TableCell>
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                <Link to={row.filesURL[1]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                    {row.isPublished && row.filesURL[1] ? `📄${getPdfName(row.filesURL[1])} ` : ''}
+                <Link to={`https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/${row.userId}/${row.awsId}/certificate.pdf`} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
+                    {row.isPublished  ? `📄 ` : ''}
                   </Link>
                 </TableCell>
 

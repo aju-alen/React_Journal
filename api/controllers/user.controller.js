@@ -8,7 +8,9 @@ export const getOneUser = async (req, res, next) => {
         const user = await prisma.user.findUnique({
 
             where: { id: profileId },
-            include: { articles: true }
+            include: { articles: { 
+                orderBy: { createdAt: 'desc' } // Sort in ascending order
+              }  }
 
         })
         if (!user) {

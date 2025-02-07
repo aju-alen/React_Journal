@@ -1,9 +1,7 @@
-import HeaderImage from '../components/HeaderImage'
-import ServicesHome from '../components/ServicesHome'
-import LatestJournalsHome from '../components/LatestJournalsHome'
 import EthicsOfPublicationCards from '../components/EthicsOfPublicationCards'
-import FullIssueHome from '../components/FullIssueHome'
-import { Link } from 'react-router-dom'
+import HeaderImage from '../components/HeaderImage'
+import LatestJournalsHome from '../components/LatestJournalsHome'
+import ServicesHome from '../components/ServicesHome'
 const Home = () => {
 
   return (

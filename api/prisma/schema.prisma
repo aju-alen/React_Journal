@@ -106,6 +106,7 @@ model Article {
   userId                    String
   articlePublishedUser      User     @relation(fields: [userId], references: [id])
   createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt @default(now())
 }
 
 model FullIssue{

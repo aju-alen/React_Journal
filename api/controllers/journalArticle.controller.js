@@ -1,7 +1,13 @@
 import { PrismaClient } from "@prisma/client"
 import createError from '../utils/createError.js'
-import nodemailer from "nodemailer";
+import fetch from 'node-fetch';
 import { createTransport } from "./auth.controller.js";
+import PDFDocument from "pdfkit";
+import { S3 } from '@aws-sdk/client-s3';
+import dotenv from 'dotenv';
+import { Buffer } from 'buffer';
+import QRCode from 'qrcode';
+dotenv.config();
 const prisma = new PrismaClient()
 
 
@@ -119,6 +125,42 @@ export const getAllArticlesToVerify = async (req, res, next) => {
             where: {
                 isReview: true,
                 isPublished: false
+            },
+            select: {
+                // Select all fields from Article
+                id: true,
+                articleTitle: true,
+                articleAbstract: true,
+                articleKeywords: true,
+                articleAuthors: true,
+                filesURL: true,
+                articleIssue: true,
+                articleVolume: true,
+                paymentStatus: true,
+                rejectionFilesURL: true,
+                publicPdfName: true,
+                awsId: true,
+                rejectionText: true,
+                specialReview: true,
+                isReview: true,
+                isPublished: true,
+                isAccepted: true,
+                articleStatus: true,
+                articleReceivedDate: true,
+                articleAcceptedDate: true,
+                articlePublishedDate: true,
+                journalId: true,
+                userId: true,
+                createdAt: true,
+                updatedAt:true,
+                
+                // Select specific fields from articlePublishedJournal (Journal)
+                articlePublishedJournal: {
+                    select: {
+                        id: true,
+                        journalAbbreviation: true
+                    }
+                }
             }
         });
         console.log(journalArticle);
@@ -328,3 +370,262 @@ export const getPublsihedJournalArticle = async (req, res, next) => {
         
     }
 }
+const BUCKET_NAME = process.env.BUCKET_NAME;
+const REGION = process.env.REGION;
+const ACCESS_KEY = process.env.ACCESS_KEY;
+const SECRET_KEY = process.env.SECRET_KEY;
+
+// Initialize S3 client
+const s3 = new S3({
+    credentials: {
+        accessKeyId: ACCESS_KEY,
+        secretAccessKey: SECRET_KEY
+    },
+    region: REGION
+});
+
+
+//article title, abbr, vol issue still pending
+export const downloadCertificate = async (req, res, next) => {
+    console.log(req.body);
+
+    try {
+        const { articleId,
+            articleTitle,
+            articleIssue,
+            articleVolume,
+            awsId,
+            userId,
+            authorGivenName,
+            journalAbbreviation,
+            pdfName,
+            publishedDate
+         } = req.body;
+         console.log(req.body,'asdasdas');
+         
+
+        if (!authorGivenName || !articleTitle || !journalAbbreviation || !articleVolume || !articleIssue) {
+            return res.status(400).json({ error: "All fields are required!" });
+        }
+
+        // Generate verification URL for QR code
+        const verificationUrl = `https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/${userId}/${awsId}/${pdfName}`;
+        
+        // Generate QR code as a data URL
+        const qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
+            errorCorrectionLevel: 'H',
+            margin: 1,
+            width: 200,
+            color: {
+                dark: '#1f497d',  // QR code color matching the certificate theme
+                light: '#ffffff'  // Background
+            }
+        });
+
+        // Create a PDF document in landscape mode
+        const doc = new PDFDocument({
+            layout: 'landscape',
+            size: 'A4',
+            margin: 0
+        });
+
+        // Instead of piping to response, collect the chunks
+        const chunks = [];
+        doc.on('data', chunk => chunks.push(chunk));
+        doc.on('end', async () => {
+            const pdfBuffer = Buffer.concat(chunks);
+
+            try {
+                const filename = `${userId}/${awsId}/certificate.pdf`;
+
+                // Upload to S3
+                const uploadParams = {
+                    Bucket: BUCKET_NAME,
+                    Key: filename,
+                    Body: pdfBuffer,
+                    ContentType: 'application/pdf'
+                };
+
+                await s3.putObject(uploadParams);
+
+                res.status(200).json({
+                    message: 'Certificate generated and uploaded successfully',
+                    key: filename
+                });
+            } catch (uploadErr) {
+                console.error('S3 Upload Error:', uploadErr);
+                return next(createError(500, 'Failed to upload certificate'));
+            }
+        });
+
+        const pageWidth = doc.page.width;
+        const pageHeight = doc.page.height;
+
+        // Background Color
+        doc.rect(0, 0, pageWidth, pageHeight).fill('#f9f9f9');
+
+        // Outer Border
+        const borderWidth = 30;
+        doc.rect(borderWidth, borderWidth, pageWidth - (borderWidth * 2), pageHeight - (borderWidth * 2))
+            .lineWidth(4)
+            .stroke('#1f497d');
+
+        // Inner Border
+        doc.rect(borderWidth + 15, borderWidth + 15, pageWidth - (borderWidth * 2) - 30, pageHeight - (borderWidth * 2) - 30)
+            .lineWidth(2)
+            .stroke('#1f497d');
+
+        // Header - Certificate Title
+        doc.font('Helvetica-Bold')
+            .fontSize(35)
+            .fillColor('#1f497d')
+            .text('Certificate of Publication', 0, 100, { align: 'center' });
+
+        // Decorative Line under the title
+        doc.moveTo(pageWidth / 2 - 120, 160)
+            .lineTo(pageWidth / 2 + 120, 160)
+            .lineWidth(3)
+            .stroke('#1f497d');
+
+        // Main Text - Certification Line
+        doc.font('Helvetica')
+            .fontSize(15)
+            .fillColor('#333333')
+            .text('This is to certify that', 0, 190, { align: 'center' });
+
+        // Author Name (Bold & Highlighted)
+        doc.font('Helvetica-Bold')
+            .fontSize(32)
+            .fillColor('#1f497d')
+            .text(authorGivenName, 0, 240, { align: 'center' });
+
+        // Publication Details (Centered, Readable)
+        doc.font('Helvetica')
+            .fontSize(15)
+            .fillColor('#333333')
+            .text(
+                `has successfully published an article titled:`,
+                0, 290, { align: 'center' }
+            );
+
+        // Article Title (Bold & Larger)
+        doc.font('Helvetica-Bold')
+            .fontSize(18)
+            .fillColor('#1f497d')
+            .text(`"${articleTitle}"`, 50, 330, {
+                align: 'center',
+                width: pageWidth - 100
+            });
+
+        // Journal, Volume & Issue Details
+        doc.font('Helvetica')
+            .fontSize(14)
+            .fillColor('#333333')
+            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, Issue ${articleIssue}.`, 50, 380, {
+                align: 'center',
+                width: pageWidth - 100
+            });
+
+        // Date of Awarding
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        });
+
+        doc.font('Helvetica')
+            .fontSize(15)
+            .fillColor('#333333')
+            .text(`Awarded on ${publishedDate}`, 0, 440, { align: 'center' });
+
+        // Calculate positions for better alignment
+        const signatureStartY = pageHeight - 180;  // Moved up slightly
+        const textStartY = signatureStartY + 90;   // Adjusted for spacing after signature
+        const columnWidth = 300;
+        const leftColumnX = pageWidth * 0.25 - columnWidth/2;  // Center of left half
+        const rightColumnX = pageWidth * 0.75 - columnWidth/2; // Center of right half
+
+        // Left Column - Signature Image and Text
+        const imageUrl = 'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/WhatsApp+Image+2025-02-04+at+14.58.37.jpeg';
+        const imageResponse = await fetch(imageUrl);
+        const imageBuffer = await imageResponse.arrayBuffer();
+
+        // Center the signature image in the left column
+        doc.image(imageBuffer, leftColumnX + 75, signatureStartY, {
+            width: 150,
+            height: 70,
+            align: 'center'
+        });
+
+        // Text below signature on left side
+        doc.font('Helvetica-Oblique')
+            .fontSize(11)
+            .fillColor('#333333')
+            .text(
+                "This is an electronically generated document and does not require a signature.",
+                leftColumnX, textStartY,
+                {
+                    width: columnWidth,
+                    align: 'center'
+                }
+            );
+
+        // Right Column - QR Code and Chairman Text
+        // Center QR code in right column
+        doc.image(qrCodeDataUrl, rightColumnX + 115, signatureStartY, {
+            width: 70,
+            height: 70
+        });
+
+        // Chairman text below QR code - aligned with QR code
+        doc.font('Helvetica')
+            .fontSize(11)
+            .fillColor('#333333')
+            .text(
+                "Editorial Board Chairman:",
+                rightColumnX, textStartY,
+                {
+                    width: columnWidth,
+                    align: 'center'
+                }
+            );
+
+        // Name with less spacing after title
+        doc.font('Helvetica-Bold')
+            .fontSize(13)
+            .fillColor('#1f497d')
+            .text(
+                "Dr. El Hadi Idriss",
+                rightColumnX, textStartY + 20,
+                {
+                    width: columnWidth,
+                    align: 'center'
+                }
+            );
+
+        // Finalize PDF
+        doc.end();
+    } catch (err) {
+        console.error('Certificate Generation Error:', err);
+        return next(createError(400, 'An error occurred while generating the certificate'));
+    }
+};
+
+// Optional: Add a function to get a certificate by its key
+export const getCertificate = async (req, res, next) => {
+    try {
+        const { key } = req.params;
+
+        const command = new GetObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: key
+        });
+
+        const url = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+        res.json({ downloadUrl: url });
+    } catch (err) {
+        console.error('Get Certificate Error:', err);
+        return next(createError(500, 'Failed to retrieve certificate'));
+    }
+};

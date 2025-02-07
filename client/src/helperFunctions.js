@@ -101,11 +101,19 @@ if (match && match[1]) {
 }
 
 export function calculateIssue(startYear, startMonth, currentYear, currentMonth) {
-  const monthsPerIssue = 4; // We have 4 months per issue. Fix 
-  const startTotalMonths = (startYear - 1) * 12 + startMonth;
-  const currentTotalMonths = (currentYear - 1) * 12 + currentMonth;
-  const issue = Math.ceil((currentTotalMonths - startTotalMonths + 1) / monthsPerIssue);
-  return issue;
+  console.log(startYear, startMonth, currentYear, currentMonth,'parameter logggggggs');
+  if( currentMonth >=1  && currentMonth <= 3 ){
+    return 1
+  }
+  else if(currentMonth >= 4 && currentMonth <= 6){
+    return  2
+  }
+  else if(currentMonth >= 7 && currentMonth <= 9){
+    return  3
+  }
+  else {
+    return  4
+  }
 }
 
 

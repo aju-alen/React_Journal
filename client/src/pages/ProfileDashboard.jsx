@@ -81,11 +81,11 @@ const ProfileDashboard = () => {
   const [loading, setLoading] = useState(true)
   let [searchParams, setSearchParams] = useSearchParams();
   const value = Number(searchParams.get("tab") || 0);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const [open, setOpen] = React.useState(false);
   const [specialIssue, setSpecialIssue] = React.useState(false);
   const [regularIssue, setRegularIssue] = React.useState(false);
-  
 
   const handleSpecialIssue = async () => {
     setOpen(false);
@@ -114,6 +114,9 @@ const ProfileDashboard = () => {
     });
   };
 
+  const refreshVerificationArticles = () => {
+    setRefreshKey((prev) => prev + 1);
+};
   useEffect(() => {
     const getUser = async () => {
       const getUser = await JSON.parse(localStorage.getItem('currentUser'))
@@ -144,7 +147,7 @@ const ProfileDashboard = () => {
     }
 
     getUser()
-  }, [])
+  }, [value === 0, refreshKey])
   console.log(userDetails, 'zzzzzz');
 
   console.log(user, 'user not special review');
@@ -266,7 +269,7 @@ const ProfileDashboard = () => {
 
           </Box>
           <CustomTabPanel value={value} index={0}>
-            {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={verificationArticle} />}
+            {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={verificationArticle} onDelete={refreshVerificationArticles} />}
             {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
 
           </CustomTabPanel>
