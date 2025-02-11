@@ -124,6 +124,7 @@ console.log(pdfName,'pdffffffNameeeee');
       await axios.put(`${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
       await axios.post(`${httpRoute}/api/journalArticle/generate`,certificateData)
       setLoading(false);
+      onDelete();
     }
     catch (err) {
       console.log(err);

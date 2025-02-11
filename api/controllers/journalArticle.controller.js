@@ -409,7 +409,7 @@ export const downloadCertificate = async (req, res, next) => {
         }
 
         // Generate verification URL for QR code
-        const verificationUrl = `https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/${userId}/${awsId}/${pdfName}`;
+        const verificationUrl = `https://scientificjournalsportal.com/journal/${journalAbbreviation}/${articleId}`;
         
         // Generate QR code as a data URL
         const qrCodeDataUrl = await QRCode.toDataURL(verificationUrl, {
