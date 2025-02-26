@@ -20,6 +20,7 @@
     "prisma": "^5.9.1"
   },
   "dependencies": {
+    "@aws-sdk/s3-request-presigner": "^3.750.0",
     "@prisma/client": "^5.9.1",
     "aws-sdk": "^2.1560.0",
     "bcrypt": "^5.1.1",
