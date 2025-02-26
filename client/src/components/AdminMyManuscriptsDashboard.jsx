@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import { Button } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Article from '../pages/Article';
-import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import axios from 'axios';
-import { axiosTokenHeader, httpRoute } from '../helperFunctions';
-import { styled } from '@mui/material/styles';
-import { getPdfName } from '../helperFunctions';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { axiosTokenHeader, getPdfName, httpRoute } from '../helperFunctions';
 
 
 const AdminMyManuscriptsDashboard = ({ user,onDelete }) => {
@@ -27,16 +25,7 @@ const AdminMyManuscriptsDashboard = ({ user,onDelete }) => {
   const [successOpen, setSuccessOpen] = useState(false);
   const [articleId, setArticleId] = useState();
   const [emailId, setEmailId] = useState('');
-  const [rejectionText, setRejectionText] = useState('');
   const [files, setFiles] = useState([]);
-  const [articleTitle, setArticleTitle] = useState('')
-  const [articleIssue,setArticleIssue] = useState('')
-  const [articleVolume,setArticleVolume] = useState('')
-  const [journalAbbreviation,setJournalAbbreviation] = useState('')
-  const [awsId,setAwsId] = useState('')
-  const [userId,setUserId] = useState('')
-  const [authorGivenName,setAuthorGivenName] = useState('')
-  const [publishedDate,setPublishedDate] = useState('')
   const [pdfName,setPdfname] = useState('')
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +35,7 @@ const AdminMyManuscriptsDashboard = ({ user,onDelete }) => {
     setEmailId(emailId);
     setOpen(true);
   };
+
 console.log(articleId, 'articleId state');
 console.log(emailId, 'emailId state');
   const handleClose = (id) => {
@@ -53,33 +43,10 @@ console.log(emailId, 'emailId state');
     setOpen(false);
   };
 
-
-  
-  const formatDate = (isoString) => {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("en-GB", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
-  
-
-  const handleClicSuccessOpen = (articleId, emailId, articleTitle, articleIssue, articleVolume, awsId, userId, authorName, journalAbbreviation, pdfName,articlePublishedDate) => {
+  const handleClicSuccessOpen = (articleId, emailId) => {
     
     setEmailId(emailId);
     setArticleId(articleId);
-    setArticleTitle(articleTitle)
-    setArticleIssue(articleIssue)
-    setArticleVolume(articleVolume)
-    setAwsId(awsId)
-    setUserId(userId)
-    setAuthorGivenName(authorName)
-    setJournalAbbreviation(journalAbbreviation)
-    setPdfname(pdfName)
-    setPublishedDate(formatDate(articlePublishedDate))
-
-
     setSuccessOpen(true);
   
   };
@@ -95,34 +62,12 @@ console.log(pdfName,'pdffffffNameeeee');
 
   const handleAcceptManuscript = async ( 
     articleId,
-    articleTitle,
-    articleIssue,
-    articleVolume,
-    awsId,
-    userId,
-    authorGivenName,
-    journalAbbreviation,
-    pdfName,
-    publishedDate
   ) => {
     console.log(articleId, 'articleId inside handleAcceptManuscript state');
     try {
       setLoading(true);
-      const certificateData = {
-        articleId,
-        articleTitle,
-    articleIssue,
-    articleVolume,
-    awsId,
-    userId,
-    authorGivenName,
-    journalAbbreviation,
-    pdfName,
-    publishedDate
-      }
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
       await axios.put(`${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
-      await axios.post(`${httpRoute}/api/journalArticle/generate`,certificateData)
       setLoading(false);
       onDelete();
     }
@@ -198,7 +143,8 @@ console.log(pdfName,'pdffffffNameeeee');
                       row.articleAuthors[0].authorGivenName,
                       row.articlePublishedJournal.journalAbbreviation,
                       row.publicPdfName,
-                      row.articlePublishedDate
+                      row.articlePublishedDate,
+                      row.articleAuthors[0].authorLastName
                     )} >
                     ✅
                   </Button>
@@ -220,15 +166,6 @@ console.log(pdfName,'pdffffffNameeeee');
                     <DialogActions>
                       <Button onClick={() => handleAcceptManuscript(
                         articleId,
-                        articleTitle,
-                        articleIssue,
-                        articleVolume,
-                        awsId,
-                        userId,
-                        authorGivenName,
-                        journalAbbreviation,
-                        pdfName,
-                        publishedDate
                         )}>{
                         loading ? 'Loading...' : 'Accept Manuscript'
                         }</Button>
