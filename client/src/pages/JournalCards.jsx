@@ -73,56 +73,77 @@ const JournalCards = () => {
     console.log(journalCategory, 'journal category data called');
     const reccomendedArticles = articles.slice(7)
     return (
-        <div className="h-auto w-auto bg-slate-200 ">
+        <div className="min-h-screen bg-gray-100">
             <ImageHeader />
-            <h1 className='text-center font-bold text-4xl mt-6'>Emirates International Journal Of Empirical Research (EIJER)</h1>
-            <div className="flex flex-col items-center mt-4 ">
-                <h3 className='mx-10 text-lg mb-3 font-medium '>Journal description</h3>
-                <p className=' text-justify mx-10 text-sm md:w-3/4'>
-                    {journalCategory[0]?.journalDescription}
-                </p>
-            </div>
-            <div className="flex flex-col md:flex-row">
-                <div className="md:w-9/12 mx-auto pb-10">
-                    {slicedArticles?.map(journal => {
-                        return (
-                            <div key={journal.id} className="bg-white rounded-md flex flex-col gap-2 mt-8 h-auto md:w-11/12 md:mx-auto">
-                                <h3 className='font-medium mx-6 mt-10'>{journal?.articleTitle}</h3>
-                                <div className="flex flex-col justify-center items-center">
-                                    <p className='mx-6 text-sm text-justify'>Published on: {getDates(journal.articlePublishedDate)}</p>
-                                    <p className='mx-6 p-2 text-sm'>Authors: {journal.articleAuthors.map((author, idx) => (
-                                        <React.Fragment key={idx}>| {author.authorGivenName} {author.authorLastName} </React.Fragment>
-                                    ))}</p>
-                                    <p className='mx-6'>
-                                        <span>Article Number - A000{journal.id.split('').splice(4, journal.id.length - 5 - 27).join('')}</span>
-                                    </p>
-                                </div>
-                                <Link to={`/journal/EIJER/${journal.id}`}>
-                                    <div className="flex justify-center items-center">
-                                        <button className='font-bold border-2 rounded p-2 mx-6 border-greenS bg-green-400 md:w-1/6 sm:text-center mb-4'>View Article</button>
+            <div className="container mx-auto px-4 py-8">
+                <h1 className='text-center font-bold text-4xl mt-6 text-gray-800'>Emirates International Journal Of Empirical Research (EIJER)</h1>
+                <div className="flex flex-col items-center mt-6 mb-10">
+                    <h3 className='text-xl mb-4 font-semibold text-gray-700'>Journal Description</h3>
+                    <p className='text-justify max-w-4xl text-gray-600 '>
+                        {journalCategory[0]?.journalDescription}
+                    </p>
+                </div>
+                
+                <div className="flex flex-col md:flex-row gap-8">
+                    <div className="md:w-9/12">
+                        <h2 className="text-2xl font-semibold mb-6 text-gray-800">Published Articles</h2>
+                        {slicedArticles?.map(journal => (
+                            <div key={journal.id} className="bg-white rounded-lg shadow-md p-6 mb-6 transition-all hover:shadow-lg">
+                                <h3 className='font-semibold text-lg mb-3 text-gray-800'>{journal?.articleTitle}</h3>
+                                <div className="flex flex-wrap gap-2 text-sm text-gray-600 mb-4">
+                                    <div className="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <span>Published: {getDates(journal.articlePublishedDate)}</span>
                                     </div>
+                                    <div className="flex items-center ml-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                        </svg>
+                                        <span>Authors: {journal.articleAuthors.map((author, idx) => (
+                                            <React.Fragment key={idx}>
+                                                {idx > 0 && ", "}
+                                                {author.authorGivenName} {author.authorLastName}
+                                            </React.Fragment>
+                                        ))}</span>
+                                    </div>
+                                </div>
+                                <p className='text-sm text-gray-500 mb-4'>
+                                    Article Number: A000{journal.id.split('').splice(4, journal.id.length - 5 - 27).join('')}
+                                </p>
+                                <Link to={`/journal/EIJER/${journal.id}`}>
+                                    <button className='px-4 py-2 bg-green-500 text-white font-medium rounded hover:bg-green-600 transition-colors'>
+                                        View Article
+                                    </button>
                                 </Link>
                             </div>
-                            
-                        )
+                        ))}
                         
-                    })}
-                     <Stack spacing={2} sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            margin: '10px 0' 
-                     }} >
-                     <Pagination count={Math.ceil(articles.length/10)} shape="rounded"   page={currentPage}
-        onChange={handlePageChange} color='primary' />
-                     </Stack>
-                </div>
-                <div className=" md:w-3/12 mt-8 md:mx:auto">
-                    <AccordianReccomended articles={reccomendedArticles} />
+                        <div className="mt-8 mb-6">
+                            <Stack spacing={2} sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                            }}>
+                                <Pagination 
+                                    count={Math.ceil(articles.length/10)} 
+                                    shape="rounded" 
+                                    page={currentPage}
+                                    onChange={handlePageChange} 
+                                    color='primary' 
+                                    size="large"
+                                />
+                            </Stack>
+                        </div>
+                    </div>
+                    
+                    <div className="md:w-3/12">
+                        <h2 className="text-2xl font-semibold mb-6 text-gray-800">Recommended</h2>
+                        <AccordianReccomended articles={reccomendedArticles} />
+                    </div>
                 </div>
             </div>
-
-            {/* <FullIssueHome purchase={true} /> */}
         </div>
     )
 }
