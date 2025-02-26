@@ -3,10 +3,11 @@ import createError from '../utils/createError.js'
 import fetch from 'node-fetch';
 import { createTransport } from "./auth.controller.js";
 import PDFDocument from "pdfkit";
-import { S3 } from '@aws-sdk/client-s3';
+import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import { Buffer } from 'buffer';
 import QRCode from 'qrcode';
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 dotenv.config();
 const prisma = new PrismaClient()
 
@@ -399,7 +400,8 @@ export const downloadCertificate = async (req, res, next) => {
             authorGivenName,
             journalAbbreviation,
             pdfName,
-            publishedDate
+            publishedDate,
+            authorLastName
          } = req.body;
          console.log(req.body,'asdasdas');
          
@@ -446,11 +448,20 @@ export const downloadCertificate = async (req, res, next) => {
                     ContentType: 'application/pdf'
                 };
 
-                await s3.putObject(uploadParams);
+                const result = await s3.putObject(uploadParams);
+
+                // Generate signed URL for the uploaded file
+                const getObjectCommand = new GetObjectCommand({
+                    Bucket: BUCKET_NAME,
+                    Key: filename,
+                });
+                const url = await getSignedUrl(s3, getObjectCommand, { expiresIn: 10 }); // URL expires in 1 hour
 
                 res.status(200).json({
                     message: 'Certificate generated and uploaded successfully',
-                    key: filename
+                    key: filename,
+                    result: result,
+                    url: url
                 });
             } catch (uploadErr) {
                 console.error('S3 Upload Error:', uploadErr);
@@ -497,7 +508,7 @@ export const downloadCertificate = async (req, res, next) => {
         doc.font('Helvetica-Bold')
             .fontSize(32)
             .fillColor('#1f497d')
-            .text(authorGivenName, 0, 240, { align: 'center' });
+            .text(`${authorGivenName} ${authorLastName}`, 0, 240, { align: 'center' });
 
         // Publication Details (Centered, Readable)
         doc.font('Helvetica')
