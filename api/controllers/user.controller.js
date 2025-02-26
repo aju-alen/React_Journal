@@ -1,4 +1,3 @@
-
 import jwt from 'jsonwebtoken'
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
@@ -6,12 +5,20 @@ export const getOneUser = async (req, res, next) => {
     try {
         const profileId = req.params.profileId
         const user = await prisma.user.findUnique({
-
             where: { id: profileId },
-            include: { articles: { 
-                orderBy: { createdAt: 'desc' } // Sort in ascending order
-              }  }
-
+            include: { 
+                articles: { 
+                    include: {
+                        articlePublishedJournal: {
+                            select: {
+                                journalAbbreviation: true,
+                                id: true
+                            }
+                        }
+                    },
+                    orderBy: { createdAt: 'desc' }
+                }
+            }
         })
         if (!user) {
             res.status(404).send('User not found')
