@@ -16,6 +16,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useNavigate } from 'react-router-dom';
+import { axiosTokenHeader } from '../helperFunctions';
+
 
 const MyManuscriptsDashboard = ({ user }) => {
   const navigate = useNavigate()
@@ -24,6 +26,61 @@ const MyManuscriptsDashboard = ({ user }) => {
   const [emailId, setEmailId] = useState('');
   const [articleId, setArticleId] = useState('');
   const [open, setOpen] = React.useState(false);
+  const [loading, setLoading] = useState(false);
+  const [certificateUrl, setCertificateUrl] = useState(null);
+  const [currentArticleId, setCurrentArticleId] = useState(null);
+
+  console.log(currentArticleId, 'currentArticleId');
+  
+
+  const handleDownloadCertificate = async (
+    articleId,
+    articleTitle,
+    articleIssue,
+    articleVolume,
+    awsId,
+    userId,
+    authorGivenName,
+    journalAbbreviation,
+    publishedDate,
+    authorLastName) => {
+      console.log('123123123123123123123123');
+      try {
+        setCurrentArticleId(articleId);
+        setLoading(true);
+        const certificateData = {
+          articleId,
+          articleTitle,
+          articleIssue,
+          articleVolume,
+          awsId,
+          userId,
+          authorGivenName,
+          journalAbbreviation,
+          publishedDate,
+          authorLastName
+        }
+        axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+        const response = await axios.post(`${httpRoute}/api/journalArticle/generate`,certificateData)
+        console.log(response, 'response in generate certificate');
+        setLoading(false);
+        setCertificateUrl(response.data.url);
+        
+        if (response.data.url) {
+          window.open(response.data.url, '_blank');
+        }
+        setLoading(false);
+      }
+      catch (err) {
+        console.log(err);
+        setLoading(false);
+      }
+      finally {
+        setLoading(false);
+      }
+  
+    }
+  
 
   const handleClickOpen = (id) => {
     setOpen(true);
@@ -54,120 +111,240 @@ const MyManuscriptsDashboard = ({ user }) => {
     }
   }
 
-  console.log(user, 'user details');
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+    <TableContainer component={Paper} sx={{ boxShadow: 3, borderRadius: 2, margin: '20px 0' }}>
+      <Table sx={{ minWidth: 650 }} aria-label="manuscripts table">
         <TableHead>
-          <TableRow>
-            <TableCell>Manuscript Id</TableCell>
-            <TableCell align="center">Article Title</TableCell>
-            <TableCell align="center">Message History</TableCell>
-            <TableCell align="center">Status</TableCell>
-            <TableCell align="center">Edit</TableCell>
-            <TableCell align="center">Correction Files</TableCell>
-            <TableCell align="center">Download PDF</TableCell>
-            <TableCell align="center">Download Certificate</TableCell>
-            <TableCell align="center">Payment</TableCell>
-            <TableCell align="center">Delete Manuscript</TableCell>
+          <TableRow sx={{ backgroundColor: '#f5f5f5' }}>
+            <TableCell sx={{ fontWeight: 'bold' }}>Manuscript ID</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Article Title</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Message History</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Status</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Edit</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Correction Files</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Download PDF</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Certificate</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Payment</TableCell>
+            <TableCell align="center" sx={{ fontWeight: 'bold' }}>Delete</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {user?.articles?.map((row) => {
-            console.log(row, 'rowData');
-            return (
+          {user?.articles?.length > 0 ? (
+            user.articles.map((row) => (
               <TableRow
                 key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                sx={{ 
+                  '&:last-child td, &:last-child th': { border: 0 },
+                  '&:nth-of-type(odd)': { backgroundColor: '#fafafa' },
+                  '&:hover': { backgroundColor: '#f0f7ff' },
+                  transition: 'background-color 0.2s'
+                }}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" sx={{ fontWeight: 'medium' }}>
                   {row.id}
                 </TableCell>
-                <TableCell align="left">{row.articleTitle}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.rejectionText}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleStatus}</TableCell>
-                {!row.isReview && !row.isPublished ? <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Link to={`/editManuscript/${row.userId}/${row.id}`}>
-                    <Button variant="contained" color="primary">
-                      Edit
-                    </Button>
-                  </Link>
-                </TableCell> : <TableCell></TableCell>}
-
-                {row.rejectionFilesURL.length !== 0 ? <TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize: 10, display: 'flex', flexDirection: "column", justifyContent: "center" }} align="center">
-                  <Link to={row.rejectionFilesURL[0]} className='mx-2 bg-indigo-100 rounded-md'
-                    target="_blank" rel="noopener noreferrer">
-                    {row.rejectionFilesURL[0] ? `📄${getPdfName(row.rejectionFilesURL[0])} ` : ''}
-                  </Link>
-                  <br></br>
-                  <Link to={row.rejectionFilesURL[1]} className='mx-2 bg-indigo-100 rounded-md'
-                    target="_blank" rel="noopener noreferrer">
-                    {row.rejectionFilesURL[1] ? `📄${getPdfName(row.rejectionFilesURL[1])} ` : ''}
-                  </Link>
-                  <br />
-                  <Link to={row.rejectionFilesURL[2]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                    {row.rejectionFilesURL[2] ? `📄${getPdfName(row.rejectionFilesURL[2])} ` : ''}
-                  </Link>
-                </TableCell> : <TableCell></TableCell>}
-
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                <Link to={row.filesURL[0]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                    {row.isPublished ? `📄${getPdfName(row.filesURL[0])} ` : ''}
-                  </Link>
+                <TableCell align="left" sx={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {row.articleTitle}
                 </TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                <Link to={`https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/${row.userId}/${row.awsId}/certificate.pdf`} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                    {row.isPublished  ? `📄 ` : ''}
-                  </Link>
+                <TableCell align="center" sx={{ color: row.rejectionText ? '#d32f2f' : 'inherit' }}>
+                  {row.rejectionText}
+                </TableCell>
+                <TableCell align="center">
+                  <span style={{ 
+                    padding: '6px 12px', 
+                    borderRadius: '16px', 
+                    backgroundColor: row.articleStatus === 'Published' ? '#e8f5e9' : 
+                                     row.articleStatus === 'Rejected' ? '#ffebee' : 
+                                     row.articleStatus === 'Under Review' ? '#fff8e1' : '#e3f2fd',
+                    color: row.articleStatus === 'Published' ? '#2e7d32' : 
+                           row.articleStatus === 'Rejected' ? '#c62828' : 
+                           row.articleStatus === 'Under Review' ? '#f57f17' : '#1565c0',
+                    fontWeight: 'bold',
+                    fontSize: '0.85rem'
+                  }}>
+                    {row.articleStatus}
+                  </span>
+                </TableCell>
+                
+                {!row.isReview && !row.isPublished ? (
+                  <TableCell align="center">
+                    <Link to={`/editManuscript/${row.userId}/${row.id}`} style={{ textDecoration: 'none' }}>
+                      <Button 
+                        variant="contained" 
+                        color="primary" 
+                        size="small"
+                        sx={{ borderRadius: '8px', textTransform: 'none' }}
+                      >
+                        Edit
+                      </Button>
+                    </Link>
+                  </TableCell>
+                ) : <TableCell></TableCell>}
+
+                {row.rejectionFilesURL.length !== 0 ? (
+                  <TableCell align="center" sx={{ padding: '8px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'center' }}>
+                      {row.rejectionFilesURL.map((url, index) => (
+                        url && (
+                          <Link 
+                            key={index}
+                            to={url} 
+                            className='mx-2 bg-indigo-100 rounded-md'
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ 
+                              textDecoration: 'none', 
+                              color: '#1976d2',
+                              padding: '4px 8px',
+                              borderRadius: '4px',
+                              backgroundColor: '#e3f2fd',
+                              display: 'flex',
+                              alignItems: 'center',
+                              fontSize: '0.85rem',
+                              width: 'fit-content'
+                            }}
+                          >
+                            📄 {getPdfName(url)}
+                          </Link>
+                        )
+                      ))}
+                    </div>
+                  </TableCell>
+                ) : <TableCell></TableCell>}
+
+                <TableCell align="center">
+                  {row.isPublished && row.filesURL[0] && (
+                    <Link 
+                      to={row.filesURL[0]} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ 
+                        textDecoration: 'none', 
+                        color: '#1976d2',
+                        padding: '4px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: '#e3f2fd',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        fontSize: '0.85rem'
+                      }}
+                    >
+                      📄 {getPdfName(row.filesURL[0])}
+                    </Link>
+                  )}
+                </TableCell>
+                
+                <TableCell align="center">
+                  
+                    <Button 
+                      variant='outlined' 
+                      color='success'
+                      size="small"
+                      sx={{ borderRadius: '8px', textTransform: 'none' }}
+                      onClick={() => handleDownloadCertificate(
+                        row.id, row.articleTitle, 
+                        row.articleIssue,
+                        row.articleVolume,
+                        row.awsId,
+                        row.userId,
+                        row.articleAuthors[0].authorGivenName,
+                        row.articlePublishedJournal.journalAbbreviation,
+                        row.publishedDate,
+                        row.articleAuthors[0].authorLastName
+                      )}
+                      disabled={!row.isPublished}
+                    >
+                      { currentArticleId === row.id ? 'Download Certificate' : 'Generate Certificate'}
+                    </Button>
+                  
                 </TableCell>
 
-                {!row.paymentStatus ? <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Link to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}`}>
-                    <Button variant="contained" color="primary">
-                      Pay Here
-                    </Button>
-                  </Link>
-                </TableCell> : <TableCell>
-                <Button variant='text' size='small' color="success">
-                    Payment Complete
-                  </Button>
-                  </TableCell>}
+                <TableCell align="center">
+                  {!row.paymentStatus ? (
+                    <Link to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}`} style={{ textDecoration: 'none' }}>
+                      <Button 
+                        variant="contained" 
+                        color="primary"
+                        size="small"
+                        sx={{ borderRadius: '8px', textTransform: 'none' }}
+                      >
+                        Pay Now
+                      </Button>
+                    </Link>
+                  ) : (
+                    <span style={{ 
+                      padding: '6px 12px', 
+                      borderRadius: '16px', 
+                      backgroundColor: '#e8f5e9',
+                      color: '#2e7d32',
+                      fontWeight: 'bold',
+                      fontSize: '0.85rem',
+                      display: 'inline-block'
+                    }}>
+                      Paid
+                    </span>
+                  )}
+                </TableCell>
 
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button variant="contained" color="error" onClick={()=>handleClickOpen(row.id)}>
+                <TableCell align="center">
+                  <Button 
+                    variant="outlined" 
+                    color="error"
+                    size="small"
+                    sx={{ borderRadius: '8px', textTransform: 'none' }}
+                    onClick={() => handleClickOpen(row.id)}
+                  >
                     Delete
                   </Button>
-                  {/* Delete Manuscript Dialogue Box */}
-                  <Dialog
-                    open={open}
-                    onClose={handleClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">
-                      {"Want to delete this manuscript?"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        Deleting this manuscript can only done by the support team.Contact support team for further assistance.
-                      </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={handleClose}>Cancel</Button>
-                      <Button onClick={ handleDeleteArticle} autoFocus>
-                        Contact Support
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-                  {/* End Of delete dialog */}
                 </TableCell>
-
               </TableRow>
-
-            )
-          })}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={10} align="center" sx={{ py: 3 }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+                  <span style={{ fontSize: '1.1rem', color: '#666' }}>No manuscripts found</span>
+                  <span style={{ fontSize: '0.9rem', color: '#888' }}>Submit a new manuscript to get started</span>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
+      
+      {/* Delete Manuscript Dialog Box */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          sx: { borderRadius: 2, padding: 1 }
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ fontWeight: 'bold' }}>
+          {"Want to delete this manuscript?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Deleting this manuscript can only be done by the support team. Contact support team for further assistance.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ padding: '16px' }}>
+          <Button onClick={handleClose} variant="outlined" sx={{ borderRadius: '8px', textTransform: 'none' }}>
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleDeleteArticle} 
+            autoFocus 
+            variant="contained" 
+            color="primary"
+            sx={{ borderRadius: '8px', textTransform: 'none' }}
+          >
+            Contact Support
+          </Button>
+        </DialogActions>
+      </Dialog>
     </TableContainer>
   );
 }
