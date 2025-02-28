@@ -189,5 +189,5 @@ app.use(errorHandler)
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
 
-  //console.log(`server listening at port ${PORT}`);
+  console.log(`server listening at port ${PORT}`);
 })
