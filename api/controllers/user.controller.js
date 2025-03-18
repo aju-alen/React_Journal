@@ -12,7 +12,8 @@ export const getOneUser = async (req, res, next) => {
                         articlePublishedJournal: {
                             select: {
                                 journalAbbreviation: true,
-                                id: true
+                                id: true,
+                                journalISSN: true
                             }
                         }
                     },

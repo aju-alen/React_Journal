@@ -399,6 +399,7 @@ export const downloadCertificate = async (req, res, next) => {
             userId,
             authorGivenName,
             journalAbbreviation,
+            journalISSN,
             pdfName,
             publishedDate,
             authorLastName
@@ -532,7 +533,7 @@ export const downloadCertificate = async (req, res, next) => {
         doc.font('Helvetica')
             .fontSize(14)
             .fillColor('#333333')
-            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, Issue ${articleIssue}.`, 50, 380, {
+            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, Issue ${articleIssue} - ISSN #: ${journalISSN}`, 50, 380, {
                 align: 'center',
                 width: pageWidth - 100
             });
