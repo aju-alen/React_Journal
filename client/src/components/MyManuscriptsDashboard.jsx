@@ -31,7 +31,6 @@ const MyManuscriptsDashboard = ({ user }) => {
   const [currentArticleId, setCurrentArticleId] = useState(null);
 
   console.log(currentArticleId, 'currentArticleId');
-  
 
   const handleDownloadCertificate = async (
     articleId,
@@ -42,6 +41,7 @@ const MyManuscriptsDashboard = ({ user }) => {
     userId,
     authorGivenName,
     journalAbbreviation,
+    journalISSN,
     publishedDate,
     authorLastName) => {
       console.log('123123123123123123123123');
@@ -57,6 +57,7 @@ const MyManuscriptsDashboard = ({ user }) => {
           userId,
           authorGivenName,
           journalAbbreviation,
+          journalISSN,
           publishedDate,
           authorLastName
         }
@@ -249,6 +250,7 @@ const MyManuscriptsDashboard = ({ user }) => {
                         row.userId,
                         row.articleAuthors[0].authorGivenName,
                         row.articlePublishedJournal.journalAbbreviation,
+                        row.articlePublishedJournal.journalISSN,
                         row.publishedDate,
                         row.articleAuthors[0].authorLastName
                       )}
@@ -348,4 +350,4 @@ const MyManuscriptsDashboard = ({ user }) => {
     </TableContainer>
   );
 }
-export default MyManuscriptsDashboard
+export default MyManuscriptsDashboardcd

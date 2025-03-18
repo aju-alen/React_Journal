@@ -67,8 +67,8 @@ const LatestJournalsHome = ({width}) => {
                                             </span>
                                         </p>
                                     </div>
-                                    <p className=' md:text-justify leading-relaxed text-gray-700 bg-gray-50 p-6 rounded-lg'>
-                                        {journal.articleAbstract.substring(0, 800)}...
+                                    <p className='text-left md:text-justify leading-relaxed text-gray-700 bg-gray-50 p-6 rounded-lg'>
+                                        {journal.articleAbstract.substring(0, 300)}...
                                     </p>
                                     <div className='text-center pt-4'>
                                         <Link 
