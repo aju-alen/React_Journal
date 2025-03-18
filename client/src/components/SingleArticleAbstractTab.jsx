@@ -33,7 +33,7 @@ const reccomendedArticles = articles.slice(7)
         </div>
       </div>
       <div className=' md:w-9/12 md:ml-auto ' >
-      <AccordianReccomended articles={reccomendedArticles} />
+      <AccordianReccomended articles={reccomendedArticles.slice(0, 5)} />
       </div>
     </div>
   )

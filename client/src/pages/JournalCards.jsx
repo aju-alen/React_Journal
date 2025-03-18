@@ -140,7 +140,7 @@ const JournalCards = () => {
                     
                     <div className="md:w-3/12">
                         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Recommended</h2>
-                        <AccordianReccomended articles={reccomendedArticles} />
+                        <AccordianReccomended articles={reccomendedArticles.slice(0, 5)} />
                     </div>
                 </div>
             </div>
