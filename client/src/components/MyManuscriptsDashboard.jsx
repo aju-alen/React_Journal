@@ -30,8 +30,6 @@ const MyManuscriptsDashboard = ({ user }) => {
   const [certificateUrl, setCertificateUrl] = useState(null);
   const [currentArticleId, setCurrentArticleId] = useState(null);
 
-  console.log(currentArticleId, 'currentArticleId');
-
   const handleDownloadCertificate = async (
     articleId,
     articleTitle,
@@ -350,4 +348,4 @@ const MyManuscriptsDashboard = ({ user }) => {
     </TableContainer>
   );
 }
-export default MyManuscriptsDashboardcd
+export default MyManuscriptsDashboard
