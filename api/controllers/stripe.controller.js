@@ -72,8 +72,8 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
     lookup_keys: [req.body.lookup_key],
     expand: ['data.product'],
   });
- 
-  // console.log(prices, 'prices in stripe');
+  
+  console.log(prices, 'prices in stripe');
 
   const session = await Stripe.checkout.sessions.create({
     metadata:{
