@@ -391,7 +391,8 @@ export const downloadCertificate = async (req, res, next) => {
     console.log(req.body);
 
     try {
-        const { articleId,
+        const { 
+            articleId,
             articleTitle,
             articleIssue,
             articleVolume,
@@ -405,6 +406,13 @@ export const downloadCertificate = async (req, res, next) => {
             authorLastName
          } = req.body;
          console.log(req.body,'asdasdas');
+
+         const getArticleData = await prisma.article.findUnique({
+            where: {
+                id: articleId
+            }
+         });
+         console.log(getArticleData,'getArticleData');
          
 
         if (!authorGivenName || !articleTitle || !journalAbbreviation || !articleVolume || !articleIssue) {
@@ -533,13 +541,13 @@ export const downloadCertificate = async (req, res, next) => {
         doc.font('Helvetica')
             .fontSize(14)
             .fillColor('#333333')
-            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, Issue ${articleIssue} - ISSN #: ${journalISSN}`, 50, 380, {
+            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, ${getArticleData.specialReview ? 'Special Issue' : 'Issue'} ${articleIssue} - ISSN #: ${journalISSN}`, 50, 380, {
                 align: 'center',
                 width: pageWidth - 100
             });
 
         // Date of Awarding
-        const currentDate = new Date().toLocaleDateString('en-US', {
+        const currentDate = new Date(getArticleData.articlePublishedDate).toLocaleDateString('en-US', {
             day: '2-digit',
             month: 'long',
             year: 'numeric'
@@ -548,7 +556,7 @@ export const downloadCertificate = async (req, res, next) => {
         doc.font('Helvetica')
             .fontSize(15)
             .fillColor('#333333')
-            .text(`Awarded on ${publishedDate}`, 0, 440, { align: 'center' });
+            .text(`Awarded on ${currentDate}`, 0, 440, { align: 'center' });
 
         // Calculate positions for better alignment
         const signatureStartY = pageHeight - 180;  // Moved up slightly
