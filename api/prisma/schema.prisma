@@ -66,8 +66,8 @@ model Journal{
   journalAbbreviation String
   journalLanguage String
   journalDescription  String  @default("") @db.VarChar(3000)
-  journalISSN String
-  journalDOI String
+  journalISSN String?
+  journalDOI String?
   journalStartYear Int
   journalStartMonth Int
   journalPublishedArticles Int @default(0)

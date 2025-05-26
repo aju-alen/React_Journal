@@ -11,8 +11,8 @@ export const createJournal = async (req, res, next) => {
                 journalImageURL: req.body.journalImageURL,
                 journalAbbreviation: req.body.journalAbbreviation,
                 journalLanguage: req.body.journalLanguage,
-                journalISSN: req.body.journalISSN,
-                journalDOI: req.body.journalDOI,
+                journalISSN: req.body.journalISSN || '-',
+                journalDOI: req.body.journalDOI || '-',
                 journalStartYear: Number(req.body.journalStartYear),
                 journalStartMonth: Number(req.body.journalStartMonth)
             }

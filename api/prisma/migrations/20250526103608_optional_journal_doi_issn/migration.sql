@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Journal` MODIFY `journalISSN` VARCHAR(191) NULL,
+    MODIFY `journalDOI` VARCHAR(191) NULL;
