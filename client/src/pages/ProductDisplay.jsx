@@ -10,6 +10,8 @@ import Typography from '@mui/material/Typography';
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
 import ImageHeader from '../components/ImageHeader';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { axiosTokenHeader, httpRoute } from '../helperFunctions';
 
 const tiers = [
   {
@@ -149,7 +151,7 @@ const ProductDisplayy = () => {
                       variant="subtitle1" 
                       color="text.secondary"
                     >
-                      /{tier.title.includes('Weekly') ? 'week' : 'month'}
+                      /{tier.title.includes('Two') ? '2 days' : '7 days'}
                     </Typography>
                   </Box>
 
@@ -226,9 +228,9 @@ const ProductDisplayy = () => {
             p: 3,
           }}
         >
-          <Typography variant="body1" color="text.secondary">
+          {/* <Typography variant="body1" color="text.secondary">
             Need a custom plan? Contact us for enterprise solutions
-          </Typography>
+          </Typography> */}
         </Box>
       </Container>
     </div>
@@ -237,22 +239,83 @@ const ProductDisplayy = () => {
 
 const SuccessDisplay = ({ sessionId }) => {
   const [userId, setUserId] = useState('');
-
+  const [userSubscription, setUserSubscription] = useState(null);
   useEffect(() => {
     const getUser = JSON.parse(localStorage.getItem('currentUser'))?.user;
     setUserId(getUser.id);
     console.log(userId, 'getuser');
+
+    const getUserSubscription = async () => {
+      axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+      console.log(currentUser.user.email, 'currentUser.user.email in article');
+      const userSubscription = await axios.get(`${httpRoute}/api/subscription/user-details/${currentUser.user.email}`);
+      setUserSubscription(userSubscription.data.getSubscription);
+    }
+
+    getUserSubscription();
   }, []);
+  console.log(userSubscription, 'userSubscription');
   return (
-    <div className="h-auto w-auto  ">
+    <div className="min-h-screen bg-gray-50">
       <ImageHeader />
-      <div className="flex flex-col items-center justify-center md:m-20 ">
-        <h1 className=' mb-8 ' >Payment Complete!✅</h1>
-        < h1 className=' mx-4 text-center' > You can download the invoice or get any details regarding the payment on your
-          <Link to={`/dashboard/${userId}`} className='text-blue-700'>
-            <b className=' text-xl'> Dashboard </b>
-          </Link>
-          menu.</h1>
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center">
+          <div className="mb-6">
+            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircleRoundedIcon className="text-green-600 text-4xl" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Payment Complete! 🎉</h1>
+            <p className="text-gray-600">Thank you for your purchase. Your subscription is now active.</p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-blue-50 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-blue-900 mb-3">What's Next?</h2>
+              <ul className="text-left space-y-3">
+                <li className="flex items-start">
+                  <CheckCircleRoundedIcon className="text-blue-600 mt-1 mr-2" />
+                  <span>Access all premium articles immediately</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleRoundedIcon className="text-blue-600 mt-1 mr-2" />
+                  <span>Download your invoice from the Dashboard</span>
+                </li>
+                <li className="flex items-start">
+                  <CheckCircleRoundedIcon className="text-blue-600 mt-1 mr-2" />
+                  <span>Manage your subscription settings</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-3">Need to Cancel?</h2>
+              <p className="text-gray-600 mb-4">
+                You can cancel your subscription at any time by:
+              </p>
+              <ol className="text-left space-y-2 text-gray-600">
+                <li className="flex items-start">
+                  <span className="font-semibold mr-2">1.</span>
+                  <span>Go to your <Link to={`/dashboard/${userId}`} className="text-blue-600 hover:text-blue-800 font-medium">Dashboard</Link></span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-semibold mr-2">2.</span>
+                  <span>Click on "Manage Purchase" in the menu</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-semibold mr-2">3.</span>
+                  <span>Follow the cancellation process</span>
+                </li>
+              </ol>
+            </div>
+
+            <Link 
+              to={`/dashboard/${userId}`}
+              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Go to Dashboard
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

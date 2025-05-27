@@ -63,7 +63,7 @@ model Journal{
     id        String    @id @default(uuid())
   journalTitle   String   @unique
   journalImageURL String @default("")
-  journalAbbreviation String
+  journalAbbreviation String @unique
   journalLanguage String
   journalDescription  String  @default("") @db.VarChar(3000)
   journalISSN String?

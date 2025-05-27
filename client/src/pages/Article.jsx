@@ -83,7 +83,7 @@ export default function Article() {
     const handleCheckSubscription = () => {
         if (userSubscriptionData) {
             let currentTimeUnix = Math.floor(Date.now() / 1000);
-            if (userSubscriptionData.subscriptionEndDate > currentTimeUnix) {
+            if (userSubscriptionData.subscriptionPeriodEnd > currentTimeUnix) {
                 window.open(getPublicManuscriptUrl)
             } else {
                 navigate('/productDisplay')

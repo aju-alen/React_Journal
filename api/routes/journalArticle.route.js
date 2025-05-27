@@ -5,8 +5,8 @@ import {createJournalArticle,getAllJournalArticle,getAllArticlesToVerify,postRej
 
 router.post('/generate', downloadCertificate);
 router.get('/',getAllJournalArticle)
-router.get('/publishedArticle',getPublsihedJournalArticle)
 router.post('/create',createJournalArticle)
+router.get('/publishedArticle/:catId',getPublsihedJournalArticle)
 router.post('/updateArticle/:articleId',updateJournalArticle)
 router.get('/singleArticle/:articleId',getSingleArticle)
 router.get('/singlePublishedArticle/:articleId',getSinglePublishedArticle)

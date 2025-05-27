@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import ImageHeader from '../components/ImageHeader'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { DNA } from 'react-loader-spinner'
 import { getDates } from '../helperFunctions'
@@ -11,6 +11,9 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 
 const JournalCards = () => {
+    const { catId } = useParams();
+    console.log(catId, 'catId');
+    
     const [articles, setArticles] = useState([])
     const [journalCategory, setJournalCategory] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
@@ -31,7 +34,7 @@ const JournalCards = () => {
     useEffect(() => {
         const getPublishedArticles = async () => {
             try {
-                const resp = await axios.get(`${httpRoute}/api/journalArticle/publishedArticle`)
+                const resp = await axios.get(`${httpRoute}/api/journalArticle/publishedArticle/${catId}`)
                 setArticles(resp.data)
                 console.log(resp.data, 'published articles--');
                 setSlicedArticles(resp.data.slice(0, 10))
@@ -47,7 +50,7 @@ const JournalCards = () => {
 
     useEffect(() => {
         const fetchJournalCategory = async () => {
-            const resp = await axios(`${httpRoute}/api/journal`)
+            const resp = await axios(`${httpRoute}/api/journal/${catId}`)
             setJournalCategory(resp.data)
             console.log('child component fn called');
         }
@@ -76,7 +79,7 @@ const JournalCards = () => {
         <div className="min-h-screen bg-gray-100">
             <ImageHeader />
             <div className="container mx-auto px-4 py-8">
-                <h1 className='text-center font-bold text-4xl mt-6 text-gray-800'>Emirates International Journal Of Empirical Research (EIJER)</h1>
+                <h1 className='text-center font-bold text-4xl mt-6 text-gray-800'>{`${journalCategory[0]?.journalTitle} (${journalCategory[0]?.journalAbbreviation})`}</h1>
                 <div className="flex flex-col items-center mt-6 mb-10">
                     <h3 className='text-xl mb-4 font-semibold text-gray-700'>Journal Description</h3>
                     <p className='text-justify max-w-4xl text-gray-600 '>

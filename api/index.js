@@ -13,7 +13,7 @@ import userFullIssueRoute from './routes/userFullIssue.route.js'
 import s3Route from './routes/s3.route.js'
 import stripeROute from './routes/stripe.route.js'
 import subscriptionROute from './routes/subscription.route.js'
-import stripe from 'stripe';
+import Stripe from 'stripe';
 import sendMailRotue from './routes/sendMail.route.js'
 import { PrismaClient } from '@prisma/client'
 import { originUrl } from './utils/cors.dev.js'
@@ -24,141 +24,119 @@ dotenv.config()
 
 const app = express()
 dotenv.config()
-
-// Configure CORS
 app.use(cors({
   origin: originUrl,
-}));
+})); //frontend url
 
-// IMPORTANT: Move the webhook route BEFORE any body parsing middleware
-app.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
+// http://localhost:5173
+
+//https://react-journal-1.onrender.com
+
+//https://scientificjournalsportal.com
+
+const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
+const endpointSecret = "whsec_d24baa5b17d580b59c4c1ce3db638760ec0742192ff05c0d32e45575949ef04d";
+
+app.post('/webhook', express.raw({type: 'application/json'}), async (request, response) => {
   const sig = request.headers['stripe-signature'];
 
   let event;
-  //console.log('Logged into webhook route for publish journal ');
 
   try {
-    event = Stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-    //console.log(event, 'event in stripe route webhook');
+    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
   } catch (err) {
+    console.error('Webhook Error:', err.message);
     response.status(400).send(`Webhook Error: ${err.message}`);
     return;
   }
 
   // Handle the event
   switch (event.type) {
-    //---------------------------------invoice.payment_succeeded-------------------------------------
+    case 'checkout.session.completed':
+      
+      break;
 
     case 'invoice.payment_succeeded':
-      // Then define and call a function to handle the event invoice.payment_succeeded
-      const invoicePaymentSucceeded = event.data.object;
-      // //console.log(invoicePaymentSucceeded, 'invoice payment succeeded in stripe route webhook');
-      const findCustomer = await prisma.subscription.findUnique({
-        where: { subscriptionEmail: invoicePaymentSucceeded.customer_email }
-      });
-      if(findCustomer){
-
-        const updateSubscription = await prisma.subscription.update({
-          where : {subscriptionEmail : invoicePaymentSucceeded.customer_email},
-          data: {
-            isSubscribed: true,
-            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
-            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
-            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
-            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
-            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
-            invoiceId: invoicePaymentSucceeded.id,
-            customerId: invoicePaymentSucceeded.subscription
-          }
-        });
-        //console.log(updateSubscription, 'updateSubscription in invoice succeed');
-      }
-      else{
-        const subscription = await prisma.subscription.create({
-          data: {
-            isSubscribed: true,
-            subscriptionAmmount: invoicePaymentSucceeded.amount_paid,
-            subscriptionPeriodStart: invoicePaymentSucceeded.lines.data[0].period.start,
-            subscriptionPeriodEnd: invoicePaymentSucceeded.lines.data[0].period.end,
-            subscriptionEmail: invoicePaymentSucceeded.customer_email,
-            hosted_invoice_url: invoicePaymentSucceeded.hosted_invoice_url,
-            hosted_invoice_pdf: invoicePaymentSucceeded.invoice_pdf,
-            invoiceId: invoicePaymentSucceeded.id,
-            customerId: invoicePaymentSucceeded.subscription
-          }
-        });
-        //console.log(subscription, 'subscription in invoice succeed');
-      }
-      await prisma.$disconnect();
-
-      break;
-
-    //---------------------------------checkout.session.completed-------------------------------------
-    case 'checkout.session.completed':
-     
-      //console.log('3');
-      const checkoutSessionCompleted = event.data.object;
-      //console.log(checkoutSessionCompleted, 'checkoutSessionCompleted in stripe route webhookkkkkkkkkk');
-
-      if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'publisharticle') {
-        const payment = await prisma.article.update({
-          where: { id: checkoutSessionCompleted.metadata.articleId },
-          data: {
-            paymentStatus: true
-          }
-        });
-
-        await prisma.$disconnect();          }
-      if (checkoutSessionCompleted.payment_status === 'paid' && checkoutSessionCompleted.status === 'complete' && checkoutSessionCompleted.mode === 'payment' && checkoutSessionCompleted.metadata.checkoutStatus === 'fullIssue') {
-        console.log(checkoutSessionCompleted,'checkoutSessionCompleted');
+      const invoice = event.data.object;
+      try{
+        const externalInvoiceData = invoice.lines.data[0]
         
-        const userFullIssue = await prisma.userFullIssue.update({
-          where:{ payment_intent: checkoutSessionCompleted.payment_intent,},
-          data: {
-            userId: checkoutSessionCompleted.metadata.userId,
-            fullIssueId: checkoutSessionCompleted.metadata.articleId,
+        if(invoice.status === 'paid') {
+          try {
+            await prisma.$transaction(async (tx) => {
+              const checkUserExist = await tx.subscription.findUnique({
+                where: {
+                  subscriptionEmail: externalInvoiceData.metadata.emailId
+                }
+              });
+
+              if(checkUserExist) {
+                await tx.subscription.update({
+                  where: {
+                    subscriptionEmail: externalInvoiceData.metadata.emailId
+                  },
+                  data: {
+                    isSubscribed: true,
+                    subscriptionPeriodStart: externalInvoiceData.period.start,
+                    subscriptionPeriodEnd: externalInvoiceData.period.end,
+                    invoiceId: invoice.id,
+                    customerId: invoice.customer,
+                    hosted_invoice_url: invoice.hosted_invoice_url,
+                    subscriptionAmmount: externalInvoiceData.amount,
+                    subscriptionEmail: externalInvoiceData.metadata.emailId,
+                    hosted_invoice_pdf: invoice.invoice_pdf,
+
+                  }
+                });
+              } else {
+                await tx.subscription.create({
+                  data: {
+                    isSubscribed: true,
+                    subscriptionEmail: externalInvoiceData.metadata.emailId,
+                    subscriptionPeriodStart: externalInvoiceData.period.start,
+                    subscriptionPeriodEnd: externalInvoiceData.period.end,
+                    invoiceId: invoice.id,
+                    customerId: invoice.customer,
+                    hosted_invoice_url: invoice.hosted_invoice_url,
+                    subscriptionAmmount: externalInvoiceData.amount,
+                    subscriptionEmail: externalInvoiceData.metadata.emailId,
+                    hosted_invoice_pdf: invoice.invoice_pdf,
+                  }
+                });
+              }
+            });
+
+            console.log('Transaction completed successfully');
+          } catch (error) {
+            console.error('Transaction failed:', error);
+            throw error; // Re-throw to handle it in the webhook handler
           }
-        });
-
-
-        await prisma.$disconnect();
-      }
-
-      if (checkoutSessionCompleted.mode === 'subscription') {
-        //console.log(checkoutSessionCompleted.invoice, 'checkoutSessionCompleted.invoice');
-        //console.log('checkoutSession updata db');
-      }
-      break;
-    //---------------------------------payment_intent.created-------------------------------------
-    case 'charge.succeeded':
-      console.log('charge.succeeded');
-      const paymentIntentCreated = event.data.object;
-      console.log(paymentIntentCreated,'z----z----z-z-z--z-z-z-z');
-      
-      const updateUserFullIssue = await prisma.userFullIssue.create({
-        
-        data: {
-          invoice_url: paymentIntentCreated.receipt_url,
-          payment_intent: paymentIntentCreated.payment_intent,
         }
-      })
-      //console.log(paymentIntentCreated, 'charge.succeeded in stripe route webhook');
-      console.log(updateUserFullIssue, 'Database result');
+      }
+      catch(err){
+        console.log(err,'This is the error in invoice payment succeeded');
+      }
 
+
+      // Handle successful payment
       break;
 
     default:
-      //console.log(`Unhandled event type ${event.type}`);
+      console.log(`Unhandled event type ${event.type}`);
   }
 
   // Return a 200 response to acknowledge receipt of the event
   response.send();
 });
 
-// AFTER the webhook route, add the body parsing middleware
+
+
+
+
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
+
+app.use(express.json())
+app.use(cookieParser())
 
 app.use('/api/auth', authRoute)
 app.use('/api/users', userRoute)

@@ -39,6 +39,22 @@ export const getAllJournal = async (req, res, next) => {
     }
 }
 
+export const getSingleJournal = async (req, res, next) => {
+    try {
+        const journal = await prisma.journal.findMany({
+            where: {
+                journalAbbreviation: req.params.catId
+            }
+        })
+        await prisma.$disconnect();
+        res.status(200).json( journal )
+    }
+    catch (err) {
+        console.log(err);
+        return next(createError(400, 'An error occoured'))
+    }
+}
+
 export const getAllJournalCategoryName = async (req, res, next) => {
     try {
         const journal = await prisma.journal.findMany({
