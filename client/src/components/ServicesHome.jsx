@@ -15,7 +15,7 @@ const ServicesHome = () => {
             </div>
             <div className="service-class py-5">
                 <img src='./images/submit.png' alt='Submit' className='w-20 h-20' />
-                <Link to='/journal/EIJER' className='font-light text-lg border-2 rounded p-3 border-black '>
+                <Link to='/journal/publications' className='font-light text-lg border-2 rounded p-3 border-black '>
                     <button>Journals</button>
                 </Link>
             </div>

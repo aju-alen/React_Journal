@@ -35,7 +35,8 @@ const CreateNewJournal = () => {
             setLoading(true);
             await axios.post(`${httpRoute}/api/journal/create`, formJournalData)
             setLoading(false);
-            alert('Journal created successfully');
+            alert.success('Journal created successfully');
+            navigate('/journal/EIJER');
 
         }
         catch (err) {
@@ -77,6 +78,8 @@ const CreateNewJournal = () => {
                 name='journalDescription'
                 value={formJournalData.journalDescription}
                 onChange={handleFormData}
+                multiline
+                rows={4}
             />
 
             <TextField id="outlined-basic" label="Journal ISSN" variant="outlined"

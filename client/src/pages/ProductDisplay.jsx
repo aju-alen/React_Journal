@@ -82,9 +82,9 @@ const ProductDisplayy = () => {
         </Box>
 
         {/* Pricing Cards */}
-        <Grid container spacing={4} justifyContent="center">
+        <Grid container spacing={{ xs: 2, sm: 3, md: 4 }} justifyContent="center">
           {tiers.map((tier) => (
-            <Grid item xs={12} md={6} key={tier.title}>
+            <Grid item xs={12} sm={10} md={6} lg={5} key={tier.title}>
               <Card
                 elevation={tier.popular ? 2 : 1}
                 sx={{
@@ -93,7 +93,7 @@ const ProductDisplayy = () => {
                   flexDirection: 'column',
                   position: 'relative',
                   transition: 'all 0.2s ease',
-                  borderRadius: 2,
+                  borderRadius: { xs: 1, sm: 2 },
                   border: tier.popular ? '1px solid' : 'none',
                   borderColor: 'primary.main',
                   '&:hover': {
@@ -105,11 +105,11 @@ const ProductDisplayy = () => {
                   <Box
                     sx={{
                       position: 'absolute',
-                      top: -12,
-                      right: 20,
+                      top: { xs: -10, sm: -12 },
+                      right: { xs: 16, sm: 20 },
                       bgcolor: 'primary.main',
                       color: 'white',
-                      px: 2,
+                      px: { xs: 1.5, sm: 2 },
                       py: 0.5,
                       borderRadius: 1,
                     }}
@@ -118,21 +118,28 @@ const ProductDisplayy = () => {
                   </Box>
                 )}
 
-                <CardContent sx={{ flexGrow: 1, pt: 6, px: 4 }}>
+                <CardContent sx={{ 
+                  flexGrow: 1, 
+                  pt: { xs: 4, sm: 6 }, 
+                  px: { xs: 2, sm: 4 } 
+                }}>
                   <Typography
                     component="h2"
                     variant="h5"
                     color="text.primary"
                     gutterBottom
                     fontWeight="500"
-                    sx={{ mb: 2 }}
+                    sx={{ 
+                      mb: 2,
+                      fontSize: { xs: '1.25rem', sm: '1.5rem' }
+                    }}
                   >
                     {tier.title}
                   </Typography>
                   
                   <Box 
                     sx={{ 
-                      my: 3,
+                      my: { xs: 2, sm: 3 },
                       display: 'flex',
                       alignItems: 'baseline',
                       gap: 1
@@ -143,6 +150,9 @@ const ProductDisplayy = () => {
                       variant="h3" 
                       fontWeight="500" 
                       color="text.primary"
+                      sx={{
+                        fontSize: { xs: '1.75rem', sm: '2.5rem' }
+                      }}
                     >
                       AED {tier.price}
                     </Typography>
@@ -150,29 +160,38 @@ const ProductDisplayy = () => {
                       component="span" 
                       variant="subtitle1" 
                       color="text.secondary"
+                      sx={{
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
+                      }}
                     >
                       /{tier.title.includes('Two') ? '2 days' : '7 days'}
                     </Typography>
                   </Box>
 
-                  <Box sx={{ mt: 3 }}>
+                  <Box sx={{ mt: { xs: 2, sm: 3 } }}>
                     {tier.description.map((feature) => (
                       <Box
                         key={feature}
                         sx={{
                           display: 'flex',
                           alignItems: 'center',
-                          mb: 2,
+                          mb: { xs: 1.5, sm: 2 },
                         }}
                       >
                         <CheckCircleRoundedIcon
                           sx={{ 
                             color: 'primary.main', 
                             mr: 2,
-                            fontSize: '1.2rem'
+                            fontSize: { xs: '1rem', sm: '1.2rem' }
                           }}
                         />
-                        <Typography variant="body1" color="text.secondary">
+                        <Typography 
+                          variant="body1" 
+                          color="text.secondary"
+                          sx={{
+                            fontSize: { xs: '0.875rem', sm: '1rem' }
+                          }}
+                        >
                           {feature}
                         </Typography>
                       </Box>
@@ -180,17 +199,15 @@ const ProductDisplayy = () => {
                   </Box>
                 </CardContent>
 
-                <CardActions sx={{ p: 4, pt: 0 }}>
+                <CardActions sx={{ 
+                  p: { xs: 2, sm: 4 }, 
+                  pt: 0 
+                }}>
                   <form
                     action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions"
                     method="POST"
                     style={{ width: '100%' }}
                   >
-                  {/* <form
-                    action="http://localhost:3001/api/stripe/create-checkout-sessions"
-                    method="POST"
-                    style={{ width: '100%' }}
-                  > */}
                     <input
                       type="hidden"
                       name="lookup_key"
@@ -205,8 +222,8 @@ const ProductDisplayy = () => {
                       size="large"
                       type="submit"
                       sx={{
-                        py: 1.5,
-                        fontSize: '1rem',
+                        py: { xs: 1, sm: 1.5 },
+                        fontSize: { xs: '0.875rem', sm: '1rem' },
                         borderRadius: 1,
                         textTransform: 'none',
                         fontWeight: 500,
