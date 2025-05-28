@@ -8,6 +8,7 @@ export const createJournal = async (req, res, next) => {
         const journal = await prisma.journal.create({
             data: {
                 journalTitle: req.body.journalTitle,
+                journalDescription: req.body.journalDescription,
                 journalImageURL: req.body.journalImageURL,
                 journalAbbreviation: req.body.journalAbbreviation,
                 journalLanguage: req.body.journalLanguage,
