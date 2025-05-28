@@ -198,6 +198,7 @@ const ProductDisplayy = () => {
                     />
                     <input type="hidden" name="userId" value={userId} />
                     <input type="hidden" name="emailId" value={emailId} />
+                    <input type="hidden" name="purchaseType" value='subscription' />
                     <Button
                       fullWidth
                       variant={tier.popular ? "contained" : "outlined"}

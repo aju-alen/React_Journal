@@ -41,6 +41,8 @@ export const createFullIssue = async (req, res, next) => {
             lookup_key: `vol${issueVolume}Issue${issueNumber}`,
           });
 
+          console.log(price, 'price in stripe');
+
     }
     catch(err){
         console.log(err);

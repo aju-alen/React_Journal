@@ -101,9 +101,9 @@ const FullIssueSearch = ({ purchase }) => {
 
   console.log(getSearchIssue, 'getSearchIssue-api');
 
-  // const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
+  const ifUserPurchasedFullIssue = purchasedFullIssue?.filter((item) => item.userId === userId && item.fullIssueId === fullIssueId)
 
-  const ifUserPurchasedFullIssue = false
+  // const ifUserPurchasedFullIssue = false
 
   return (
     <>

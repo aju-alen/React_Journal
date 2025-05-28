@@ -53,13 +53,40 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
   // Handle the event
   switch (event.type) {
     case 'checkout.session.completed':
+      const checkoutSession = event.data.object;
+      try{
+        const {userId, articleId } = checkoutSession.metadata;
+
+        if(checkoutSession.status === 'complete'){
+          const invoice = await stripe.invoices.retrieve(checkoutSession.invoice);
+      
+          console.log("Invoice hosted URL:", invoice.hosted_invoice_url);
+          await prisma.userFullIssue.create({
+            data:{
+              userId:userId,
+              fullIssueId:articleId,
+              amountTotal:JSON.stringify(checkoutSession.amount_total),
+              amountCurrency:checkoutSession.currency,
+              payment_intent:checkoutSession.payment_intent,
+              invoice_url:invoice.hosted_invoice_url,
+            }
+          })
+      }
+      else{
+        console.log('checkout session is not complete');
+      }
+      }
+      catch(err){
+        console.log(err, 'error in webhook');
+      }
       
       break;
 
     case 'invoice.payment_succeeded':
       const invoice = event.data.object;
-      try{
-        const externalInvoiceData = invoice.lines.data[0]
+      const externalInvoiceData = invoice.lines.data[0]
+      if(externalInvoiceData.metadata.purchaseType === 'subscription'){
+     try{
         
         if(invoice.status === 'paid') {
           try {
@@ -115,7 +142,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
       }
       catch(err){
         console.log(err,'This is the error in invoice payment succeeded');
-      }
+      }}
 
 
       // Handle successful payment

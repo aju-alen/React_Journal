@@ -40,6 +40,9 @@ export const createCheckoutSession = async (req, res, next) => {
         },
       ],
       mode: 'payment',
+      invoice_creation: {
+        enabled: true
+      },
       metadata:{
         articleId:articleId,
         checkoutStatus:checkoutStatus,
@@ -71,7 +74,8 @@ export const returnSessionStatus = async (req, res, next) => {
 export const createCheckoutSessionForSubscription = async (req, res, next) => {
   console.log('Creating checkout session with metadata:', {
     userId: req.body.userId,
-    emailId: req.body.emailId
+    emailId: req.body.emailId,
+    purchaseType: req.body.purchaseType
   });
 
   const prices = await Stripe.prices.list({
@@ -84,7 +88,8 @@ export const createCheckoutSessionForSubscription = async (req, res, next) => {
     subscription_data: {
       metadata: {
         userId: req.body.userId,
-        emailId: req.body.emailId
+        emailId: req.body.emailId,
+        purchaseType: req.body.purchaseType
       },
     },
     billing_address_collection: 'auto',
