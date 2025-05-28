@@ -13,13 +13,16 @@ const YOUR_DOMAIN = stripeDomain;
 export const createCheckoutSession = async (req, res, next) => {
   let price;
   let {articleId,checkoutStatus,userId,emailId,stripeLookupId} = req.body;
+  console.log(req.body, 'req.body in api');
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
   if (checkoutStatus === "publisharticle" ){
     price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
   }
   else if (checkoutStatus === "fullIssue"){
+    console.log('inside fullissue apicall');
+    
     const prices = await Stripe.prices.list({
-      lookup_keys: [`${stripeLookupId}`],
+      lookup_keys: [stripeLookupId],
     });
 
      price = prices.data[0]?.id;
