@@ -32,7 +32,7 @@ const reccomendedArticles = articles.slice(7)
           <span className="text-justify">{` ` + journal.articleKeywords}</span>
         </div>
       </div>
-      <div className=' md:w-9/12 md:ml-auto ' >
+      <div className=' md:w-9/12 md:ml-auto mt-10 md:mt-0 ' >
       <AccordianReccomended articles={reccomendedArticles.slice(0, 5)} />
       </div>
     </div>
