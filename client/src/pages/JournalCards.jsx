@@ -146,8 +146,7 @@ const JournalCards = () => {
                             label="Select Journal"
                             onChange={(event) => {
                                 setSelectedJournal(event.target.value)
-                                setJournalAbbreviation(journalList.find(journal => journal.id === event.target.value).journalAbbreviation)
-                                setLoading(true);   
+                                setJournalAbbreviation(journalList.find(journal => journal.id === event.target.value).journalAbbreviation)  
                             }}
                             sx={{
                                 backgroundColor: 'white',
