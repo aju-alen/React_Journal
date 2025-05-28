@@ -4,9 +4,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 import { httpRoute } from '../helperFunctions';
-
-
+import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router-dom';
 const CreateNewJournal = () => {
+    const navigate = useNavigate();
     const [formJournalData, setFormJournalData] = useState({
         journalTitle: "",
         journalImageURL: "",
@@ -19,6 +20,7 @@ const CreateNewJournal = () => {
         journalStartMonth: "",
         journalPublishedArticles: "",
     })
+    const [loading, setLoading] = useState(false);
 
     const handleFormData = (e) => {
         const { name, value } = e.target;
@@ -30,11 +32,15 @@ const CreateNewJournal = () => {
 
     const handleSubmitJournal = async () => {
         try {
+            setLoading(true);
             await axios.post(`${httpRoute}/api/journal/create`, formJournalData)
+            setLoading(false);
+            alert('Journal created successfully');
 
         }
         catch (err) {
             console.log(err);
+            setLoading(false);
         }
     }
 
@@ -98,7 +104,7 @@ const CreateNewJournal = () => {
                 onChange={handleFormData}
                 placeholder='Number of month eg: 1 for January'
             />
-            <Button variant="contained" onClick={handleSubmitJournal}>Create new Journal </Button>
+            <Button variant="contained" onClick={handleSubmitJournal} disabled={loading}>Create new Journal {loading && <CircularProgress size={20} />}</Button>
         </Box>
 
     );
