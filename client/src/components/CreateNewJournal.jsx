@@ -35,13 +35,13 @@ const CreateNewJournal = () => {
             setLoading(true);
             await axios.post(`${httpRoute}/api/journal/create`, formJournalData)
             setLoading(false);
-            alert.success('Journal created successfully');
-            navigate('/journal/EIJER');
-
+            alert('Journal created successfully!');
+            navigate('/journal/publications');
         }
         catch (err) {
             console.log(err);
             setLoading(false);
+            alert('Error creating journal. Please try again.');
         }
     }
 
