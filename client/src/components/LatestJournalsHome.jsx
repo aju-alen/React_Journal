@@ -46,7 +46,7 @@ const LatestJournalsHome = ({width}) => {
                         <React.Fragment key={journal.id}>
                             <div className='bg-white rounded-xl shadow-xl p-8 mx-auto mb-8 max-w-4xl transform transition-all duration-300 hover:shadow-2xl'>
                                 <div className="flex flex-col gap-6">
-                                    <h2 className='text-3xl font-bold text-gray-800 border-l-4 border-yellow-400 pl-4 leading-tight'>
+                                    <h2 className='text-2xl md:text-3xl text-left md:text-center font-bold text-gray-800 border-l-4 border-yellow-400 pl-4 leading-tight'>
                                         {journal.articleTitle}
                                     </h2>
                                     <div className='flex flex-col gap-3 text-gray-600 bg-gray-50 p-4 rounded-lg'>

@@ -9,6 +9,13 @@ import FullIssueHome from '../components/FullIssueHome.jsx'
 import AccordianReccomended from '../components/AccordianReccomended.jsx'
 import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
+import { 
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Box
+} from '@mui/material';
 
 const JournalCards = () => {
     const { catId } = useParams();
@@ -18,12 +25,18 @@ const JournalCards = () => {
     const [journalCategory, setJournalCategory] = useState([])
     const [currentPage, setCurrentPage] = useState(1);
     const [slicedArticles, setSlicedArticles] = useState([])
+    const [selectedJournal, setSelectedJournal] = useState('');
+    const [journalAbbreviation, setJournalAbbreviation] = useState('EIJER');
+    const [journalDescription, setJournalDescription] = useState('');
+    const [journalList, setJournalList] = useState([]);
+    const [loading, setLoading] = useState(false);
 
+    console.log(articles, 'articlessssssss');
     
 
     useEffect(() => {
         setSlicedArticles(articles.slice((currentPage - 1) * 10, currentPage * 10))
-    }, [currentPage])
+    }, [currentPage, articles])
 
     const handlePageChange = (event, value) => {
         console.log(value, 'value--value');
@@ -31,13 +44,35 @@ const JournalCards = () => {
         setCurrentPage(value);
       };
 
+      useEffect(() => {
+        const getPublishedArticles = async () => {
+            try {
+                setLoading(true);   
+                const resp = await axios.get(`${httpRoute}/api/journalArticle/publishedArticle/${journalAbbreviation}`)
+
+                setArticles(resp.data)
+                setJournalDescription(resp.data[0].articlePublishedJournal.journalDescription)
+                setLoading(false);
+            }
+            catch (error) {
+                console.log(error);
+            }
+        }
+        getPublishedArticles()
+      }, [journalAbbreviation])
     useEffect(() => {
         const getPublishedArticles = async () => {
             try {
+                setLoading(true);
                 const resp = await axios.get(`${httpRoute}/api/journalArticle/publishedArticle/${catId}`)
+
                 setArticles(resp.data)
                 console.log(resp.data, 'published articles--');
                 setSlicedArticles(resp.data.slice(0, 10))
+              
+                    const getJournalList = await axios.get(`${httpRoute}/api/journal`)
+                    setJournalList(getJournalList.data)
+                    setLoading(false);
                 
             }
             catch (error) {
@@ -49,16 +84,18 @@ const JournalCards = () => {
 
 
     useEffect(() => {
+        setLoading(true);
         const fetchJournalCategory = async () => {
             const resp = await axios(`${httpRoute}/api/journal/${catId}`)
             setJournalCategory(resp.data)
             console.log('child component fn called');
+            setLoading(false);
         }
         fetchJournalCategory()
     }, [])
 
     // console.log(articles,'articles');
-    if (!Array.isArray(articles) || articles.length === 0) {
+    if (!Array.isArray(articles) || loading) {
         // Handle empty or non-array user prop
         return (
             <div className='  min-h-screen flex items-center justify-center '>
@@ -73,17 +110,108 @@ const JournalCards = () => {
             </div>
         );
     }
-    console.log(journalCategory, 'journal category data called');
     const reccomendedArticles = articles.slice(7)
     return (
         <div className="min-h-screen bg-gray-100">
             <ImageHeader />
+            <div className="w-full px-4 sm:px-6 md:px-8">
+                <Box 
+                    sx={{ 
+                        width: {
+                            xs: '100%',    // Full width on mobile
+                            sm: '80%',     // 80% width on small screens
+                            md: '80%',     // 60% width on medium screens
+                            lg: '80%'      // 40% width on large screens
+                        },
+                        marginX: 'auto',  // Center the dropdown
+                        marginTop: '10px'
+                    }}
+                >
+                    <FormControl fullWidth>
+                        <InputLabel 
+                            id="journal-select-label"
+                            sx={{
+                                fontSize: {
+                                    xs: '0.875rem',  // Smaller font on mobile
+                                    sm: '1rem'       // Normal font on larger screens
+                                }
+                            }}
+                        >
+                            Select Journal
+                        </InputLabel>
+                        <Select
+                            labelId="journal-select-label"
+                            id="journal-select"
+                            value={selectedJournal}
+                            label="Select Journal"
+                            onChange={(event) => {
+                                setSelectedJournal(event.target.value)
+                                setJournalAbbreviation(journalList.find(journal => journal.id === event.target.value).journalAbbreviation)
+                                setLoading(true);   
+                            }}
+                            sx={{
+                                backgroundColor: 'white',
+                                borderRadius: 1,
+                                height: {
+                                    xs: '40px',  // Smaller height on mobile
+                                    sm: '48px'   // Normal height on larger screens
+                                },
+                                fontSize: {
+                                    xs: '0.875rem',  // Smaller font on mobile
+                                    sm: '1rem'       // Normal font on larger screens
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'rgba(0, 0, 0, 0.23)',
+                                },
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'primary.main',
+                                },
+                                '& .MuiSelect-select': {
+                                    padding: {
+                                        xs: '8px 14px',  // Smaller padding on mobile
+                                        sm: '10px 16px'  // Normal padding on larger screens
+                                    }
+                                }
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        maxHeight: {
+                                            xs: '200px',  // Smaller max height on mobile
+                                            sm: '300px'   // Normal max height on larger screens
+                                        }
+                                    }
+                                }
+                            }}
+                        >
+                            {journalList.map(journal => (
+                                <MenuItem 
+                                    key={journal.id}
+                                    value={journal.id}
+                                    sx={{
+                                        fontSize: {
+                                        xs: '0.875rem',
+                                        sm: '1rem'
+                                    }
+                                }}
+                            >
+                                {journal.journalTitle}
+                            </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                </Box>
+            </div>
             <div className="container mx-auto px-4 py-8">
-                <h1 className='text-center font-bold text-4xl mt-6 text-gray-800'>{`${journalCategory[0]?.journalTitle} (${journalCategory[0]?.journalAbbreviation})`}</h1>
+            {journalCategory && journalCategory[0] && (
+                 <h1 className='text-center font-bold text-4xl mt-6 text-gray-800'>
+                   {`${journalCategory[0].journalTitle || ''} ${journalCategory[0].journalAbbreviation ? `(${journalCategory[0].journalAbbreviation})` : ''}`}
+                 </h1>
+               )}
                 <div className="flex flex-col items-center mt-6 mb-10">
                     <h3 className='text-xl mb-4 font-semibold text-gray-700'>Journal Description</h3>
                     <p className='text-justify max-w-4xl text-gray-600 '>
-                        {journalCategory[0]?.journalDescription}
+                        {journalDescription}
                     </p>
                 </div>
                 
@@ -143,7 +271,7 @@ const JournalCards = () => {
                     
                     <div className="md:w-3/12">
                         <h2 className="text-2xl font-semibold mb-6 text-gray-800">Recommended</h2>
-                        <AccordianReccomended articles={reccomendedArticles.slice(0, 5)} />
+                        <AccordianReccomended articles={articles.slice(0, 5)} />
                     </div>
                 </div>
             </div>

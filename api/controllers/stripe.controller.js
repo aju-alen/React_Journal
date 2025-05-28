@@ -10,51 +10,51 @@ const YOUR_DOMAIN = stripeDomain;
 // const YOUR_DOMAIN = 'https://scientificjournalsportal.com';
 
 
-// export const createCheckoutSession = async (req, res, next) => {
-//   let price;
-//   let {articleId,checkoutStatus,userId,emailId,stripeLookupId} = req.body;
-//   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
-//   if (checkoutStatus === "publisharticle" ){
-//     price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
-//   }
-//   else if (checkoutStatus === "fullIssue"){
-//     const prices = await Stripe.prices.list({
-//       lookup_keys: [`${stripeLookupId}`],
-//     });
+export const createCheckoutSession = async (req, res, next) => {
+  let price;
+  let {articleId,checkoutStatus,userId,emailId,stripeLookupId} = req.body;
+  console.log(checkoutStatus,articleId, 'checkoutStatus in api');
+  if (checkoutStatus === "publisharticle" ){
+    price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
+  }
+  else if (checkoutStatus === "fullIssue"){
+    const prices = await Stripe.prices.list({
+      lookup_keys: [`${stripeLookupId}`],
+    });
 
-//      price = prices.data[0]?.id;
-//   }
-//   try{
-//     console.log(price, 'price in stripe');
-//     const session = await Stripe.checkout.sessions.create({
-//       ui_mode: 'embedded',
-//       customer_email: emailId,
-//       line_items: [
-//         {
+     price = prices.data[0]?.id;
+  }
+  try{
+    console.log(price, 'price in stripe');
+    const session = await Stripe.checkout.sessions.create({
+      ui_mode: 'embedded',
+      customer_email: emailId,
+      line_items: [
+        {
           
-//           price: price,
-//           quantity: 1,
-//         },
-//       ],
-//       mode: 'payment',
-//       metadata:{
-//         articleId:articleId,
-//         checkoutStatus:checkoutStatus,
-//         userId:userId
-//       },
-//       return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
-//     });
-//     console.log(session, 'session in api');
+          price: price,
+          quantity: 1,
+        },
+      ],
+      mode: 'payment',
+      metadata:{
+        articleId:articleId,
+        checkoutStatus:checkoutStatus,
+        userId:userId
+      },
+      return_url: `${YOUR_DOMAIN}/returnPayment?session_id={CHECKOUT_SESSION_ID}`,
+    });
+    console.log(session, 'session in api');
   
-//     res.send({clientSecret: session.client_secret});
-//   }
-//   catch(err){
-//     console.log(err, 'error in stripe');
-//     res.status(500).send({error: err.message});
-//   }
+    res.send({clientSecret: session.client_secret});
+  }
+  catch(err){
+    console.log(err, 'error in stripe');
+    res.status(500).send({error: err.message});
+  }
   
   
-// };
+};
 
 export const returnSessionStatus = async (req, res, next) => {
   const session = await Stripe.checkout.sessions.retrieve(req.query.session_id);

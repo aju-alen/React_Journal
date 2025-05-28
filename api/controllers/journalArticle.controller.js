@@ -345,6 +345,19 @@ export const acceptManuscript = async (req, res, next) => {
     }
 }
 
+export const getAllPublsihedJournalArticle = async (req, res, next) => {
+    try {
+        const journalArticle = await prisma.article.findMany({
+            where: {
+                isPublished: true
+            }
+        });
+        res.status(200).json(journalArticle);
+    } catch (error) {
+        
+    }
+}
+
 export const getPublsihedJournalArticle = async (req, res, next) => {
     try {
         const journalArticle = await prisma.article.findMany({
@@ -359,7 +372,8 @@ export const getPublsihedJournalArticle = async (req, res, next) => {
                     select: {
                         id: true,
                         journalAbbreviation: true,
-                        journalTitle: true
+                        journalTitle: true,
+                        journalDescription: true
                     }
                 }
             },
