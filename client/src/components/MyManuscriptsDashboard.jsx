@@ -29,7 +29,9 @@ const MyManuscriptsDashboard = ({ user }) => {
   const [loading, setLoading] = useState(false);
   const [certificateUrl, setCertificateUrl] = useState(null);
   const [currentArticleId, setCurrentArticleId] = useState(null);
-
+  const [isAdmin, setIsAdmin] = useState(false);
+  console.log(isAdmin, 'isAdmin');
+  
   const handleDownloadCertificate = async (
     articleId,
     articleTitle,
@@ -96,17 +98,44 @@ const MyManuscriptsDashboard = ({ user }) => {
 
   useEffect(() => {
     const getUser = JSON.parse(localStorage.getItem('currentUser'))
+    console.log(getUser, 'getUser');
     setUserId(getUser?.user?.id)
     setEmailId(getUser?.user?.email)
+    setIsAdmin(getUser?.user?.isAdmin)
   }, []);
 
-  const handleDeleteArticle = async () => {
+  const handleSupportArticle = async () => {
  //There exist a delete article route in the backend which is not implemented in the frontend
     try{
       navigate('/contact/new')
     }
     catch(err){
       console.log(err)
+    }
+  }
+
+  const handleDeleteArticle = async () => {
+    try {
+      const response = await axios.delete(`${httpRoute}/api/journalArticle/delete-article/${articleId}/${userId}`, {
+        headers: {
+          'Authorization': axiosTokenHeader()
+        }
+      });
+      
+      if (response.status === 200) {
+        // Fetch updated user data
+        const updatedUserResp = await axios.get(`${httpRoute}/api/users/${userId}`);
+        // Update the user prop with new data
+        user.articles = updatedUserResp.data.articles;
+        handleClose(); // Close the dialog
+        alert('Article deleted successfully!');
+        // Force a re-render by toggling articles state
+        setArticles(prev => !prev);
+      }
+    }
+    catch(err) {
+      console.log(err);
+      alert('Error deleting article. Please try again.');
     }
   }
 
@@ -327,22 +356,34 @@ const MyManuscriptsDashboard = ({ user }) => {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Deleting this manuscript can only be done by the support team. Contact support team for further assistance.
+            {isAdmin ? 'Are you sure you want to delete this manuscript?' : 'Deleting this manuscript can only be done by the support team. Contact support team for further assistance.'}
           </DialogContentText>
         </DialogContent>
         <DialogActions sx={{ padding: '16px' }}>
           <Button onClick={handleClose} variant="outlined" sx={{ borderRadius: '8px', textTransform: 'none' }}>
             Cancel
           </Button>
-          <Button 
-            onClick={handleDeleteArticle} 
-            autoFocus 
-            variant="contained" 
-            color="primary"
-            sx={{ borderRadius: '8px', textTransform: 'none' }}
-          >
-            Contact Support
-          </Button>
+          {!isAdmin ? (
+            <Button 
+            onClick={handleSupportArticle} 
+              autoFocus 
+              variant="contained" 
+              color="primary"
+              sx={{ borderRadius: '8px', textTransform: 'none' }}
+            >
+              Contact Support
+            </Button>
+          ) : (
+            <Button 
+              onClick={handleDeleteArticle} 
+              autoFocus 
+              variant="contained" 
+              color="primary"
+              sx={{ borderRadius: '8px', textTransform: 'none' }}
+            >
+              Delete
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </TableContainer>

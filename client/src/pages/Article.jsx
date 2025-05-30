@@ -11,7 +11,7 @@ import SingleArticleAbstractTab from '../components/SingleArticleAbstractTab';
 import { httpRoute, axiosTokenHeader } from '../helperFunctions.js';
 import Box from '@mui/material/Box';
 import Snackbar from '@mui/material/Snackbar';
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, } from 'react-router-dom'
 import { DNA } from 'react-loader-spinner'
 import FullIssueHome from '../components/FullIssueHome.jsx'
 
@@ -19,7 +19,7 @@ import FullIssueHome from '../components/FullIssueHome.jsx'
 
 export default function Article() {
     const navigate = useNavigate()
-    const { articleId } = useParams()
+    const { articleId,catId } = useParams()
     const [journal, setJournal] = useState([])
     const [loading, setLoading] = useState(true)
     const [userSubscriptionData, setUserSubscriptionData] = useState({})
@@ -40,6 +40,9 @@ export default function Article() {
     const handleClose = () => {
         setState({ ...state, open: false });
     };
+
+    console.log(catId, 'catId in article');
+    
 
 
 
@@ -108,7 +111,7 @@ export default function Article() {
                 />
             </div>)) : (
                 <div>
-                    <ImageHeaderArticle />
+                    <ImageHeaderArticle catId={catId} />
                     <div className="flex justify-center items-center w-12/12 mx-auto ">
     <div className="w-52 justify-center items-center hidden md:block">
         <img src="./images/logo.jpeg" />

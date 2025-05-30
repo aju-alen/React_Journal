@@ -269,7 +269,7 @@ const JournalCards = () => {
                                     <p className='text-sm text-gray-500 mb-4'>
                                         Article Number: A000{journal.id.split('').splice(4, journal.id.length - 5 - 27).join('')}
                                     </p>
-                                    <Link to={`/journal/EIJER/${journal.id}`}>
+                                    <Link to={`/journal/${journalCategory[0].journalAbbreviation}/${journal.id}`}>
                                         <button className='px-4 py-2 bg-green-500 text-white font-medium rounded hover:bg-green-600 transition-colors'>
                                             View Article
                                         </button>
