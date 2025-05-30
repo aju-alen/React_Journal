@@ -83,7 +83,7 @@ model Article {
     id        String    @id @default(uuid())
   articleTitle              String
   articleAbstract           String @db.VarChar(3000)
-  articleKeywords           String
+  articleKeywords           String @db.VarChar(1000)
   articleAuthors            Json
   filesURL                  Json
   articleIssue             Int

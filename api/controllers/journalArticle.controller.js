@@ -558,7 +558,7 @@ export const downloadCertificate = async (req, res, next) => {
         doc.font('Helvetica')
             .fontSize(14)
             .fillColor('#333333')
-            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, ${getArticleData.specialReview ? 'Special Issue' : 'Issue'} ${articleIssue} - ISSN #: ${journalISSN}`, 50, 380, {
+            .text(`in ${journalAbbreviation}, Volume ${articleVolume}, ${getArticleData.specialReview ? 'Special Issue' : 'Issue'} ${articleIssue} ${journalISSN ? `- ISSN #: ${journalISSN}` : ''}`, 50, 400, {
                 align: 'center',
                 width: pageWidth - 100
             });
