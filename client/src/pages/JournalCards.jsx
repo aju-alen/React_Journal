@@ -235,10 +235,13 @@ const JournalCards = () => {
                         </h1>
                     )}
                     <div className="flex flex-col items-center mt-6 mb-10">
-                        <h3 className='text-xl mb-4 font-semibold text-gray-700'>Journal Description</h3>
-                        <p className='text-justify max-w-4xl text-gray-600 whitespace-pre-line'>
-                            {journalCategory[0]?.journalDescription || 'No description available'}
-                        </p>
+                        <h3 className='text-2xl mb-4 font-semibold text-gray-700 border-b-2 border-gray-300 pb-2'>Journal Description</h3>
+                        <div 
+                            className='text-left md:text-justify max-w-4xl text-gray-600 prose prose-lg'
+                            dangerouslySetInnerHTML={{ 
+                                __html: journalCategory[0]?.journalDescription || 'No description available'
+                            }}
+                        />
                     </div>
                     
                     <div className="flex flex-col md:flex-row gap-8">
