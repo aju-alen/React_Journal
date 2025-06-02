@@ -534,7 +534,7 @@ export const downloadCertificate = async (req, res, next) => {
         doc.font('Helvetica-Bold')
             .fontSize(32)
             .fillColor('#1f497d')
-            .text(`${authorGivenName} ${authorLastName}`, 0, 240, { align: 'center' });
+            .text(`${getArticleData.articleAuthors[0].authorTitle}${authorGivenName} ${authorLastName}`, 0, 240, { align: 'center' });
 
         // Publication Details (Centered, Readable)
         doc.font('Helvetica')
