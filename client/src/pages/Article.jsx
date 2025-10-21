@@ -31,6 +31,8 @@ export default function Article() {
         horizontal: 'center',
     });
 
+    
+
     const { vertical, horizontal, open } = state;
 
     const handleClick = (newState) => () => {
@@ -155,10 +157,10 @@ export default function Article() {
     <div className="w-48 py-8 hidden md:block">
         {/* <FullIssueHome purchase={false} /> */}
         {
-            journal?.articleIssue === 1 && journal.articleVolume === 1 ? (
+            journal?.articleIssue === 1 && catId !=='JCP' && journal.articleVolume === 1 ? (
                 <img src="./images/vol1_issue1.jpg"  className= 'w-full' />
 
-            ):journal?.articleIssue === 2 && journal.articleVolume === 1 ? (
+            ):journal?.articleIssue === 2 && catId !=='JCP' && journal.articleVolume === 1 ? (
                 <img src="./images/vol1_issue2.jpg"  className= 'w-full' />
 
             ):(
