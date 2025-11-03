@@ -8,6 +8,8 @@ import cookieParser from 'cookie-parser'
 import createError from '../utils/createError.js'
 import dotenv from 'dotenv'
 import { emailVerifyBackendUrl, emailUrl } from '../utils/cors.dev.js'
+import { resendEmailBoiler } from '../utils/resend-email-boiler.js';
+import { emailVerificationTemplate, passwordResetTemplate, markettingEmailTemplate, welcomeEmailTemplate } from '../utils/emailTemplates.js';
 dotenv.config()
 
 const prisma = new PrismaClient();
@@ -53,68 +55,26 @@ export const register = async (req, res, next) => {
         })
         await prisma.$disconnect()
         console.log(emailVerificationToken, 'emailVerificationToken');
-        sendVerificationEmail(req.body.email, emailVerificationToken, req.body.surname);
+
+        const emailHtml = emailVerificationTemplate(
+            req.body.surname,
+            emailVerificationToken,
+            req.body.email,
+            emailVerifyBackendUrl
+        );
+
+        await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER,
+            req.body.email,
+            'Verify your email',
+            emailHtml
+        )
+        // sendVerificationEmail(req.body.email, emailVerificationToken, req.body.surname);
         res.status(201).json({ message: 'User created, please verify your details', user })
     }
     catch (err) {
         console.log(err);
         res.status(400).send('An error occoured')
-    }
-}
-export const createTransport = nodemailer.createTransport({
-    host: 'mail.privateemail.com',
-    port: 587,
-    secure: false,
-    auth: {
-        user: process.env.GMAIL_AUTH_USER,
-        pass: process.env.GMAIL_AUTH_PASS
-    }
-})
-
-// not a route controller, function to send verification email
-const sendVerificationEmail = async (email, verificationToken, name) => {
-    const timestamp = Date.now(); // Current timestamp
-    const tokenWithTimestamp = `${verificationToken}.${timestamp}`; // Concatenate token and timestamp
-    console.log(email, 'email');
-
-    const transporter = createTransport;
-    const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: email,
-        subject: 'Verify Your Email Address',
-        html: `
-    <html>
-    <body>
-        <div>
-
-            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
-            <p>Scientific Journals Portal</p>
-
-        </div>S
-        <div>
-            <p>Hi ${name},</p>
-            <p>You're almost there.</p>
-            <br>
-            <p>We just need to verify your email address before you can access your Scientific Journals Portal. Verifying your email address helps secure your account.</p>
-            <br>
-            <p><a href="${emailVerifyBackendUrl}/api/auth/verify/${tokenWithTimestamp}/${email}">VERIFY YOUR EMAIL</a></p>
-            <p>Note: This link will expire in 48 hours.</p>
-            <br>
-            <p>Cannot verify your email by clicking the button? Copy and paste the URL into your browser to verify your email.</p>
-            <br>
-            <p>${emailVerifyBackendUrl}/api/auth/verify/${tokenWithTimestamp}/${email}</p>
-        </div>
-    </body>
-    </html>`
-    }
-
-    //send the mail
-    try {
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Verification email sent", response);
-    }
-    catch (err) {
-        console.log("Err sending verification email", err);
     }
 }
 
@@ -157,7 +117,17 @@ export const verifyEmail = async (req, res) => {
             }
         })
         await prisma.$disconnect()
-        sendWelcomeEmail(updatedUser.email, updatedUser.surname);
+        const emailHtml = welcomeEmailTemplate(
+            updatedUser.surname,
+            updatedUser.email,
+            emailUrl
+        );
+        await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER,
+            updatedUser.email,
+            'Welcome to Scientific Journals Portal',
+            emailHtml
+        )
         console.log(updatedUser, 'updatedUser');
         // res.status(200).json({ message: 'Email verified' })
         res.redirect(`${emailUrl}/login`)
@@ -165,57 +135,6 @@ export const verifyEmail = async (req, res) => {
     catch (err) {
         console.log(err);
         res.status(400).send('An error occoured')
-    }
-}
-
-const sendWelcomeEmail = async (email, name) => {
-
-    const transporter = createTransport;
-    const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: email,
-        subject: 'Welcome to the Scientific Journals Portal(SJP)',
-        html: `
-    <html>
-    <body>
-        <div>
-
-            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
-            <p>Scientific Journals Portal</p>
-
-        </div>
-        <div>
-            <p>Welcome ${name},</p>
-            <p>With your Scientific Journals Portal account you can sign in, edit your details and make institutional connections for a range of the Scientific Journals Portal products.</p>
-            <br>
-            <p>The Scientific Journals Team</p>
-            <br>
-            <p><a href="${emailUrl}">View Your Scientific Journals Portal Account</a></p>
-            <br>
-            <p>--------------------</p>
-            <p>Copyright © 2024, Scientific Journals Portal, its licensors and distributors. All rights are reserved, including those for text and data mining.</p>
-            <br>
-            <p> <a href="${emailUrl}">About SJP</a></p>
-            <br>
-            <p><a href="${emailUrl}/terms">Terms and conditions</a></p>
-            <br>
-            <p> <a href="${emailUrl}/policies">Privacy policy</a></p>
-            <br>
-            <p> <a href="${emailUrl}/contact">Help</a></p>
-            <br>
-            <p>We use cookies to help provide and enhance our service. By continuing you agree to the use of cookies.</p>
-        </div>
-    </body>
-    </html>`
-    }
-
-    //send the mail
-    try {
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Verification email sent", response);
-    }
-    catch (err) {
-        console.log("Err sending verification email", err);
     }
 }
 
@@ -293,41 +212,23 @@ const sendResetPassword = async (email, resetToken, name) => {
     const resetTokenWithTimestamp = `${resetToken}.${timestamp}`; // Concatenate token and timestamp
     console.log(email, 'email');
 
+    const emailHtml = passwordResetTemplate(name, resetTokenWithTimestamp, emailVerifyBackendUrl);
 
+    
+try{
+    await resendEmailBoiler(
+        process.env.GMAIL_AUTH_USER,
+        email,
+        'Reset Your Password',
+        emailHtml
+    )
 
-    const transporter = createTransport;
-    const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: email,
-        subject: 'Reset Password',
-        html: `
-    <html>
-    <body>
-        <div>
-            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
-        </div>
-        <div>
-            <p>Hi ${name},</p>
-            <p>Click to reset your password:</p>
-            <br>
-            <p><a href="${emailVerifyBackendUrl}/api/auth/reset-password/${resetTokenWithTimestamp}">Reset Your Password</a></p>
-            <p>Note: This link will expire in 30 minutes. If expired, you can create a forget password request again.</p>
-            <br>
-            <p>Warm Regards</p>
-            <p>Scientific Journals Team</p>
-        </div>
-    </body>
-    </html>`
-    }
-
-    //send the mail
-    try {
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Reset Password email sent", response);
-    }
-    catch (err) {
+}
+    catch(err){
+        console.log(err);
         console.log("Err sending Reset Password email", err);
     }
+   
 }
 
 export const verifyResetPassword = async (req, res) => {
@@ -428,43 +329,17 @@ const formatEmailText = (text) => {
 };
 
 const sendMarkettingEmailFinal = async (emails, emailContent, subject) => {
-    const transporter = createTransport;
-    
-    const formattedContent = formatEmailText(emailContent);
+    const emailHtml = markettingEmailTemplate(emailContent);
 
-    const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        subject: subject,
-        html: `
-    <html>
-    <head>
-        <style>
-            .email-content {
-                font-family: Arial, sans-serif;
-                line-height: 1.6;
-                white-space: pre-line;
-            }
-            .paragraph {
-                margin-bottom: 15px;
-            }
-        </style>
-    </head>
-    <body>
-        <div>
-            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
-        </div>
-        <div class="email-content">
-            <p>Hi there,</p>
-            <div class="paragraph">${formattedContent}</div>
-            <p><a href="https://scientificjournalsportal.com/">Scientific Journals Team</a></p>
-        </div>
-    </body>
-    </html>`,
-        bcc: emails
-    };
+   
 
     try {
-        const response = await transporter.sendMail(mailOptions);
+        const response = await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER,
+            emails.split(','),
+            subject,
+            emailHtml
+        );
         console.log("Emails sent", response);
     }
     catch (err) {

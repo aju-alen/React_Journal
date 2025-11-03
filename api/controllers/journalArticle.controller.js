@@ -1,13 +1,14 @@
 import { PrismaClient } from "@prisma/client"
 import createError from '../utils/createError.js'
 import fetch from 'node-fetch';
-import { createTransport } from "./auth.controller.js";
 import PDFDocument from "pdfkit";
 import { S3, GetObjectCommand } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import { Buffer } from 'buffer';
 import QRCode from 'qrcode';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { articleSubmittedEmailTemplate, articleRejectionEmailTemplate } from "../utils/emailTemplates.js";
+import { resendEmailBoiler } from "../utils/resend-email-boiler.js";
 dotenv.config();
 const prisma = new PrismaClient()
 
@@ -64,44 +65,22 @@ export const createJournalArticle = async (req, res, next) => {
 }
 
 const sendArticleSubmittedEmail = async (email) => {
-    const transporter = createTransport; 
-    const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: email,
-        subject: 'Article Submitted Successfully',
-        html: `
-    <html>
-    <body>
-        <div>
-
-            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
-            <p>Scientific Journals Portal</p>
-
-        </div>
-        <div>
-            <p>Hi there,</p>
-            <p>I am delighted to inform you that your article submission has been successfully received.</p>
-            <br>
-            <p>Our team will now carefully evaluate your submission, and we will keep you informed throughout the review process. Should there be any additional information required or updates regarding your article, we will promptly reach out to you.</p>
-            <br>
-            <p>Warm regards,</p>
-            <p>Scientific Journals Portal</p>
-        </div>
-    </body>
-    </html>`
-    }
+    const emailHtml = articleSubmittedEmailTemplate(email);
+   
 
     //send the mail
     try {
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Article Submission email Sent", response);
+        const response = await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER,
+            email,
+            'Article Submission',
+            emailHtml
+        );
     }
     catch (err) {
-        console.log("Err sending Article Submission email", err);
+        console.log("Err sending Article Submitted email", err);
     }
 }
-
-
 export const getAllJournalArticle = async (req, res, next) => {
     try {
         const journalArticle = await prisma.user.findUnique({
@@ -199,46 +178,20 @@ export const postRejectionText = async (req, res, next) => {
 }
 
 const sendArticleRejectionEmail = async (email) => {
-    const transporter = createTransport; 
-    const mailOptions = {
-        from: process.env.GMAIL_AUTH_USER,
-        to: email,
-        subject: 'Article Submission Revision Required',
-        html: `
-    <html>
-    <body>
-        <div>
-
-            <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" alt="email verification" style="display:block;margin:auto;width:50%;" />
-            <p>Scientific Journals Portal</p>
-
-        </div>
-        <div>
-            <p>Hi there,</p>
-            <p>I hope this email finds you well. I wanted to personally update you regarding the status of your recent article submission.</p>
-            <br>
-            <p>After careful review by our editorial team, unfortunately, we have decided that your article does not meet our current publication standards. However, please don't be discouraged as your effort is highly appreciated.</p>
-            <br>
-            <p>We believe that with some revisions, your article could align more closely with our requirements. Therefore, we have returned it to your dashboard for further editing. Please take some time to review the feedback provided and make the necessary adjustments.</p>
-            <br>
-            <p>Should you have any questions or require clarification on any points raised in the feedback, please don't hesitate to reach out to us. We are here to support you throughout this process.
-
-            Thank you for your understanding and cooperation. We truly value your contributions and look forward to the possibility of reconsidering your article for publication after the revisions.</p>
-            <br>
-            <p>Warm regards,</p>
-            <p>Scientific Journals Portal</p>
-        </div>
-    </body>
-    </html>`
-    }
+    const emailHtml = articleRejectionEmailTemplate(email);
 
     //send the mail
     try {
-        const response = await transporter.sendMail(mailOptions);
-        console.log("Article Submission email Sent", response);
+        const emailHtml = articleRejectionEmailTemplate(email);
+        await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER,
+            email,
+            'Article Submission Revision Required',
+            emailHtml
+        );
     }
     catch (err) {
-        console.log("Err sending Article Submission email", err);
+        console.log("Err sending Article Rejection email", err);
     }
 }
 
