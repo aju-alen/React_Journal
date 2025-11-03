@@ -9,24 +9,27 @@ const HeaderImage = ()=>{
   }
 
     return (
-      <div className="">
-      <img
-        src="./images/desert.jpg"
-        alt="Your Image Alt Text"
-        className="w-full md:h-[100vh] h-[370px] object-cover"
-      />
-      
-      <div className="absolute sm:top-40 md:top-1/4 top-1/4  left-1/2  transform -translate-x-1/2 -translate-y-1/2 text-gray-900 text-center w-full flex flex-col justify-center items-center gap-3 ">
-        <h1 className=" text-3xl font-bold font sm:text-4xl md:text-6xl">Scientific Journals Portal</h1>
-        {/* <p className="text-lg text-center w-1/2">Paragraph about the scientific Journal  </p> */}
-        {/* <Link to="/journal" className=" text-lg font-bold border-2 rounded p-4 border-black bg-black md:w-1/6 text-white"> */}
-        {/* <button onClick={handleClickJournal}>
-          View Journal
-        </button> */}
-        {/* </Link> */}
+      <div className="relative w-full overflow-hidden">
+        <div className="relative w-full h-[50vh] sm:h-[60vh] md:h-[85vh] lg:h-[100vh]">
+          <img
+            src="./images/desert.jpg"
+            alt="Scientific Journals Portal Background"
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/20 to-black/40"></div>
+        </div>
+        
+        <div className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 md:px-8">
+          <div className="text-center w-full max-w-5xl flex flex-col justify-center items-center gap-4 sm:gap-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white drop-shadow-lg leading-tight px-4">
+              Scientific Journals Portal
+            </h1>
+            {/* <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/95 drop-shadow-md max-w-3xl px-4">
+              Advancing Knowledge Through Peer-Reviewed Research
+            </p> */}
+          </div>
+        </div>
       </div>
-    </div>
-          
     )
 }
 

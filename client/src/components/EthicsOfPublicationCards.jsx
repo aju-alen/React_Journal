@@ -11,39 +11,65 @@ import Typography from '@mui/material/Typography';
 const EthicsOfPublicationCards= () => {
    
     return (
-        <div>
-            <h2 className='text-3xl font-bold text-center'>Ethics of Publication</h2>
-        <div className='flex flex-col md:flex-row justify-center md:justify-around items-center'>
-        {EthicsOfPublicationdata.map(data =>(
-                
-             <Card sx={{ maxWidth: 345,minHeight:360,display:"flex", flexDirection:"column", justifyContent:'space-between' }} className='my-6' key={data.link}>
-
-           
-          <CardMedia
-            sx={{ height: 140 }}
-            image={data.img}
-            title={data.title}
-          />
-          <CardContent>
-            <Typography gutterBottom variant="h5" component="div">
-              {data.EthicsOfPublicationTitle}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {data.EthicsOfPublicationContent}
-            </Typography>
-          </CardContent>
-          <CardActions>
-            <Link to={`/ethics${data.link}`} >
-            <Button size='medium'>Learn More</Button>
-            </Link>
-          </CardActions>
-          </Card>
-          
-            ))
-        }
+        <div className="w-full">
+            <h2 className='text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-8 sm:mb-12 text-gray-900'>
+                Ethics of Publication
+            </h2>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 justify-items-center px-4 sm:px-6 md:px-8'>
+                {EthicsOfPublicationdata.map(data =>(
+                    <Card 
+                        sx={{ 
+                            maxWidth: 345, 
+                            minHeight: 380,
+                            display: "flex", 
+                            flexDirection: "column", 
+                            justifyContent: 'space-between',
+                            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+                            '&:hover': {
+                                transform: 'translateY(-8px)',
+                                boxShadow: '0 12px 24px rgba(0,0,0,0.15)'
+                            }
+                        }} 
+                        className='my-4 sm:my-6 w-full max-w-sm' 
+                        key={data.link}
+                    >
+                        <CardMedia
+                            sx={{ height: 160 }}
+                            image={data.img}
+                            title={data.title}
+                        />
+                        <CardContent sx={{ flexGrow: 1, padding: '20px' }}>
+                            <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 600, marginBottom: '12px', fontSize: '1.25rem' }}>
+                                {data.EthicsOfPublicationTitle}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.95rem', lineHeight: 1.6 }}>
+                                {data.EthicsOfPublicationContent}
+                            </Typography>
+                        </CardContent>
+                        <CardActions sx={{ padding: '0 20px 20px' }}>
+                            <Link to={`/ethics${data.link}`} className="no-underline">
+                                <Button 
+                                    size='medium' 
+                                    sx={{ 
+                                        textTransform: 'none',
+                                        fontWeight: 600,
+                                        padding: '10px 24px',
+                                        backgroundColor: '#543a31',
+                                        color: 'white',
+                                        '&:hover': {
+                                            backgroundColor: '#3d2a23'
+                                        }
+                                    }}
+                                >
+                                    Learn More
+                                </Button>
+                            </Link>
+                        </CardActions>
+                    </Card>
+                ))}
+            </div>
         </div>
-        </div>
-      );
+    );
 }
 
 export default EthicsOfPublicationCards
