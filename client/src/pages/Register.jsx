@@ -9,6 +9,7 @@ import { httpRoute } from '../helperFunctions.js';
 import Button from '@mui/material/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 const Register = () => {
@@ -33,6 +34,7 @@ const Register = () => {
   })
   const [passwordError, setPasswordError] = useState('');
   const [isValid, setIsValid] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [value, setValue] = useState('')
   const options = useMemo(() => countryList().getData(), [])
 
@@ -79,6 +81,7 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     console.log(e.target[0]);
     if (formData.password !== formData.confirmPassword) {
       return alert("Password do not match")
@@ -97,13 +100,14 @@ const Register = () => {
           navigate('/login')
         }, 3000);
       }
-
+      setLoading(false);
     }
     catch (err) {
       console.log(err,'error');
       handleClick();
       setAlertMessage(err.response.data);
       setAlertColor('error');
+      setLoading(false);
     }
     console.log('Form submitted:', mergeForm);
   };
@@ -244,7 +248,7 @@ const Register = () => {
               className="bg-indigo-500 text-white px-4 py-2 rounded focus:outline-none hover:bg-indigo-600 w-full"
               disabled={!isValid}
             >
-              Register
+              {loading ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'Register'}
             </button>
             <div className=" text-center p-4">
               Already Registered?
