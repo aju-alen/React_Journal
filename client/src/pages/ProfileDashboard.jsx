@@ -24,6 +24,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Badge from '@mui/material/Badge';
 import ManagePurchase from '../components/ManagePurchase';
+import StripeManageSubscription from '../components/StripeManageSubscription';
 
 
 const shapeStyles = { bgcolor: 'primary.main', width: 40, height: 40 };
@@ -265,6 +266,11 @@ const ProfileDashboard = () => {
                 }
                 {...a11yProps(8)}
               />
+              <Tab
+              wrapped
+                label= "Manage Subscription"
+                {...a11yProps(9)}
+              />
             </Tabs>
 
           </Box>
@@ -307,6 +313,9 @@ const ProfileDashboard = () => {
           </CustomTabPanel>
           <CustomTabPanel value={value} index={8}>
             {userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={9}>
+            <StripeManageSubscription />
           </CustomTabPanel>
         </Box>
 

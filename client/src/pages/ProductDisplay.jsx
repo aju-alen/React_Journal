@@ -18,7 +18,7 @@ const tiers = [
     title: 'Two Day Access',
     price: '199.00',
     description: [
-      'Unlimited access to all articles for 2 days',
+      'Unlimited access to all articles for 2 days (Billed automatically)',
     ],
     buttonText: 'Get Started',
     popular: false,
@@ -28,7 +28,7 @@ const tiers = [
     title: 'One Week Access',
     price: '699.00',
     description: [
-      'Unlimited access to all articles for 7 days',
+      'Unlimited access to all articles for 7 days (Billed automatically)',
     ],
     buttonText: 'Get Started',
     popular: true,
