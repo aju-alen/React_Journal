@@ -26,31 +26,54 @@ dotenv.config()
 
 const app = express()
 dotenv.config()
-app.use(cors({
-  origin: originUrl,
-})); //frontend url
 
-// http://localhost:5173
-
-//https://react-journal-1.onrender.com
-
-//https://scientificjournalsportal.com
+// IMPORTANT: Webhook route MUST be defined before CORS and any body parsing middleware
+// This ensures the raw request body is preserved for Stripe signature verification
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.FULLISSUE_WEBHOOK_SIG;
 
-app.post('/webhook', express.raw({type: 'application/json'}), async (request, response) => {
-  const sig = request.headers['stripe-signature'];
+// CRITICAL: Webhook route MUST be defined before any body parsing middleware
+// Use bodyParser.raw() to ensure raw body is preserved as Buffer for signature verification
+// In production, ensure your reverse proxy (nginx, etc.) doesn't parse the body for this endpoint
+app.post('/webhook', 
+  bodyParser.raw({ type: 'application/json' }), 
+  async (request, response) => {
+    const sig = request.headers['stripe-signature'];
 
-  let event;
+    // Verify signature header exists
+    if (!sig) {
+      console.error('Webhook Error: Missing stripe-signature header');
+      return response.status(400).send('Missing stripe-signature header');
+    }
 
-  try {
-    event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
-  } catch (err) {
-    console.error('Webhook Error:', err.message);
-    response.status(400).send(`Webhook Error: ${err.message}`);
-    return;
-  }
+    // Verify endpoint secret is configured
+    if (!endpointSecret) {
+      console.error('Webhook Error: Webhook signing secret is not configured');
+      return response.status(500).send('Webhook configuration error');
+    }
+
+    // Verify request body is a Buffer (required for signature verification)
+    if (!request.body || !Buffer.isBuffer(request.body)) {
+      console.error('Webhook Error: Request body is not a Buffer. Body type:', typeof request.body);
+      console.error('Body is parsed:', typeof request.body === 'object' && !Buffer.isBuffer(request.body));
+      return response.status(400).send('Invalid request body format - body must be raw Buffer');
+    }
+
+    let event;
+
+    try {
+      // request.body must be a Buffer for signature verification
+      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    } catch (err) {
+      console.error('Webhook Error:', err.message);
+      console.error('Signature header present:', !!sig);
+      console.error('Body type:', typeof request.body);
+      console.error('Body is Buffer:', Buffer.isBuffer(request.body));
+      console.error('Body length:', request.body?.length);
+      response.status(400).send(`Webhook Error: ${err.message}`);
+      return;
+    }
 
   // Handle the event
   switch (event.type) {
@@ -204,9 +227,15 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
   response.send();
 });
 
+// Apply CORS and body parsing middleware AFTER webhook route
+// This ensures webhook receives raw body
+app.use(cors({
+  origin: originUrl,
+})); //frontend url
 
-
-
+// http://localhost:5173
+//https://react-journal-1.onrender.com
+//https://scientificjournalsportal.com
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
