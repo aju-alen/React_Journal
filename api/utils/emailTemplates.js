@@ -2129,3 +2129,387 @@ export const articleRejectionEmailTemplate = (email) => {
     </html>
   `;
 };
+
+/**
+ * Subscription payment successful email template
+ * @param {string} userName - User's name or surname
+ * @param {string} subscriptionPeriodStart - Subscription period start date (formatted)
+ * @param {string} subscriptionPeriodEnd - Subscription period end date (formatted)
+ * @param {string} invoiceUrl - Hosted invoice URL
+ * @param {string} invoicePdf - Invoice PDF URL
+ * @param {string} subscriptionAmount - Subscription amount (formatted with currency)
+ * @returns {string} HTML email template
+ */
+export const subscriptionPaymentSuccessfulEmailTemplate = (
+  userName,
+  subscriptionPeriodStart,
+  subscriptionPeriodEnd,
+  invoiceUrl,
+  invoicePdf,
+  subscriptionAmount
+) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>Subscription Payment Successful - Scientific Journals Portal</title>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, sans-serif !important;}
+      </style>
+      <![endif]-->
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.7;
+          color: #2d3748;
+          background-color: #f7fafc;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        .email-wrapper {
+          background-color: #f7fafc;
+          padding: 40px 20px;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          background: linear-gradient(135deg, #543a31 0%, #6b4f47 100%);
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .logo-container {
+          margin-bottom: 15px;
+        }
+        .logo-container img {
+          max-width: 180px;
+          height: auto;
+          display: block;
+          margin: 0 auto;
+        }
+        .header-title {
+          color: #ffffff;
+          font-size: 24px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          margin-top: 10px;
+        }
+        .content {
+          padding: 40px 30px;
+        }
+        .success-icon {
+          text-align: center;
+          font-size: 64px;
+          margin-bottom: 20px;
+        }
+        .greeting {
+          font-size: 22px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+        }
+        .success-message {
+          font-size: 18px;
+          color: #22c55e;
+          margin-bottom: 30px;
+          font-weight: 600;
+          text-align: center;
+        }
+        .message-text {
+          font-size: 16px;
+          color: #4a5568;
+          margin-bottom: 16px;
+          line-height: 1.8;
+        }
+        .info-box {
+          background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+          border-left: 4px solid #22c55e;
+          padding: 20px;
+          margin: 30px 0;
+          border-radius: 6px;
+        }
+        .info-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #065f46;
+          margin-bottom: 10px;
+        }
+        .info-text {
+          font-size: 15px;
+          color: #047857;
+          line-height: 1.7;
+        }
+        .subscription-details {
+          background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+          padding: 30px;
+          border-radius: 8px;
+          margin: 30px 0;
+        }
+        .details-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+          text-align: center;
+        }
+        .detail-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 15px;
+          background-color: #ffffff;
+          border-radius: 6px;
+          margin-bottom: 12px;
+          border-left: 4px solid #543a31;
+        }
+        .detail-label {
+          font-size: 15px;
+          font-weight: 600;
+          color: #4a5568;
+        }
+        .detail-value {
+          font-size: 15px;
+          font-weight: 700;
+          color: #1a202c;
+          text-align: right;
+        }
+        .amount-highlight {
+          font-size: 24px;
+          color: #22c55e;
+        }
+        .button-container {
+          text-align: center;
+          margin: 35px 0;
+        }
+        .invoice-button {
+          display: inline-block;
+          padding: 16px 48px;
+          background: linear-gradient(135deg, #543a31 0%, #6b4f47 100%);
+          color: #ffffff !important;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 16px;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 12px rgba(84, 58, 49, 0.3);
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          margin: 5px;
+        }
+        .invoice-button:hover {
+          background: linear-gradient(135deg, #3d2a23 0%, #543a31 100%);
+          box-shadow: 0 6px 16px rgba(84, 58, 49, 0.4);
+          transform: translateY(-2px);
+        }
+        .pdf-button {
+          display: inline-block;
+          padding: 14px 36px;
+          background-color: #ffffff;
+          color: #543a31 !important;
+          text-decoration: none;
+          border: 2px solid #543a31;
+          border-radius: 8px;
+          font-weight: 600;
+          font-size: 15px;
+          letter-spacing: 0.5px;
+          margin: 5px;
+        }
+        .pdf-button:hover {
+          background-color: #f7fafc;
+        }
+        .support-section {
+          background-color: #edf2f7;
+          padding: 20px;
+          border-radius: 8px;
+          margin: 30px 0;
+          border: 1px solid #cbd5e0;
+        }
+        .support-title {
+          font-size: 14px;
+          font-weight: 700;
+          color: #2d3748;
+          margin-bottom: 10px;
+        }
+        .support-text {
+          font-size: 13px;
+          color: #4a5568;
+          line-height: 1.7;
+        }
+        .support-link {
+          color: #543a31;
+          text-decoration: underline;
+          font-weight: 600;
+        }
+        .signature {
+          margin-top: 35px;
+          padding-top: 25px;
+          border-top: 1px solid #e2e8f0;
+        }
+        .signature-text {
+          font-size: 15px;
+          color: #4a5568;
+          margin-bottom: 5px;
+          font-weight: 500;
+        }
+        .footer {
+          background-color: #f7fafc;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+        }
+        .footer-text {
+          font-size: 13px;
+          color: #718096;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+        .footer-brand {
+          font-size: 14px;
+          color: #543a31;
+          font-weight: 600;
+          margin-top: 15px;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-wrapper {
+            padding: 20px 10px;
+          }
+          .header {
+            padding: 30px 20px;
+          }
+          .content {
+            padding: 30px 20px;
+          }
+          .header-title {
+            font-size: 20px;
+          }
+          .greeting {
+            font-size: 20px;
+          }
+          .success-message {
+            font-size: 16px;
+          }
+          .invoice-button,
+          .pdf-button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            text-align: center;
+          }
+          .detail-row {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .detail-value {
+            text-align: left;
+            margin-top: 5px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+          <!-- Header -->
+          <div class="header">
+            <div class="logo-container">
+              <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" 
+                   alt="Scientific Journals Portal Logo" />
+            </div>
+            <h1 class="header-title">Scientific Journals Portal</h1>
+          </div>
+          
+          <!-- Content -->
+          <div class="content">
+            <div class="success-icon">✅</div>
+            
+            <p class="greeting">Hi ${userName},</p>
+            
+            <p class="success-message">🎉 Subscription Payment Successful!</p>
+            
+            <p class="message-text">
+              Thank you for your subscription payment! Your payment has been successfully processed 
+              and your subscription is now active. We're excited to have you as part of our community.
+            </p>
+            
+            <div class="info-box">
+              <p class="info-title">✨ Your Subscription is Active</p>
+              <p class="info-text">
+                You now have full access to all subscription benefits. Enjoy unlimited access to our 
+                premium content and features throughout your subscription period.
+              </p>
+            </div>
+            
+            <div class="subscription-details">
+              <h2 class="details-title">Subscription Details</h2>
+              
+              <div class="detail-row">
+                <span class="detail-label">Subscription Period:</span>
+                <span class="detail-value">${subscriptionPeriodStart} - ${subscriptionPeriodEnd}</span>
+              </div>
+              
+              <div class="detail-row">
+                <span class="detail-label">Amount Paid:</span>
+                <span class="detail-value amount-highlight">${subscriptionAmount}</span>
+              </div>
+            </div>
+            
+            <div class="button-container">
+              <a href="${invoiceUrl}" class="invoice-button" target="_blank">
+                View Invoice Online
+              </a>
+              ${invoicePdf ? `<a href="${invoicePdf}" class="pdf-button" target="_blank">Download PDF Invoice</a>` : ''}
+            </div>
+            
+            <div class="support-section">
+              <p class="support-title">💬 Need Assistance?</p>
+              <p class="support-text">
+                If you have any questions about your subscription or need help accessing your account, 
+                please don't hesitate to 
+                <a href="https://scientificjournalsportal.com/contact/new" class="support-link">contact our support team</a>. 
+                We're here to help!
+              </p>
+            </div>
+            
+            <div class="signature">
+              <p class="signature-text">Thank you for choosing Scientific Journals Portal.</p>
+              <p class="signature-text">Best Regards,</p>
+              <p class="signature-text">
+                <a href="https://scientificjournalsportal.com/" style="color: #543a31; text-decoration: none; font-weight: 600;">
+                  Scientific Journals Team
+                </a>
+              </p>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="footer">
+            <p class="footer-text">
+              This is an automated confirmation email from Scientific Journals Portal. 
+              Please keep this email for your records.
+            </p>
+            <p class="footer-text">
+              All subscription-related communications will be sent to this email address. 
+              Please ensure your email is active and check your spam folder if you don't receive updates.
+            </p>
+            <p class="footer-brand">Scientific Journals Portal © ${new Date().getFullYear()}</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};

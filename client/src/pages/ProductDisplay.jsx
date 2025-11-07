@@ -46,6 +46,7 @@ const ProductDisplayy = () => {
     setEmailId(getUser.email);
   }, []);
 
+  const checkoutSessionURL = import.meta.env.VITE_STRIPE_CHECKOUT_SESSION_URL;
   return (
     <div className="min-h-screen bg-white">
       <ImageHeader />
@@ -204,7 +205,7 @@ const ProductDisplayy = () => {
                   pt: 0 
                 }}>
                   <form
-                    action="https://react-journal1.onrender.com/api/stripe/create-checkout-sessions"
+                    action={checkoutSessionURL}
                     method="POST"
                     style={{ width: '100%' }}
                   >

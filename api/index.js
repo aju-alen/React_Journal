@@ -18,6 +18,8 @@ import sendMailRotue from './routes/sendMail.route.js'
 import { PrismaClient } from '@prisma/client'
 import { originUrl } from './utils/cors.dev.js'
 import riseRoutes from './routes/rise-route.js'
+import { resendEmailBoiler } from './utils/resend-email-boiler.js'
+import { subscriptionPaymentSuccessfulEmailTemplate } from './utils/emailTemplates.js'
 const prisma = new PrismaClient()
 dotenv.config()
 
@@ -132,6 +134,52 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
                 });
               }
             });
+
+            //send email to user
+            const user = await prisma.user.findUnique({
+              where: {
+                email: externalInvoiceData.metadata.emailId
+              }
+            });
+            if(user){
+              // Format dates from Unix timestamps to readable format
+              const formatDate = (timestamp) => {
+                const date = new Date(timestamp * 1000);
+                return date.toLocaleDateString('en-US', { 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                });
+              };
+
+              // Format amount from cents to currency
+              const formatAmount = (amount, currency = 'aed') => {
+                const amountInDollars = (amount / 100).toFixed(2);
+                const currencySymbol = currency.toUpperCase() === 'AED' ? 'AED' : currency.toUpperCase();
+                return `${currencySymbol}${amountInDollars}`;
+              };
+
+              const subscriptionPeriodStart = formatDate(externalInvoiceData.period.start);
+              const subscriptionPeriodEnd = formatDate(externalInvoiceData.period.end);
+              const subscriptionAmount = formatAmount(externalInvoiceData.amount, invoice.currency);
+              const userName = user.surname || user.name || 'Valued Customer';
+
+              const emailHtml = subscriptionPaymentSuccessfulEmailTemplate(
+                userName,
+                subscriptionPeriodStart,
+                subscriptionPeriodEnd,
+                invoice.hosted_invoice_url,
+                invoice.invoice_pdf,
+                subscriptionAmount
+              );
+
+              await resendEmailBoiler(
+                process.env.GMAIL_AUTH_USER,
+                user.email,
+                'Subscription Payment Successful',
+                emailHtml
+              )
+            }
 
             console.log('Transaction completed successfully');
           } catch (error) {
