@@ -154,6 +154,8 @@ const ProfileDashboard = () => {
   console.log(user, 'user not special review');
   console.log(userSpecialReview, 'user yesss special review');
 
+  const isAdmin = userDetails?.user?.isAdmin;
+
   return (
     <div>
       {!loading ? (<div>
@@ -168,7 +170,7 @@ const ProfileDashboard = () => {
             >
               <Tab
                 label={
-                  userDetails?.user?.isAdmin ? (
+                  isAdmin ? (
                     <div>
                       Verify Regular Issue
                       <Badge color="primary" badgeContent={userCount} overlap='circular' max={5} sx={{ mb: 5 }} >
@@ -223,25 +225,30 @@ const ProfileDashboard = () => {
 
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab wrapped label="Edit Profile" {...a11yProps(2)} />
-<Tab label="Manage Purchase" {...a11yProps(3)} />
-              <Tab wrapped label={userDetails?.user?.isAdmin && "Create new journal"} {...a11yProps(4)} />
-              <Tab wrapped label={userDetails?.user?.isAdmin && "Mailing"} {...a11yProps(5)} />
-              <Tab wrapped
-                label={
-                  userDetails?.user?.isAdmin && (
+              <Tab label="Manage Purchase" {...a11yProps(3)} />
+              {/* Admin-only tabs */}
+              {isAdmin && (
+                <Tab wrapped label="Create new journal" {...a11yProps(4)} />
+              )}
+              {isAdmin && (
+                <Tab wrapped label="Mailing" {...a11yProps(5)} />
+              )}
+              {isAdmin && (
+                <Tab wrapped
+                  label={
                     <div>
                       Verify Special Issue
                       <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
                       </Badge>
                     </div>
-                  )
-                }
-                {...a11yProps(6)}
-              />
-              <Tab
-              wrapped
-                label={
-                  userDetails?.user?.isAdmin && (
+                  }
+                  {...a11yProps(6)}
+                />
+              )}
+              {isAdmin && (
+                <Tab
+                wrapped
+                  label={
                     <div>
                       Submit Issue
                       <Badge color="primary" 
@@ -249,72 +256,72 @@ const ProfileDashboard = () => {
                        overlap='circular' max={5} sx={{ mb: 5 }} >
                       </Badge>
                     </div>
-                  )
-                }
-                {...a11yProps(7)}
-              />
-              <Tab
-              wrapped
-                label={
-                  userDetails?.user?.isAdmin && (
+                  }
+                  {...a11yProps(7)}
+                />
+              )}
+              {isAdmin && (
+                <Tab
+                wrapped
+                  label={
                     <div>
                       My Manuscripts
                       <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
                       </Badge>
                     </div>
-                  )
-                }
-                {...a11yProps(8)}
-              />
+                  }
+                  {...a11yProps(8)}
+                />
+              )}
               <Tab
               wrapped
                 label= "Manage Subscription"
-                {...a11yProps(9)}
+                {...a11yProps(isAdmin ? 9 : 4)}
               />
             </Tabs>
 
           </Box>
           <CustomTabPanel value={value} index={0}>
-            {userDetails?.user?.isAdmin && <AdminMyManuscriptsDashboard user={verificationArticle} onDelete={refreshVerificationArticles} />}
-            {!userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
-
+            {isAdmin && <AdminMyManuscriptsDashboard user={verificationArticle} onDelete={refreshVerificationArticles} />}
+            {!isAdmin && <MyManuscriptsDashboard user={user} />}
           </CustomTabPanel>
           <CustomTabPanel value={value} index={1}>
-
             {( regularIssue) && <SubmitManuscript user={user} checked={false} />}
             {(specialIssue) && <SubmitManuscript user={user} checked={true} />}
-            
-
-
           </CustomTabPanel>
           <CustomTabPanel value={value} index={2}>
-
             <EditProfile userDetails={userDetails} />
           </CustomTabPanel>
-
           <CustomTabPanel value={value} index={3}>
-                <ManagePurchase />
-
+            <ManagePurchase />
           </CustomTabPanel>
-          <CustomTabPanel value={value} index={4}>
-            <CreateNewJournal />
-
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={5}>
-            <CreateMarkettingEmail />
-
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={6}>
-            <AdminMyManuscriptsDashboard user={userSpecialReview} />
-
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={7}>
-            {userDetails?.user?.isAdmin && <SubmitIssue user={user} />}
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={8}>
-            {userDetails?.user?.isAdmin && <MyManuscriptsDashboard user={user} />}
-          </CustomTabPanel>
-          <CustomTabPanel value={value} index={9}>
+          {/* Admin-only panels */}
+          {isAdmin && (
+            <CustomTabPanel value={value} index={4}>
+              <CreateNewJournal />
+            </CustomTabPanel>
+          )}
+          {isAdmin && (
+            <CustomTabPanel value={value} index={5}>
+              <CreateMarkettingEmail />
+            </CustomTabPanel>
+          )}
+          {isAdmin && (
+            <CustomTabPanel value={value} index={6}>
+              <AdminMyManuscriptsDashboard user={userSpecialReview} />
+            </CustomTabPanel>
+          )}
+          {isAdmin && (
+            <CustomTabPanel value={value} index={7}>
+              <SubmitIssue user={user} />
+            </CustomTabPanel>
+          )}
+          {isAdmin && (
+            <CustomTabPanel value={value} index={8}>
+              <MyManuscriptsDashboard user={user} />
+            </CustomTabPanel>
+          )}
+          <CustomTabPanel value={value} index={isAdmin ? 9 : 4}>
             <StripeManageSubscription />
           </CustomTabPanel>
         </Box>
