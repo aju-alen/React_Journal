@@ -60,17 +60,45 @@ app.post('/webhook',
       return response.status(400).send('Invalid request body format - body must be raw Buffer');
     }
 
+    // Debug logging (first 10 chars of secret to verify it's loaded, without exposing full secret)
+    console.log('Webhook Debug Info:');
+    console.log('- Endpoint secret configured:', !!endpointSecret);
+    console.log('- Endpoint secret prefix:', endpointSecret ? endpointSecret.substring(0, 10) + '...' : 'NOT SET');
+    console.log('- Signature header present:', !!sig);
+    console.log('- Body is Buffer:', Buffer.isBuffer(request.body));
+    console.log('- Body length:', request.body?.length);
+    console.log('- Request Content-Type:', request.headers['content-type']);
+    console.log('- Request method:', request.method);
+    console.log('- Request URL:', request.url);
+
     let event;
 
     try {
       // request.body must be a Buffer for signature verification
       event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+      console.log('Webhook signature verified successfully. Event type:', event.type);
     } catch (err) {
       console.error('Webhook Error:', err.message);
-      console.error('Signature header present:', !!sig);
-      console.error('Body type:', typeof request.body);
+      console.error('Detailed Debug Info:');
+      console.error('- Signature header present:', !!sig);
+      console.error('- Signature header value (first 20 chars):', sig ? sig.substring(0, 20) + '...' : 'MISSING');
+      console.error('- Body type:', typeof request.body);
       console.error('Body is Buffer:', Buffer.isBuffer(request.body));
-      console.error('Body length:', request.body?.length);
+      console.error('- Body length:', request.body?.length);
+      console.error('- Endpoint secret prefix:', endpointSecret ? endpointSecret.substring(0, 10) + '...' : 'NOT SET');
+      console.error('- Error type:', err.type);
+      console.error('- Full error:', err);
+      
+      // Additional check: Try to parse signature to see if it's valid format
+      if (sig) {
+        const sigParts = sig.split(',');
+        console.error('- Signature parts count:', sigParts.length);
+        sigParts.forEach((part, idx) => {
+          const [key, value] = part.split('=');
+          console.error(`  Part ${idx}: ${key} = ${value ? value.substring(0, 20) + '...' : 'empty'}`);
+        });
+      }
+      
       response.status(400).send(`Webhook Error: ${err.message}`);
       return;
     }
