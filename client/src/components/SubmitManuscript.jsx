@@ -284,7 +284,7 @@ const SubmitManuscript = ({ user, checked }) => {
                             </Select>
                         </FormControl>
 
-                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                        {/* <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
                             <Typography variant="body1" sx={{ mr: 2 }}>
                                 Is this a special review?
                             </Typography>
@@ -293,7 +293,7 @@ const SubmitManuscript = ({ user, checked }) => {
                                 inputProps={{ 'aria-label': 'controlled', readOnly: true }}
                                 color="primary"
                             />
-                        </Box>
+                        </Box> */}
 
                         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 3 }}>
                             <TextField

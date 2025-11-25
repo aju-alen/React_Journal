@@ -290,7 +290,7 @@ const MyManuscriptsDashboard = ({ user }) => {
 
                 <TableCell align="center">
                   {!row.paymentStatus ? (
-                    <Link to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}`} style={{ textDecoration: 'none' }}>
+                    <Link to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}/manuscript_payment_1050`} style={{ textDecoration: 'none' }}>
                       <Button 
                         variant="contained" 
                         color="primary"

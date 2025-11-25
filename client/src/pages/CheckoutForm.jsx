@@ -11,12 +11,12 @@ import { useParams } from "react-router-dom";
 import { httpRoute } from "../helperFunctions.js";
 const CheckoutForm = () => {
     const {articleId,checkoutStatus,userId,emailId,stripeLookupId} = useParams()
-    console.log(stripeLookupId,'stripeLookupId');
     
-
     const [clientSecret, setClientSecret] = useState('');
 
     useEffect(() => {
+      console.log(articleId,checkoutStatus,userId,emailId,stripeLookupId);
+      
      
       const getStripeCheckoutSession = async () => {
           const resp = await axios.post(`${httpRoute}/api/stripe/create-checkout-session`,{articleId,checkoutStatus,userId,emailId,stripeLookupId} ) 
