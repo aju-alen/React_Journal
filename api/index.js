@@ -20,6 +20,7 @@ import { originUrl } from './utils/cors.dev.js'
 import riseRoutes from './routes/rise-route.js'
 import { resendEmailBoiler } from './utils/resend-email-boiler.js'
 import { subscriptionPaymentSuccessfulEmailTemplate } from './utils/emailTemplates.js'
+import { handleRiseWebhook } from './controllers/rise-controller.js'
 const prisma = new PrismaClient()
 dotenv.config()
 
@@ -32,10 +33,17 @@ dotenv.config()
 
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const endpointSecret = process.env.FULLISSUE_WEBHOOK_SIG;
+const riseStripe = Stripe(process.env.STRIPE_SECRET_KEY_RISE);
+const riseEndpointSecret = process.env.RISE_WEBHOOK_SIG;
 
 // CRITICAL: Webhook route MUST be defined before any body parsing middleware
 // Use bodyParser.raw() to ensure raw body is preserved as Buffer for signature verification
 // In production, ensure your reverse proxy (nginx, etc.) doesn't parse the body for this endpoint
+app.post('/rise/webhook',
+  bodyParser.raw({ type: 'application/json' }),
+  handleRiseWebhook
+);
+
 app.post('/webhook', 
   bodyParser.raw({ type: 'application/json' }), 
   async (request, response) => {

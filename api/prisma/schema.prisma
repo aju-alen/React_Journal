@@ -139,3 +139,11 @@ model UserFullIssue{
   @@id([payment_intent])
 }
 
+model RiseInvestor {
+  id          String   @id @default(uuid())
+  name        String
+  email       String
+  receipt_url String
+  createdAt   DateTime @default(now())
+}
+

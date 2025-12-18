@@ -156,9 +156,174 @@ export const createCheckoutSession = async (req, res, next) => {
   }
 };
 
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
+
 /**
  * Handle Stripe webhook for payment confirmation
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
- * @param {Function} next - Express next middleware function
  */
+export const handleRiseWebhook = async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  const riseEndpointSecret = process.env.RISE_WEBHOOK_SIG;
+
+  // Verify signature header exists
+  if (!sig) {
+    console.error('Rise Webhook Error: Missing stripe-signature header');
+    return res.status(400).send('Missing stripe-signature header');
+  }
+
+  // Verify endpoint secret is configured
+  if (!riseEndpointSecret) {
+    console.error('Rise Webhook Error: Webhook signing secret is not configured');
+    return res.status(500).send('Webhook configuration error');
+  }
+
+  // Verify request body is a Buffer (required for signature verification)
+  if (!req.body || !Buffer.isBuffer(req.body)) {
+    console.error('Rise Webhook Error: Request body is not a Buffer. Body type:', typeof req.body);
+    return res.status(400).send('Invalid request body format - body must be raw Buffer');
+  }
+
+  let event;
+
+  try {
+    // request.body must be a Buffer for signature verification
+    event = stripe.webhooks.constructEvent(req.body, sig, riseEndpointSecret);
+    console.log('Rise Webhook signature verified successfully. Event type:', event.type);
+  } catch (err) {
+    console.error('Rise Webhook Error:', err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  // Handle the event
+  switch (event.type) {
+    case 'checkout.session.completed':
+      const checkoutSession = event.data.object;
+      try {
+        if (checkoutSession.status === 'complete') {
+          const { investor_name, investor_email } = checkoutSession.metadata;
+
+          if (!investor_email) {
+            console.error('Rise Webhook Error: Missing investor_email in metadata');
+            break;
+          }
+
+          // Retrieve invoice to get receipt URL
+          let receiptUrl = '';
+          if (checkoutSession.invoice) {
+            try {
+              const invoice = await stripe.invoices.retrieve(checkoutSession.invoice);
+              receiptUrl = invoice.hosted_invoice_url || '';
+            } catch (invoiceError) {
+              console.error('Rise Webhook Error: Failed to retrieve invoice:', invoiceError);
+            }
+          }
+
+          // Check for existing record to prevent duplicates
+          const existingInvestor = await prisma.riseInvestor.findFirst({
+            where: {
+              email: investor_email
+            }
+          });
+
+          if (!existingInvestor) {
+            await prisma.riseInvestor.create({
+              data: {
+                name: investor_name || investor_email,
+                email: investor_email,
+                receipt_url: receiptUrl
+              }
+            });
+            console.log('Rise Investor created successfully:', investor_email);
+          } else {
+            console.log('Rise Investor already exists:', investor_email);
+          }
+        } else {
+          console.log('Rise checkout session is not complete');
+        }
+      } catch (err) {
+        console.error('Rise Webhook Error in checkout.session.completed:', err);
+      }
+      break;
+
+    case 'payment_intent.succeeded':
+      const paymentIntent = event.data.object;
+      try {
+        // Get customer email from payment intent
+        let customerEmail = '';
+        let customerName = '';
+
+        if (paymentIntent.customer) {
+          try {
+            const customer = await stripe.customers.retrieve(paymentIntent.customer);
+            customerEmail = customer.email || '';
+            customerName = customer.name || customerEmail;
+          } catch (customerError) {
+            console.error('Rise Webhook Error: Failed to retrieve customer:', customerError);
+          }
+        }
+
+        // Try to get email from billing details
+        if (!customerEmail && paymentIntent.charges && paymentIntent.charges.data && paymentIntent.charges.data.length > 0) {
+          customerEmail = paymentIntent.charges.data[0].billing_details?.email || '';
+          customerName = paymentIntent.charges.data[0].billing_details?.name || customerEmail;
+        }
+
+        // Try to get from metadata
+        if (!customerEmail && paymentIntent.metadata && paymentIntent.metadata.investor_email) {
+          customerEmail = paymentIntent.metadata.investor_email;
+          customerName = paymentIntent.metadata.investor_name || customerEmail;
+        }
+
+        if (!customerEmail) {
+          console.error('Rise Webhook Error: Could not determine customer email from payment_intent');
+          break;
+        }
+
+        // Retrieve receipt URL - try to get from checkout session if available
+        let receiptUrl = '';
+        if (paymentIntent.metadata && paymentIntent.metadata.checkout_session_id) {
+          try {
+            const session = await stripe.checkout.sessions.retrieve(paymentIntent.metadata.checkout_session_id);
+            if (session.invoice) {
+              const invoice = await stripe.invoices.retrieve(session.invoice);
+              receiptUrl = invoice.hosted_invoice_url || '';
+            }
+          } catch (sessionError) {
+            console.error('Rise Webhook Error: Failed to retrieve checkout session:', sessionError);
+          }
+        }
+
+        // Check for existing record to prevent duplicates
+        const existingInvestorPayment = await prisma.riseInvestor.findFirst({
+          where: {
+            email: customerEmail
+          }
+        });
+
+        if (!existingInvestorPayment) {
+          await prisma.riseInvestor.create({
+            data: {
+              name: customerName || customerEmail,
+              email: customerEmail,
+              receipt_url: receiptUrl
+            }
+          });
+          console.log('Rise Investor created from payment_intent:', customerEmail);
+        } else {
+          console.log('Rise Investor already exists from payment_intent:', customerEmail);
+        }
+      } catch (err) {
+        console.error('Rise Webhook Error in payment_intent.succeeded:', err);
+      }
+      break;
+
+    default:
+      console.log(`Rise Webhook: Unhandled event type ${event.type}`);
+  }
+
+  // Return a 200 response to acknowledge receipt of the event
+  res.send();
+};
