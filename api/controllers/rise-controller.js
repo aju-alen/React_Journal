@@ -1,6 +1,8 @@
 
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import { PrismaClient } from "@prisma/client"
+const prisma = new PrismaClient()
 dotenv.config();
 
 export const sendContact = async (req, res, next) => {
@@ -156,10 +158,8 @@ export const createCheckoutSession = async (req, res, next) => {
   }
 };
 
-import { PrismaClient } from '@prisma/client';
 import { resendEmailBoiler } from '../utils/resend-email-boiler.js';
 import { riseInvestmentConfirmationTemplate } from '../utils/emailTemplates.js';
-const prisma = new PrismaClient();
 
 /**
  * Handle Stripe webhook for payment confirmation
@@ -240,7 +240,7 @@ export const handleRiseWebhook = async (req, res) => {
               const emailHtml = riseInvestmentConfirmationTemplate(
                 investor_name || investor_email,
                 investor_email,
-                receiptUrl
+                receiptUrl,
               );
               
               await resendEmailBoiler(
@@ -305,9 +305,11 @@ export const handleRiseWebhook = async (req, res) => {
         if (paymentIntent.metadata && paymentIntent.metadata.checkout_session_id) {
           try {
             const session = await stripe.checkout.sessions.retrieve(paymentIntent.metadata.checkout_session_id);
+            console.log(session, 'session');
             if (session.invoice) {
               const invoice = await stripe.invoices.retrieve(session.invoice);
               receiptUrl = invoice.hosted_invoice_url || '';
+              console.log(invoice, 'invoice');
             }
           } catch (sessionError) {
             console.error('Rise Webhook Error: Failed to retrieve checkout session:', sessionError);
