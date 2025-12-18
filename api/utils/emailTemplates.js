@@ -2548,25 +2548,22 @@ export const riseInvestmentConfirmationTemplate = (
         body {
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
           line-height: 1.7;
-          color: #2d3748;
-          background-color: #f7fafc;
+          color: #1a202c;
+          background-color: #ffffff;
           -webkit-font-smoothing: antialiased;
           -moz-osx-font-smoothing: grayscale;
         }
         .email-wrapper {
-          background-color: #f7fafc;
+          background-color: #ffffff;
           padding: 40px 20px;
         }
         .email-container {
           max-width: 600px;
           margin: 0 auto;
           background-color: #ffffff;
-          border-radius: 12px;
-          overflow: hidden;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 15px rgba(0, 0, 0, 0.1);
         }
         .header {
-          background: linear-gradient(135deg, #2A3C5A 0%, #1F2F4C 50%, #182236 100%);
+          background-color: #2A3C5A;
           padding: 50px 30px;
           text-align: center;
         }
@@ -2587,6 +2584,8 @@ export const riseInvestmentConfirmationTemplate = (
         }
         .content {
           padding: 40px 30px;
+          background-color: #ffffff;
+          color: #1a202c;
         }
         .success-icon {
           text-align: center;
@@ -2609,13 +2608,13 @@ export const riseInvestmentConfirmationTemplate = (
         }
         .message-text {
           font-size: 16px;
-          color: #4a5568;
+          color: #1a202c;
           margin-bottom: 16px;
           line-height: 1.8;
           text-align: center;
         }
         .info-box {
-          background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+          background-color: #ecfdf5;
           border-left: 4px solid #22c55e;
           padding: 25px;
           margin: 30px 0;
@@ -2634,7 +2633,7 @@ export const riseInvestmentConfirmationTemplate = (
           line-height: 1.7;
         }
         .confirmation-box {
-          background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+          background-color: #f7fafc;
           padding: 30px;
           border-radius: 8px;
           margin: 30px 0;
@@ -2648,17 +2647,17 @@ export const riseInvestmentConfirmationTemplate = (
         }
         .confirmation-text {
           font-size: 16px;
-          color: #4a5568;
+          color: #1a202c;
           line-height: 1.8;
           margin-bottom: 20px;
         }
         .highlight-text {
           font-size: 18px;
           font-weight: 600;
-          color: #182236;
+          color: #1a202c;
           margin: 20px 0;
           padding: 15px;
-          background-color: #ffffff;
+          background-color: #f7fafc;
           border-radius: 6px;
           border: 2px solid #2A3C5A;
         }
@@ -2669,21 +2668,24 @@ export const riseInvestmentConfirmationTemplate = (
         .receipt-button {
           display: inline-block;
           padding: 16px 48px;
-          background: linear-gradient(135deg, #2A3C5A 0%, #1F2F4C 100%);
+          background-color: #2A3C5A;
           color: #ffffff !important;
-          text-decoration: none;
+          text-decoration: none !important;
           border-radius: 8px;
           font-weight: 700;
           font-size: 16px;
           letter-spacing: 0.5px;
-          box-shadow: 0 4px 12px rgba(42, 60, 90, 0.3);
-          transition: all 0.3s ease;
           text-transform: uppercase;
+          border: none;
         }
         .receipt-button:hover {
-          background: linear-gradient(135deg, #1F2F4C 0%, #182236 100%);
-          box-shadow: 0 6px 16px rgba(42, 60, 90, 0.4);
-          transform: translateY(-2px);
+          background-color: #1F2F4C;
+        }
+        .receipt-link {
+          color: #2A3C5A !important;
+          text-decoration: underline !important;
+          font-weight: 600;
+          word-break: break-all;
         }
         .next-steps {
           background-color: #fff9e6;
@@ -2716,12 +2718,12 @@ export const riseInvestmentConfirmationTemplate = (
         .support-title {
           font-size: 16px;
           font-weight: 700;
-          color: #2d3748;
+          color: #1a202c;
           margin-bottom: 10px;
         }
         .support-text {
           font-size: 14px;
-          color: #4a5568;
+          color: #1a202c;
           line-height: 1.7;
         }
         .support-link {
@@ -2737,19 +2739,19 @@ export const riseInvestmentConfirmationTemplate = (
         }
         .signature-text {
           font-size: 15px;
-          color: #4a5568;
+          color: #1a202c;
           margin-bottom: 5px;
           font-weight: 500;
         }
         .footer {
-          background-color: #f7fafc;
+          background-color: #ffffff;
           padding: 30px;
           text-align: center;
           border-top: 1px solid #e2e8f0;
         }
         .footer-text {
           font-size: 13px;
-          color: #718096;
+          color: #4a5568;
           line-height: 1.6;
           margin-bottom: 10px;
         }
@@ -2831,8 +2833,14 @@ export const riseInvestmentConfirmationTemplate = (
             
             ${receiptUrl ? `
               <div class="button-container">
-                <a href="${receiptUrl}" class="receipt-button" target="_blank">
+                <a href="${receiptUrl}" class="receipt-button" target="_blank" style="display: inline-block; padding: 16px 48px; background-color: #2A3C5A; color: #ffffff !important; text-decoration: none !important; border-radius: 8px; font-weight: 700; font-size: 16px; letter-spacing: 0.5px; text-transform: uppercase;">
                   View Receipt
+                </a>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <p style="font-size: 14px; color: #1a202c; margin-bottom: 10px;">Or click this link:</p>
+                <a href="${receiptUrl}" class="receipt-link" target="_blank" style="color: #2A3C5A !important; text-decoration: underline !important; font-weight: 600; word-break: break-all;">
+                  ${receiptUrl}
                 </a>
               </div>
             ` : ''}
