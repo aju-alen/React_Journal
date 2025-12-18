@@ -212,14 +212,33 @@ export const handleRiseWebhook = async (req, res) => {
             break;
           }
 
-          // Retrieve invoice to get receipt URL
+          // Retrieve receipt URL - try invoice first, then payment intent charge
           let receiptUrl = '';
+          
+          // For subscription payments, invoice is available
           if (checkoutSession.invoice) {
             try {
               const invoice = await stripe.invoices.retrieve(checkoutSession.invoice);
               receiptUrl = invoice.hosted_invoice_url || '';
             } catch (invoiceError) {
               console.error('Rise Webhook Error: Failed to retrieve invoice:', invoiceError);
+            }
+          } 
+          // For one-time payments, get receipt from payment intent charge
+          else if (checkoutSession.payment_intent) {
+            try {
+              const paymentIntent = await stripe.paymentIntents.retrieve(checkoutSession.payment_intent);
+              
+              // Get the charge from payment intent
+              if (paymentIntent.latest_charge) {
+                const charge = await stripe.charges.retrieve(paymentIntent.latest_charge);
+                receiptUrl = charge.receipt_url || '';
+              } else if (paymentIntent.charges && paymentIntent.charges.data && paymentIntent.charges.data.length > 0) {
+                // Fallback: get first charge if latest_charge is not available
+                receiptUrl = paymentIntent.charges.data[0].receipt_url || '';
+              }
+            } catch (paymentError) {
+              console.error('Rise Webhook Error: Failed to retrieve payment intent receipt:', paymentError);
             }
           }
 
