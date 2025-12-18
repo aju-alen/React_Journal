@@ -2513,3 +2513,371 @@ export const subscriptionPaymentSuccessfulEmailTemplate = (
     </html>
   `;
 };
+
+/**
+ * RISE Investment payment confirmation email template
+ * @param {string} investorName - Investor's name
+ * @param {string} investorEmail - Investor's email address
+ * @param {string} receiptUrl - Invoice/receipt URL
+ * @returns {string} HTML email template
+ */
+export const riseInvestmentConfirmationTemplate = (
+  investorName,
+  investorEmail,
+  receiptUrl
+) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>Investment Confirmation - RISE</title>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, sans-serif !important;}
+      </style>
+      <![endif]-->
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.7;
+          color: #2d3748;
+          background-color: #f7fafc;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        .email-wrapper {
+          background-color: #f7fafc;
+          padding: 40px 20px;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          background: linear-gradient(135deg, #2A3C5A 0%, #1F2F4C 50%, #182236 100%);
+          padding: 50px 30px;
+          text-align: center;
+        }
+        .header-title {
+          color: #ffffff;
+          font-size: 32px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          margin-top: 15px;
+          text-transform: uppercase;
+        }
+        .header-subtitle {
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 400;
+          margin-top: 10px;
+          opacity: 0.95;
+        }
+        .content {
+          padding: 40px 30px;
+        }
+        .success-icon {
+          text-align: center;
+          font-size: 72px;
+          margin-bottom: 20px;
+        }
+        .greeting {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+          text-align: center;
+        }
+        .success-message {
+          font-size: 20px;
+          color: #22c55e;
+          margin-bottom: 30px;
+          font-weight: 600;
+          text-align: center;
+        }
+        .message-text {
+          font-size: 16px;
+          color: #4a5568;
+          margin-bottom: 16px;
+          line-height: 1.8;
+          text-align: center;
+        }
+        .info-box {
+          background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+          border-left: 4px solid #22c55e;
+          padding: 25px;
+          margin: 30px 0;
+          border-radius: 8px;
+          text-align: center;
+        }
+        .info-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #065f46;
+          margin-bottom: 12px;
+        }
+        .info-text {
+          font-size: 15px;
+          color: #047857;
+          line-height: 1.7;
+        }
+        .confirmation-box {
+          background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+          padding: 30px;
+          border-radius: 8px;
+          margin: 30px 0;
+          text-align: center;
+        }
+        .confirmation-title {
+          font-size: 20px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+        }
+        .confirmation-text {
+          font-size: 16px;
+          color: #4a5568;
+          line-height: 1.8;
+          margin-bottom: 20px;
+        }
+        .highlight-text {
+          font-size: 18px;
+          font-weight: 600;
+          color: #182236;
+          margin: 20px 0;
+          padding: 15px;
+          background-color: #ffffff;
+          border-radius: 6px;
+          border: 2px solid #2A3C5A;
+        }
+        .button-container {
+          text-align: center;
+          margin: 35px 0;
+        }
+        .receipt-button {
+          display: inline-block;
+          padding: 16px 48px;
+          background: linear-gradient(135deg, #2A3C5A 0%, #1F2F4C 100%);
+          color: #ffffff !important;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 16px;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 12px rgba(42, 60, 90, 0.3);
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+        }
+        .receipt-button:hover {
+          background: linear-gradient(135deg, #1F2F4C 0%, #182236 100%);
+          box-shadow: 0 6px 16px rgba(42, 60, 90, 0.4);
+          transform: translateY(-2px);
+        }
+        .next-steps {
+          background-color: #fff9e6;
+          border: 1px solid #f6e05e;
+          border-radius: 8px;
+          padding: 25px;
+          margin: 30px 0;
+        }
+        .steps-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #744210;
+          margin-bottom: 15px;
+          text-align: center;
+        }
+        .steps-text {
+          font-size: 15px;
+          color: #744210;
+          line-height: 1.7;
+          text-align: center;
+        }
+        .support-section {
+          background-color: #edf2f7;
+          padding: 20px;
+          border-radius: 8px;
+          margin: 30px 0;
+          border: 1px solid #cbd5e0;
+          text-align: center;
+        }
+        .support-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #2d3748;
+          margin-bottom: 10px;
+        }
+        .support-text {
+          font-size: 14px;
+          color: #4a5568;
+          line-height: 1.7;
+        }
+        .support-link {
+          color: #2A3C5A;
+          text-decoration: underline;
+          font-weight: 600;
+        }
+        .signature {
+          margin-top: 35px;
+          padding-top: 25px;
+          border-top: 1px solid #e2e8f0;
+          text-align: center;
+        }
+        .signature-text {
+          font-size: 15px;
+          color: #4a5568;
+          margin-bottom: 5px;
+          font-weight: 500;
+        }
+        .footer {
+          background-color: #f7fafc;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+        }
+        .footer-text {
+          font-size: 13px;
+          color: #718096;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+        .footer-brand {
+          font-size: 14px;
+          color: #2A3C5A;
+          font-weight: 600;
+          margin-top: 15px;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-wrapper {
+            padding: 20px 10px;
+          }
+          .header {
+            padding: 40px 20px;
+          }
+          .content {
+            padding: 30px 20px;
+          }
+          .header-title {
+            font-size: 24px;
+          }
+          .greeting {
+            font-size: 20px;
+          }
+          .success-message {
+            font-size: 18px;
+          }
+          .receipt-button {
+            padding: 14px 32px;
+            font-size: 14px;
+            width: 100%;
+            display: block;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+          <!-- Header -->
+          <div class="header">
+            <h1 class="header-title">RISE</h1>
+            <p class="header-subtitle">Right Intellectual Services Enterprise</p>
+          </div>
+          
+          <!-- Content -->
+          <div class="content">
+            <div class="success-icon">✅</div>
+            
+            <p class="greeting">Dear ${investorName},</p>
+            
+            <p class="success-message">🎉 Investment Payment Successful!</p>
+            
+            <p class="message-text">
+              Thank you for your investment in RISE. Your payment has been processed successfully.
+            </p>
+            
+            <div class="info-box">
+              <p class="info-title">✨ Investment Confirmed</p>
+              <p class="info-text">
+                We acknowledge your contribution and will be in touch within 48 hours to discuss 
+                further contact and formalities regarding your investment.
+              </p>
+            </div>
+            
+            <div class="confirmation-box">
+              <p class="confirmation-title">Investment Details</p>
+              <p class="confirmation-text">
+                Your investment has been successfully recorded in our system. You will receive 
+                formal documentation and next steps from our team shortly.
+              </p>
+              ${receiptUrl ? `
+                <div class="highlight-text">
+                  📄 Your receipt is available below
+                </div>
+              ` : ''}
+            </div>
+            
+            ${receiptUrl ? `
+              <div class="button-container">
+                <a href="${receiptUrl}" class="receipt-button" target="_blank">
+                  View Receipt
+                </a>
+              </div>
+            ` : ''}
+            
+            <div class="next-steps">
+              <p class="steps-title">⏰ What Happens Next?</p>
+              <p class="steps-text">
+                Our team will contact you within 48 hours to acknowledge your contribution and 
+                discuss the next steps in the investment process. Please keep this confirmation 
+                email for your records.
+              </p>
+            </div>
+            
+            <div class="support-section">
+              <p class="support-title">💬 Need Assistance?</p>
+              <p class="support-text">
+                If you have any questions about your investment or need to contact us, 
+                please don't hesitate to reach out. We're here to help!
+              </p>
+            </div>
+            
+            <div class="signature">
+              <p class="signature-text">Thank you for choosing RISE.</p>
+              <p class="signature-text">Best Regards,</p>
+              <p class="signature-text" style="font-weight: 600; color: #2A3C5A;">
+                RISE Investment Team
+              </p>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="footer">
+            <p class="footer-text">
+              This is an automated confirmation email from RISE (Right Intellectual Services Enterprise). 
+              Please keep this email for your records.
+            </p>
+            <p class="footer-text">
+              All investment-related communications will be sent to this email address. 
+              Please ensure your email is active and check your spam folder if you don't receive updates.
+            </p>
+            <p class="footer-brand">RISE © ${new Date().getFullYear()}</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};

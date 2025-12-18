@@ -157,6 +157,8 @@ export const createCheckoutSession = async (req, res, next) => {
 };
 
 import { PrismaClient } from '@prisma/client';
+import { resendEmailBoiler } from '../utils/resend-email-boiler.js';
+import { riseInvestmentConfirmationTemplate } from '../utils/emailTemplates.js';
 const prisma = new PrismaClient();
 
 /**
@@ -221,14 +223,9 @@ export const handleRiseWebhook = async (req, res) => {
             }
           }
 
-          // Check for existing record to prevent duplicates
-          const existingInvestor = await prisma.riseInvestor.findFirst({
-            where: {
-              email: investor_email
-            }
-          });
 
-          if (!existingInvestor) {
+
+          if (investor_email) {
             await prisma.riseInvestor.create({
               data: {
                 name: investor_name || investor_email,
@@ -237,6 +234,27 @@ export const handleRiseWebhook = async (req, res) => {
               }
             });
             console.log('Rise Investor created successfully:', investor_email);
+
+            // Send confirmation email to investor
+            try {
+              const emailHtml = riseInvestmentConfirmationTemplate(
+                investor_name || investor_email,
+                investor_email,
+                receiptUrl
+              );
+              
+              await resendEmailBoiler(
+                process.env.RISE_AUTH_USER || process.env.GMAIL_AUTH_USER,
+                investor_email,
+                'Investment Confirmation - RISE',
+                emailHtml
+              );
+              
+              console.log('Investment confirmation email sent to:', investor_email);
+            } catch (emailError) {
+              console.error('Rise Webhook Error: Failed to send confirmation email:', emailError);
+              // Don't throw - email failure shouldn't break the webhook
+            }
           } else {
             console.log('Rise Investor already exists:', investor_email);
           }
@@ -312,6 +330,27 @@ export const handleRiseWebhook = async (req, res) => {
             }
           });
           console.log('Rise Investor created from payment_intent:', customerEmail);
+
+          // Send confirmation email to investor
+          try {
+            const emailHtml = riseInvestmentConfirmationTemplate(
+              customerName || customerEmail,
+              customerEmail,
+              receiptUrl
+            );
+            
+            await resendEmailBoiler(
+              process.env.RISE_AUTH_USER || process.env.GMAIL_AUTH_USER,
+              customerEmail,
+              'Investment Confirmation - RISE',
+              emailHtml
+            );
+            
+            console.log('Investment confirmation email sent to:', customerEmail);
+          } catch (emailError) {
+            console.error('Rise Webhook Error: Failed to send confirmation email:', emailError);
+            // Don't throw - email failure shouldn't break the webhook
+          }
         } else {
           console.log('Rise Investor already exists from payment_intent:', customerEmail);
         }
