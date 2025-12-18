@@ -132,8 +132,8 @@ export const createCheckoutSession = async (req, res, next) => {
         },
       ],
       mode: 'payment',
-      success_url: `${process.env.FRONTEND_RISE_URL || 'http://localhost:5173'}/investors?success=true&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.FRONTEND_RISE_URL || 'http://localhost:5173'}/investors?canceled=true`,
+      success_url: `${process.env.FRONTEND_RISE_URL || 'http://localhost:5173'}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_RISE_URL || 'http://localhost:5173'}/payment/cancelled?canceled=true`,
       customer_email: email,
       metadata: {
         investor_name: name || '',
