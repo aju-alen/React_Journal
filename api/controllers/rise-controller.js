@@ -340,7 +340,7 @@ export const handleRiseWebhook = async (req, res) => {
             );
             
             await resendEmailBoiler(
-              process.env.RISE_AUTH_USER || process.env.GMAIL_AUTH_USER,
+              process.env.RISE_INVESTOR_AUTH_USER || process.env.GMAIL_AUTH_USER,
               customerEmail,
               'Investment Confirmation - RISE',
               emailHtml
