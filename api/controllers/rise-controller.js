@@ -404,7 +404,7 @@ const generateOTP = () => {
  * @returns {string} HTML email template
  */
 const otpEmailTemplate = (name, otp, reportType) => {
-  const reportName = reportType === 'profile' ? 'Profile' : 'Report';
+  const reportName = reportType === 'profile' ? 'Profile' : reportType === 'investor' ? 'Investment Opportunities' : 'Report';
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -608,6 +608,65 @@ export const submitProfileRequest = async (req, res, next) => {
 };
 
 /**
+ * Submit investor request
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+export const submitInvestorRequest = async (req, res, next) => {
+  try {
+    const { name, email, phone } = req.body;
+
+    // Validate required fields (email required, name and phone optional)
+    if (!email) {
+      return res.status(400).json({ 
+        message: 'Email is required' 
+      });
+    }
+
+    // Generate 4-digit OTP
+    const otp = generateOTP();
+
+    // Store in database (use email as name if name not provided)
+    const investorRequest = await prisma.profileReport.create({
+      data: {
+        name: name || email,
+        email,
+        report: 'investor',
+        otp,
+        isEmailVerified: false
+      }
+    });
+
+    // Send OTP email
+    try {
+      const emailHtml = otpEmailTemplate(name || email, otp, 'investor');
+      await resendEmailBoilerRise(
+        process.env.RISE_INVESTOR_AUTH_USER || process.env.GMAIL_AUTH_USER,
+        email,
+        'OTP Verification - RISE Investor Request',
+        emailHtml
+      );
+      console.log('OTP email sent to:', email);
+    } catch (emailError) {
+      console.error('Error sending OTP email:', emailError);
+      // Don't fail the request if email fails, but log it
+    }
+
+    res.status(200).json({ 
+      message: 'Investor request submitted successfully. Please check your email for OTP.',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error submitting investor request:', error);
+    res.status(500).json({ 
+      message: 'Failed to submit investor request',
+      error: error.message 
+    });
+  }
+};
+
+/**
  * Submit report request
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
@@ -715,16 +774,23 @@ export const verifyOTP = async (req, res, next) => {
       data: { isEmailVerified: true }
     });
 
-    // Determine PDF URL based on report type
-    const pdfUrl = record.report === 'profile' 
-      ? 'https://amzn-s3-rightintellectual.s3.ap-south-1.amazonaws.com/RIGHT_INTELLECTUAL_SERVICES_PROFILE-1.pdf'
-      : 'https://amzn-s3-rightintellectual.s3.ap-south-1.amazonaws.com/RIGHT_INTELLECTUAL_SERVICES_ENTERPRISE_LTD_ANNUAL_REPORT-3.pdf';
+    // Determine PDF URL based on report type (investor doesn't need PDF)
+    if (record.report === 'investor') {
+      res.status(200).json({ 
+        message: 'OTP verified successfully',
+        success: true
+      });
+    } else {
+      const pdfUrl = record.report === 'profile' 
+        ? 'https://amzn-s3-rightintellectual.s3.ap-south-1.amazonaws.com/RIGHT_INTELLECTUAL_SERVICES_PROFILE-1.pdf'
+        : 'https://amzn-s3-rightintellectual.s3.ap-south-1.amazonaws.com/RIGHT_INTELLECTUAL_SERVICES_ENTERPRISE_LTD_ANNUAL_REPORT-3.pdf';
 
-    res.status(200).json({ 
-      message: 'OTP verified successfully',
-      success: true,
-      pdfUrl: pdfUrl
-    });
+      res.status(200).json({ 
+        message: 'OTP verified successfully',
+        success: true,
+        pdfUrl: pdfUrl
+      });
+    }
   } catch (error) {
     console.error('Error verifying OTP:', error);
     res.status(500).json({ 
