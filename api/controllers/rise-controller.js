@@ -158,7 +158,7 @@ export const createCheckoutSession = async (req, res, next) => {
   }
 };
 
-import { resendEmailBoiler } from '../utils/resend-email-boiler.js';
+import { resendEmailBoilerRise } from '../utils/resend-email-boiler.js';
 import { riseInvestmentConfirmationTemplate } from '../utils/emailTemplates.js';
 
 /**
@@ -262,7 +262,7 @@ export const handleRiseWebhook = async (req, res) => {
                 receiptUrl,
               );
               
-              await resendEmailBoiler(
+              await resendEmailBoilerRise(
                 process.env.RISE_INVESTOR_AUTH_USER || process.env.GMAIL_AUTH_USER,
                 investor_email,
                 'Investment Confirmation - RISE',
@@ -360,7 +360,7 @@ export const handleRiseWebhook = async (req, res) => {
               receiptUrl
             );
             
-            await resendEmailBoiler(
+            await resendEmailBoilerRise(
               process.env.RISE_INVESTOR_AUTH_USER || process.env.GMAIL_AUTH_USER,
               customerEmail,
               'Investment Confirmation - RISE',
@@ -386,4 +386,350 @@ export const handleRiseWebhook = async (req, res) => {
 
   // Return a 200 response to acknowledge receipt of the event
   res.send();
+};
+
+/**
+ * Generate a 4-digit OTP
+ * @returns {string} 4-digit OTP
+ */
+const generateOTP = () => {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+};
+
+/**
+ * OTP email template
+ * @param {string} name - User's name
+ * @param {string} otp - 4-digit OTP
+ * @param {string} reportType - 'profile' or 'report'
+ * @returns {string} HTML email template
+ */
+const otpEmailTemplate = (name, otp, reportType) => {
+  const reportName = reportType === 'profile' ? 'Profile' : 'Report';
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>OTP Verification - RISE</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.7;
+          color: #1a202c;
+          background-color: #ffffff;
+        }
+        .email-wrapper {
+          background-color: #ffffff;
+          padding: 40px 20px;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+        }
+        .header {
+          background-color: #2A3C5A;
+          padding: 50px 30px;
+          text-align: center;
+        }
+        .header-title {
+          color: #ffffff;
+          font-size: 32px;
+          font-weight: 800;
+          letter-spacing: 1px;
+          margin-top: 15px;
+          text-transform: uppercase;
+        }
+        .content {
+          padding: 40px 30px;
+          background-color: #ffffff;
+        }
+        .greeting {
+          font-size: 24px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+        }
+        .message-text {
+          font-size: 16px;
+          color: #1a202c;
+          margin-bottom: 16px;
+          line-height: 1.8;
+        }
+        .otp-box {
+          background-color: #f7fafc;
+          border: 3px solid #2A3C5A;
+          border-radius: 12px;
+          padding: 30px;
+          margin: 30px 0;
+          text-align: center;
+        }
+        .otp-label {
+          font-size: 14px;
+          color: #4a5568;
+          margin-bottom: 15px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        }
+        .otp-code {
+          font-size: 48px;
+          font-weight: 800;
+          color: #2A3C5A;
+          letter-spacing: 8px;
+          font-family: 'Courier New', monospace;
+        }
+        .info-box {
+          background-color: #fff9e6;
+          border: 1px solid #f6e05e;
+          border-radius: 8px;
+          padding: 20px;
+          margin: 30px 0;
+        }
+        .info-text {
+          font-size: 14px;
+          color: #744210;
+          line-height: 1.7;
+        }
+        .footer {
+          background-color: #ffffff;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+        }
+        .footer-text {
+          font-size: 13px;
+          color: #4a5568;
+          line-height: 1.6;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+          <div class="header">
+            <h1 class="header-title">RISE</h1>
+          </div>
+          <div class="content">
+            <p class="greeting">Hi ${name},</p>
+            <p class="message-text">
+              Thank you for requesting the ${reportName}. Please use the OTP below to verify your email and access your ${reportName}.
+            </p>
+            <div class="otp-box">
+              <p class="otp-label">Your Verification Code</p>
+              <p class="otp-code">${otp}</p>
+            </div>
+            <div class="info-box">
+              <p class="info-text">
+                ⚠️ This OTP is valid for 10 minutes. Please do not share this code with anyone.
+              </p>
+            </div>
+            <p class="message-text">
+              Enter this code in the verification form to complete your request.
+            </p>
+          </div>
+          <div class="footer">
+            <p class="footer-text">
+              This is an automated email from RISE (Right Intellectual Services Enterprise).
+            </p>
+            <p class="footer-text">
+              If you did not request this ${reportName}, please ignore this email.
+            </p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+/**
+ * Submit profile request
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+export const submitProfileRequest = async (req, res, next) => {
+  try {
+    const { name, email, phone } = req.body;
+
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({ 
+        message: 'Name and email are required' 
+      });
+    }
+
+    // Generate 4-digit OTP
+    const otp = generateOTP();
+
+    // Store in database
+    const profileRequest = await prisma.profileReport.create({
+      data: {
+        name,
+        email,
+        report: 'profile',
+        otp,
+        isEmailVerified: false
+      }
+    });
+
+    // Send OTP email
+    try {
+      const emailHtml = otpEmailTemplate(name, otp, 'profile');
+      await resendEmailBoilerRise(
+        process.env.RISE_INVESTOR_AUTH_USER || process.env.GMAIL_AUTH_USER,
+        email,
+        'OTP Verification - RISE Profile Request',
+        emailHtml
+      );
+      console.log('OTP email sent to:', email);
+    } catch (emailError) {
+      console.error('Error sending OTP email:', emailError);
+      // Don't fail the request if email fails, but log it
+    }
+
+    res.status(200).json({ 
+      message: 'Profile request submitted successfully. Please check your email for OTP.',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error submitting profile request:', error);
+    res.status(500).json({ 
+      message: 'Failed to submit profile request',
+      error: error.message 
+    });
+  }
+};
+
+/**
+ * Submit report request
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+export const submitReportRequest = async (req, res, next) => {
+  try {
+    const { name, email, phone } = req.body;
+
+    // Validate required fields
+    if (!name || !email) {
+      return res.status(400).json({ 
+        message: 'Name and email are required' 
+      });
+    }
+
+    // Generate 4-digit OTP
+    const otp = generateOTP();
+
+    // Store in database
+    const reportRequest = await prisma.profileReport.create({
+      data: {
+        name,
+        email,
+        report: 'report',
+        otp,
+        isEmailVerified: false
+      }
+    });
+
+    // Send OTP email
+    try {
+      const emailHtml = otpEmailTemplate(name, otp, 'report');
+      await resendEmailBoilerRise(
+        process.env.RISE_INVESTOR_AUTH_USER || process.env.GMAIL_AUTH_USER,
+        email,
+        'OTP Verification - RISE Report Request',
+        emailHtml
+      );
+      console.log('OTP email sent to:', email);
+    } catch (emailError) {
+      console.error('Error sending OTP email:', emailError);
+      // Don't fail the request if email fails, but log it
+    }
+
+    res.status(200).json({ 
+      message: 'Report request submitted successfully. Please check your email for OTP.',
+      success: true
+    });
+  } catch (error) {
+    console.error('Error submitting report request:', error);
+    res.status(500).json({ 
+      message: 'Failed to submit report request',
+      error: error.message 
+    });
+  }
+};
+
+/**
+ * Verify OTP and return PDF URL
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ */
+export const verifyOTP = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+
+    // Validate required fields
+    if (!email || !otp) {
+      return res.status(400).json({ 
+        message: 'Email and OTP are required' 
+      });
+    }
+
+    // Find the record
+    const record = await prisma.profileReport.findFirst({
+      where: {
+        email,
+        otp,
+        isEmailVerified: false
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    if (!record) {
+      return res.status(400).json({ 
+        message: 'Invalid OTP or email. Please check and try again.' 
+      });
+    }
+
+    // Check if OTP is expired (10 minutes)
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
+    if (record.createdAt < tenMinutesAgo) {
+      return res.status(400).json({ 
+        message: 'OTP has expired. Please request a new one.' 
+      });
+    }
+
+    // Update record to mark as verified
+    await prisma.profileReport.update({
+      where: { id: record.id },
+      data: { isEmailVerified: true }
+    });
+
+    // Determine PDF URL based on report type
+    const pdfUrl = record.report === 'profile' 
+      ? 'https://amzn-s3-rightintellectual.s3.ap-south-1.amazonaws.com/RIGHT_INTELLECTUAL_SERVICES_PROFILE-1.pdf'
+      : 'https://amzn-s3-rightintellectual.s3.ap-south-1.amazonaws.com/RIGHT_INTELLECTUAL_SERVICES_ENTERPRISE_LTD_ANNUAL_REPORT-3.pdf';
+
+    res.status(200).json({ 
+      message: 'OTP verified successfully',
+      success: true,
+      pdfUrl: pdfUrl
+    });
+  } catch (error) {
+    console.error('Error verifying OTP:', error);
+    res.status(500).json({ 
+      message: 'Failed to verify OTP',
+      error: error.message 
+    });
+  }
 };

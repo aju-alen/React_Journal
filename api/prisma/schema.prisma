@@ -147,3 +147,14 @@ model RiseInvestor {
   createdAt   DateTime @default(now())
 }
 
+model ProfileReport {
+  id              String   @id @default(uuid())
+  name            String
+  email           String
+  report          String   // 'profile' or 'report'
+  otp             String   @db.VarChar(4)
+  isEmailVerified Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
