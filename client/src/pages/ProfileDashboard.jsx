@@ -16,6 +16,8 @@ import EditProfile from '../components/EditProfile';
 import SubmitIssue from '../components/SubmitIssue';
 import CreateNewJournal from '../components/CreateNewJournal';
 import CreateMarkettingEmail from '../components/CreateMarkettingEmail';
+import ReviewerManagement from '../components/ReviewerManagement';
+import ReviewerArticleDashboard from '../components/ReviewerArticleDashboard';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -129,7 +131,7 @@ const ProfileDashboard = () => {
           setUser(resp.data)
           setLoading(false)
 
-        if (resp.data.isAdmin) {
+        if (resp.data.isAdmin || (resp.data.userType === 'reviewer' && resp.data.reviewerApproved)) {
           const verifyResp = await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
           console.log(verifyResp.data, 'special review full log');
           setVerificationArticle(verifyResp.data.filter((item) => item.specialReview === false))
@@ -155,6 +157,7 @@ const ProfileDashboard = () => {
   console.log(userSpecialReview, 'user yesss special review');
 
   const isAdmin = userDetails?.user?.isAdmin;
+  const isReviewer = userDetails?.user?.userType === 'reviewer' && userDetails?.user?.reviewerApproved;
 
   return (
     <div>
@@ -170,7 +173,7 @@ const ProfileDashboard = () => {
             >
               <Tab
                 label={
-                  isAdmin ? (
+                  (isAdmin || isReviewer) ? (
                     <div>
                       Verify Regular Issue
                       <Badge color="primary" badgeContent={userCount} overlap='circular' max={5} sx={{ mb: 5 }} >
@@ -184,48 +187,58 @@ const ProfileDashboard = () => {
                 {...a11yProps(0)}
               />
               {/* START ------------ This is a tab button to check if user wants special issue or regular issue */}
-              <Tab
-              wrapped
-              label={
-                
-                (
-                  <div>
-                    <Button variant="text" onClick={handleClickOpen}>
-                      Submit Manuscript
-                    </Button>
-                    <Dialog
-                      open={open}
-                      onClose={handleClose}
-                      aria-labelledby="alert-dialog-title"
-                      aria-describedby="alert-dialog-description"
-                    >
-                      <DialogTitle id="alert-dialog-title">
-                        {"Submit this manuscript as a special issue?"}
-                      </DialogTitle>
-                      <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                          Special Issue - A special issue will be published at the current issue of the journal
-                        </DialogContentText>
-                        <DialogContentText id="alert-dialog-description">
-                          Regular Issue - A regular issue will be published at the next issue of the journal
-                        </DialogContentText>
-                      </DialogContent>
-                      <DialogActions>
-                        <Button onClick={handleRegularIssue}>Regular Issue</Button>
-                        <Button onClick={handleSpecialIssue} autoFocus>
-                          Special Issue
-                        </Button>
-                      </DialogActions>
-                    </Dialog>
-                  </div>
-                )
+              {!isReviewer && (
+                <Tab
+                wrapped
+                label={
+                  
+                  (
+                    <div>
+                      <Button variant="text" onClick={handleClickOpen}>
+                        Submit Manuscript
+                      </Button>
+                      <Dialog
+                        open={open}
+                        onClose={handleClose}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                      >
+                        <DialogTitle id="alert-dialog-title">
+                          {"Submit this manuscript as a special issue?"}
+                        </DialogTitle>
+                        <DialogContent>
+                          <DialogContentText id="alert-dialog-description">
+                            Special Issue - A special issue will be published at the current issue of the journal
+                          </DialogContentText>
+                          <DialogContentText id="alert-dialog-description">
+                            Regular Issue - A regular issue will be published at the next issue of the journal
+                          </DialogContentText>
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleRegularIssue}>Regular Issue</Button>
+                          <Button onClick={handleSpecialIssue} autoFocus>
+                            Special Issue
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </div>
+                  )
 
-              } {...a11yProps(1)} />
+                } {...a11yProps(1)} />
+              )}
               {/* END ------------ This is a tab button to check if user wants special issue or regular issue */}
 
               {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
               <Tab wrapped label="Edit Profile" {...a11yProps(2)} />
-              <Tab label="Manage Purchase" {...a11yProps(3)} />
+              {isReviewer && (
+                <Tab wrapped label="Review Articles" {...a11yProps(3)} />
+              )}
+              {!isReviewer && (
+                <Tab label="Manage Purchase" {...a11yProps(3)} />
+              )}
+              {isReviewer && (
+                <Tab label="Manage Purchase" {...a11yProps(4)} />
+              )}
               {/* Admin-only tabs */}
               {isAdmin && (
                 <Tab wrapped label="Create new journal" {...a11yProps(4)} />
@@ -233,7 +246,7 @@ const ProfileDashboard = () => {
               {isAdmin && (
                 <Tab wrapped label="Mailing" {...a11yProps(5)} />
               )}
-              {isAdmin && (
+              {(isAdmin || isReviewer) && (
                 <Tab wrapped
                   label={
                     <div>
@@ -273,28 +286,58 @@ const ProfileDashboard = () => {
                   {...a11yProps(8)}
                 />
               )}
-              <Tab
-              wrapped
-                label= "Manage Subscription"
-                {...a11yProps(isAdmin ? 9 : 4)}
-              />
+              {isAdmin && (
+                <Tab
+                  wrapped
+                  label="Reviewer Management"
+                  {...a11yProps(9)}
+                />
+              )}
+              {isReviewer && (
+                <Tab
+                  wrapped
+                  label="Manage Subscription"
+                  {...a11yProps(5)}
+                />
+              )}
+              {!isReviewer && (
+                <Tab
+                  wrapped
+                  label="Manage Subscription"
+                  {...a11yProps(isAdmin ? 10 : 4)}
+                />
+              )}
             </Tabs>
 
           </Box>
           <CustomTabPanel value={value} index={0}>
-            {isAdmin && <AdminMyManuscriptsDashboard user={verificationArticle} onDelete={refreshVerificationArticles} />}
-            {!isAdmin && <MyManuscriptsDashboard user={user} />}
+            {(isAdmin || isReviewer) && <AdminMyManuscriptsDashboard user={verificationArticle} onDelete={refreshVerificationArticles} />}
+            {!isAdmin && !isReviewer && <MyManuscriptsDashboard user={user} />}
           </CustomTabPanel>
-          <CustomTabPanel value={value} index={1}>
-            {( regularIssue) && <SubmitManuscript user={user} checked={false} />}
-            {(specialIssue) && <SubmitManuscript user={user} checked={true} />}
-          </CustomTabPanel>
+          {!isReviewer && (
+            <CustomTabPanel value={value} index={1}>
+              {( regularIssue) && <SubmitManuscript user={user} checked={false} />}
+              {(specialIssue) && <SubmitManuscript user={user} checked={true} />}
+            </CustomTabPanel>
+          )}
           <CustomTabPanel value={value} index={2}>
             <EditProfile userDetails={userDetails} />
           </CustomTabPanel>
-          <CustomTabPanel value={value} index={3}>
-            <ManagePurchase />
-          </CustomTabPanel>
+          {isReviewer && (
+            <CustomTabPanel value={value} index={3}>
+              <ReviewerArticleDashboard />
+            </CustomTabPanel>
+          )}
+          {!isReviewer && (
+            <CustomTabPanel value={value} index={3}>
+              <ManagePurchase />
+            </CustomTabPanel>
+          )}
+          {isReviewer && (
+            <CustomTabPanel value={value} index={4}>
+              <ManagePurchase />
+            </CustomTabPanel>
+          )}
           {/* Admin-only panels */}
           {isAdmin && (
             <CustomTabPanel value={value} index={4}>
@@ -306,7 +349,7 @@ const ProfileDashboard = () => {
               <CreateMarkettingEmail />
             </CustomTabPanel>
           )}
-          {isAdmin && (
+          {(isAdmin || isReviewer) && (
             <CustomTabPanel value={value} index={6}>
               <AdminMyManuscriptsDashboard user={userSpecialReview} />
             </CustomTabPanel>
@@ -321,9 +364,21 @@ const ProfileDashboard = () => {
               <MyManuscriptsDashboard user={user} />
             </CustomTabPanel>
           )}
-          <CustomTabPanel value={value} index={isAdmin ? 9 : 4}>
-            <StripeManageSubscription />
-          </CustomTabPanel>
+          {isAdmin && (
+            <CustomTabPanel value={value} index={9}>
+              <ReviewerManagement />
+            </CustomTabPanel>
+          )}
+          {isReviewer && (
+            <CustomTabPanel value={value} index={5}>
+              <StripeManageSubscription />
+            </CustomTabPanel>
+          )}
+          {!isReviewer && (
+            <CustomTabPanel value={value} index={isAdmin ? 10 : 4}>
+              <StripeManageSubscription />
+            </CustomTabPanel>
+          )}
         </Box>
 
       </div>) :

@@ -10,15 +10,32 @@ import dotenv from 'dotenv'
 import { emailVerifyBackendUrl, emailUrl } from '../utils/cors.dev.js'
 import { resendEmailBoiler } from '../utils/resend-email-boiler.js';
 import { emailVerificationTemplate, passwordResetTemplate, markettingEmailTemplate, welcomeEmailTemplate } from '../utils/emailTemplates.js';
+import { S3 } from '@aws-sdk/client-s3';
 dotenv.config()
+
+const BUCKET_NAME = process.env.BUCKET_NAME;
+const REGION = process.env.REGION;
+const ACCESS_KEY = process.env.ACCESS_KEY;
+const SECRET_KEY = process.env.SECRET_KEY;
+
+const s3 = new S3({
+    credentials: {
+        accessKeyId: ACCESS_KEY,
+        secretAccessKey: SECRET_KEY
+    },
+    region: REGION
+});
 
 const prisma = new PrismaClient();
 export const register = async (req, res, next) => {
     console.log(req.body);
     try {
+        const userType = req.body.userType || 'user';
+        const email = req.body.email;
+        
         const finduser = await prisma.user.findUnique({
             where: {
-                email: req.body.email,
+                email: email,
             }
         })
         if (finduser) {
@@ -28,20 +45,55 @@ export const register = async (req, res, next) => {
             else if (finduser.emailVerified === false) {
                 await prisma.user.delete({
                     where: {
-                        email: req.body.email
+                        email: email
                     }
                 })
                 return next(createError(400, 'User already exists but verification link has expired. Please register again'))
             }
         }
         console.log('this is the req from the client', req.body);
+        
+        // Handle CV upload for reviewers
+        let cvUrl = null;
+        if (userType === 'reviewer') {
+            if (!req.file) {
+                return next(createError(400, 'CV file is required for reviewers'))
+            }
+            
+            // Validate file is PDF
+            if (req.file.mimetype !== 'application/pdf') {
+                return next(createError(400, 'CV must be a PDF file'))
+            }
+            
+            // Generate temporary identifier using email (sanitized)
+            const tempUserId = email.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            // Upload CV to S3
+            const cvFileName = `cv/${tempUserId}/${req.file.originalname}`;
+            const uploadParams = {
+                Bucket: BUCKET_NAME,
+                Key: cvFileName,
+                Body: req.file.buffer,
+                ContentType: 'application/pdf'
+            };
+            
+            try {
+                await s3.putObject(uploadParams);
+                cvUrl = `https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/${cvFileName}`;
+                console.log('CV uploaded successfully:', cvUrl);
+            } catch (uploadErr) {
+                console.error('S3 Upload Error:', uploadErr);
+                return next(createError(500, 'Failed to upload CV'))
+            }
+        }
+        
         const hash = await bcrypt.hash(req.body.password, 10);
         //generate the verification token
         const emailVerificationToken = crypto.randomBytes(64).toString('hex');
 
         const user = await prisma.user.create({
             data: {
-                email: req.body.email,
+                email: email,
                 password: hash,
                 title: req.body.title,
                 surname: req.body.surname,
@@ -50,7 +102,10 @@ export const register = async (req, res, next) => {
                 label: req.body.label,
                 value: req.body.value,
                 emailVerificationToken: emailVerificationToken,
-                marketingCommunications: req.body.marketingCommunications,
+                marketingCommunications: req.body.marketingCommunications === 'true' || req.body.marketingCommunications === true,
+                userType: userType,
+                cvUrl: cvUrl,
+                reviewerApproved: userType === 'reviewer' ? false : true,
             }
         })
         await prisma.$disconnect()
@@ -59,18 +114,21 @@ export const register = async (req, res, next) => {
         const emailHtml = emailVerificationTemplate(
             req.body.surname,
             emailVerificationToken,
-            req.body.email,
+            email,
             emailVerifyBackendUrl
         );
 
         await resendEmailBoiler(
             process.env.GMAIL_AUTH_USER,
-            req.body.email,
+            email,
             'Verify your email',
             emailHtml
         )
         // sendVerificationEmail(req.body.email, emailVerificationToken, req.body.surname);
-        res.status(201).json({ message: 'User created, please verify your details', user })
+        const successMessage = userType === 'reviewer' 
+            ? 'Registration successful! Your reviewer application is pending admin approval. You will receive an email notification once your application is reviewed.'
+            : 'User created, please verify your details';
+        res.status(201).json({ message: successMessage, user })
     }
     catch (err) {
         console.log(err);
@@ -154,8 +212,14 @@ export const login = async (req, res, next) => {
         if (!isCorrect) {
             return res.status(400).json({ message: 'Wrong password or username' })
         }
+        
+        // Check if reviewer is approved
+        if (finduser.userType === 'reviewer' && !finduser.reviewerApproved) {
+            return res.status(403).json({ message: 'Your reviewer application is pending approval. You will be notified via email once approved.' })
+        }
+        
         const token = jwt.sign(
-            { id: finduser.id },
+            { id: finduser.id, isAdmin: finduser.isAdmin },
             process.env.SECRET,
         )
 

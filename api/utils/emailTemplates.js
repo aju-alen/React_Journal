@@ -2889,3 +2889,267 @@ export const riseInvestmentConfirmationTemplate = (
     </html>
   `;
 };
+
+/**
+ * Reviewer approval email template
+ * @param {string} name - Reviewer's name
+ * @param {string} email - Reviewer's email address
+ * @returns {string} HTML email template
+ */
+export const reviewerApprovalTemplate = (name, email) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>Reviewer Application Approved - Scientific Journals Portal</title>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, sans-serif !important;}
+      </style>
+      <![endif]-->
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.7;
+          color: #2d3748;
+          background-color: #f7fafc;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        .email-wrapper {
+          background-color: #f7fafc;
+          padding: 40px 20px;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          background: linear-gradient(135deg, #543a31 0%, #6b4f47 100%);
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .logo-container {
+          margin-bottom: 15px;
+        }
+        .logo-container img {
+          max-width: 180px;
+          height: auto;
+          display: block;
+          margin: 0 auto;
+        }
+        .header-title {
+          color: #ffffff;
+          font-size: 24px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          margin-top: 10px;
+        }
+        .content {
+          padding: 40px 30px;
+        }
+        .success-icon {
+          text-align: center;
+          font-size: 64px;
+          margin-bottom: 20px;
+        }
+        .greeting {
+          font-size: 22px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+        }
+        .success-message {
+          font-size: 18px;
+          color: #22c55e;
+          margin-bottom: 30px;
+          font-weight: 600;
+          text-align: center;
+        }
+        .message-text {
+          font-size: 16px;
+          color: #4a5568;
+          margin-bottom: 16px;
+          line-height: 1.8;
+        }
+        .info-box {
+          background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+          border-left: 4px solid #22c55e;
+          padding: 20px;
+          margin: 30px 0;
+          border-radius: 6px;
+        }
+        .info-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #065f46;
+          margin-bottom: 10px;
+        }
+        .info-text {
+          font-size: 15px;
+          color: #047857;
+          line-height: 1.7;
+        }
+        .cta-section {
+          text-align: center;
+          margin: 35px 0;
+        }
+        .cta-button {
+          display: inline-block;
+          padding: 16px 48px;
+          background: linear-gradient(135deg, #543a31 0%, #6b4f47 100%);
+          color: #ffffff !important;
+          text-decoration: none;
+          border-radius: 8px;
+          font-weight: 700;
+          font-size: 16px;
+          letter-spacing: 0.5px;
+          box-shadow: 0 4px 12px rgba(84, 58, 49, 0.3);
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+        }
+        .cta-button:hover {
+          background: linear-gradient(135deg, #3d2a23 0%, #543a31 100%);
+          box-shadow: 0 6px 16px rgba(84, 58, 49, 0.4);
+          transform: translateY(-2px);
+        }
+        .signature {
+          margin-top: 35px;
+          padding-top: 25px;
+          border-top: 1px solid #e2e8f0;
+        }
+        .signature-text {
+          font-size: 15px;
+          color: #4a5568;
+          margin-bottom: 5px;
+          font-weight: 500;
+        }
+        .footer {
+          background-color: #f7fafc;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+        }
+        .footer-text {
+          font-size: 13px;
+          color: #718096;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+        .footer-brand {
+          font-size: 14px;
+          color: #543a31;
+          font-weight: 600;
+          margin-top: 15px;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-wrapper {
+            padding: 20px 10px;
+          }
+          .header {
+            padding: 30px 20px;
+          }
+          .content {
+            padding: 30px 20px;
+          }
+          .header-title {
+            font-size: 20px;
+          }
+          .greeting {
+            font-size: 20px;
+          }
+          .success-message {
+            font-size: 16px;
+          }
+          .cta-button {
+            padding: 14px 32px;
+            font-size: 14px;
+            width: 100%;
+            display: block;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+          <!-- Header -->
+          <div class="header">
+            <div class="logo-container">
+              <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" 
+                   alt="Scientific Journals Portal Logo" />
+            </div>
+            <h1 class="header-title">Scientific Journals Portal</h1>
+          </div>
+          
+          <!-- Content -->
+          <div class="content">
+            <div class="success-icon">🎉</div>
+            
+            <p class="greeting">Hi ${name}!</p>
+            
+            <p class="success-message">Your Reviewer Application Has Been Approved!</p>
+            
+            <p class="message-text">
+              We are pleased to inform you that your reviewer application has been reviewed and approved 
+              by our editorial team. Welcome to the Scientific Journals Portal reviewer community!
+            </p>
+            
+            <div class="info-box">
+              <p class="info-title">✨ What's Next?</p>
+              <p class="info-text">
+                You can now log in to your account and start reviewing manuscripts. Your expertise and 
+                contributions are valuable to maintaining the quality and integrity of our publications.
+              </p>
+            </div>
+            
+            <div class="cta-section">
+              <a href="https://scientificjournalsportal.com/login" class="cta-button">
+                Log In to Your Account
+              </a>
+            </div>
+            
+            <p class="message-text">
+              Thank you for your interest in contributing to the scientific community through peer review. 
+              We look forward to working with you!
+            </p>
+            
+            <div class="signature">
+              <p class="signature-text">Best Regards,</p>
+              <p class="signature-text">
+                <a href="https://scientificjournalsportal.com/" style="color: #543a31; text-decoration: none; font-weight: 600;">
+                  Scientific Journals Portal Editorial Team
+                </a>
+              </p>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div class="footer">
+            <p class="footer-text">
+              This is an automated message from Scientific Journals Portal. 
+              Please do not reply to this email.
+            </p>
+            <p class="footer-text">
+              If you have any questions, please contact our support team through your dashboard.
+            </p>
+            <p class="footer-brand">Scientific Journals Portal © ${new Date().getFullYear()}</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};

@@ -28,6 +28,7 @@ const AdminMyManuscriptsDashboard = ({ user,onDelete }) => {
   const [files, setFiles] = useState([]);
   const [pdfName,setPdfname] = useState('')
   const [loading, setLoading] = useState(false);
+  const [acceptError, setAcceptError] = useState('');
 
 
   const handleClickOpen = (articleId,emailId) => {
@@ -66,16 +67,18 @@ console.log(pdfName,'pdffffffNameeeee');
     console.log(articleId, 'articleId inside handleAcceptManuscript state');
     try {
       setLoading(true);
+      setAcceptError('');
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
       await axios.put(`${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
       setLoading(false);
       onDelete();
+      handleSuccessClose();
     }
     catch (err) {
       console.log(err);
+      setLoading(false);
+      setAcceptError(err.response?.data?.message || 'Error accepting manuscript');
     }
-    setLoading(false);
-    handleSuccessClose();
   }
   
   if (!Array.isArray(user) || user.length === 0) {
@@ -98,6 +101,7 @@ console.log(pdfName,'pdffffffNameeeee');
             <TableCell align="center">Article Abstract</TableCell>
             <TableCell align="center">Article Keywords</TableCell>
             <TableCell align="center">Article Files</TableCell>
+            <TableCell align="center">Reviewer Status</TableCell>
             <TableCell align="center">Verification</TableCell>
           </TableRow>
         </TableHead>
@@ -131,21 +135,46 @@ console.log(pdfName,'pdffffffNameeeee');
                 </TableCell>
 
                 <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button variant='outlined' onClick={
-                    ()=>handleClicSuccessOpen(
-                      row.id,
-                      row.articleAuthors[0].authorEmail,
-                      row.articleTitle,
-                      row.articleIssue,
-                      row.articleVolume,
-                      row.awsId,
-                      row.userId,
-                      row.articleAuthors[0].authorGivenName,
-                      row.articlePublishedJournal.journalAbbreviation,
-                      row.publicPdfName,
-                      row.articlePublishedDate,
-                      row.articleAuthors[0].authorLastName
-                    )} >
+                  {row.isAccepted ? (
+                    row.reviewerAcceptedBy ? (
+                      <div style={{ fontSize: '12px' }}>
+                        <div style={{ color: 'green', fontWeight: 'bold' }}>✓ Accepted</div>
+                        <div style={{ color: 'gray', marginTop: '4px' }}>
+                          by {row.reviewerAcceptedBy.title || ''} {row.reviewerAcceptedBy.surname || ''} {row.reviewerAcceptedBy.otherName || ''}
+                        </div>
+                        <div style={{ color: 'gray', fontSize: '10px' }}>
+                          {row.reviewerAcceptedBy.email}
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ color: 'green', fontWeight: 'bold', fontSize: '12px' }}>✓ Accepted</div>
+                    )
+                  ) : (
+                    <div style={{ color: 'orange', fontWeight: 'bold', fontSize: '12px' }}>Pending Review</div>
+                  )}
+                </TableCell>
+
+                <TableCell sx={{ fontWeight: 'bold' }} align="center">
+                  <Button 
+                    variant='outlined' 
+                    onClick={
+                      ()=>handleClicSuccessOpen(
+                        row.id,
+                        row.articleAuthors[0].authorEmail,
+                        row.articleTitle,
+                        row.articleIssue,
+                        row.articleVolume,
+                        row.awsId,
+                        row.userId,
+                        row.articleAuthors[0].authorGivenName,
+                        row.articlePublishedJournal.journalAbbreviation,
+                        row.publicPdfName,
+                        row.articlePublishedDate,
+                        row.articleAuthors[0].authorLastName
+                      )
+                    }
+                    title="Accept and publish manuscript"
+                  >
                     ✅
                   </Button>
 
@@ -160,16 +189,34 @@ console.log(pdfName,'pdffffffNameeeee');
                     </DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        Accepting this manuscript will make it available for the public to view. This action cannot be undone.
+                        {(() => {
+                          const article = user?.find(a => a.id === articleId);
+                          if (article && article.isAccepted && article.reviewerAcceptedBy) {
+                            const reviewerName = `${article.reviewerAcceptedBy.title || ''} ${article.reviewerAcceptedBy.surname || ''} ${article.reviewerAcceptedBy.otherName || ''}`.trim();
+                            return (
+                              <>
+                                This manuscript has been accepted by reviewer: <strong>{reviewerName}</strong> ({article.reviewerAcceptedBy.email}).
+                                <br /><br />
+                                As an admin, you can publish this manuscript directly. Publishing will make it available for the public to view. This action cannot be undone.
+                              </>
+                            );
+                          }
+                          return 'As an admin, you can publish this manuscript directly. Publishing will make it available for the public to view. This action cannot be undone.';
+                        })()}
                       </DialogContentText>
+                      {acceptError && (
+                        <DialogContentText sx={{ color: 'error.main', mt: 2 }}>
+                          {acceptError}
+                        </DialogContentText>
+                      )}
                     </DialogContent>
                     <DialogActions>
                       <Button onClick={() => handleAcceptManuscript(
                         articleId,
-                        )}>{
+                        )} disabled={loading}>{
                         loading ? 'Loading...' : 'Accept Manuscript'
                         }</Button>
-                      <Button onClick={handleSuccessClose} autoFocus>
+                      <Button onClick={handleSuccessClose} autoFocus disabled={loading}>
                         Discard
                       </Button>
                     </DialogActions>

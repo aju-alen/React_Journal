@@ -36,6 +36,9 @@ const Register = () => {
   const [isValid, setIsValid] = useState(false);
   const [loading, setLoading] = useState(false);
   const [value, setValue] = useState('')
+  const [userType, setUserType] = useState('user');
+  const [cvFile, setCvFile] = useState(null);
+  const [cvFileError, setCvFileError] = useState('');
   const options = useMemo(() => countryList().getData(), [])
 
   const changeHandler = value => {
@@ -69,6 +72,41 @@ const Register = () => {
    setCheckedFormdata({ ...checkedFormdata, [event.target.name]: event.target.checked });
   }
 
+  const handleUserTypeChange = (e) => {
+    setUserType(e.target.value);
+    // Clear CV file when switching away from reviewer
+    if (e.target.value !== 'reviewer') {
+      setCvFile(null);
+      setCvFileError('');
+    }
+  }
+
+  const handleCVFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setCvFile(null);
+      return;
+    }
+
+    // Validate file is PDF
+    if (file.type !== 'application/pdf') {
+      setCvFileError('CV must be a PDF file');
+      setCvFile(null);
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+      setCvFileError('CV file size must be less than 5MB');
+      setCvFile(null);
+      return;
+    }
+
+    setCvFile(file);
+    setCvFileError('');
+  }
+
   const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*()_+\-={}[\]:;"'<>,.?/])(?=.{8,})/;
     if (!passwordRegex.test(password)) {
@@ -82,19 +120,55 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    console.log(e.target[0]);
+    
     if (formData.password !== formData.confirmPassword) {
+      setLoading(false);
       return alert("Password do not match")
     }
-    const mergeForm = Object.assign({}, formData, value, checkedFormdata)
-    console.log(mergeForm, 'merged');
+
+    // Validate CV is required for reviewers
+    if (userType === 'reviewer' && !cvFile) {
+      setLoading(false);
+      setCvFileError('CV file is required for reviewers');
+      return;
+    }
+
+    // Create FormData
+    const formDataToSend = new FormData();
+    formDataToSend.append('email', formData.email);
+    formDataToSend.append('password', formData.password);
+    formDataToSend.append('title', formData.title);
+    formDataToSend.append('surname', formData.surname);
+    formDataToSend.append('otherName', formData.otherName);
+    formDataToSend.append('affiliation', formData.affiliation);
+    formDataToSend.append('userType', userType);
+    
+    if (value && value.label) {
+      formDataToSend.append('label', value.label);
+    }
+    if (value && value.value) {
+      formDataToSend.append('value', value.value);
+    }
+    
+    formDataToSend.append('marketingCommunications', checkedFormdata.marketingCommunications);
+    
+    // Append CV file if reviewer
+    if (userType === 'reviewer' && cvFile) {
+      formDataToSend.append('cvFile', cvFile);
+    }
+
+    console.log('Form submitted:', formDataToSend);
     try {
-      const res = await axios.post(`${httpRoute}/api/auth/register`, mergeForm)
+      const res = await axios.post(`${httpRoute}/api/auth/register`, formDataToSend, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
       console.log(res);
       if (res.status === 201) {
         handleClick();
-          setAlertMessage(res.data.message);
-          setAlertColor('success');
+        setAlertMessage(res.data.message);
+        setAlertColor('success');
 
         setTimeout(() => {
           navigate('/login')
@@ -105,11 +179,10 @@ const Register = () => {
     catch (err) {
       console.log(err,'error');
       handleClick();
-      setAlertMessage(err.response.data);
+      setAlertMessage(err.response?.data?.message || err.response?.data || 'An error occurred');
       setAlertColor('error');
       setLoading(false);
     }
-    console.log('Form submitted:', mergeForm);
   };
   console.log(checkedFormdata, 'checked');
   return (
@@ -120,7 +193,37 @@ const Register = () => {
         <div className="bg-white p-8 rounded shadow-md w-full md:w-5/6">
           <h2 className="text-2xl font-semibold mb-6 text-center">Register</h2>
           <form onSubmit={handleSubmit}>
-
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2">
+                Role
+              </label>
+              <div className="flex gap-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="user"
+                    checked={userType === 'user'}
+                    onChange={handleUserTypeChange}
+                    className="mr-2"
+                    required
+                  />
+                  <span>User</span>
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    name="userType"
+                    value="reviewer"
+                    checked={userType === 'reviewer'}
+                    onChange={handleUserTypeChange}
+                    className="mr-2"
+                    required
+                  />
+                  <span>Reviewer</span>
+                </label>
+              </div>
+            </div>
             <div className="mb-4">
 
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
@@ -233,6 +336,26 @@ const Register = () => {
               </label>
               <Select options={options} value={value} onChange={changeHandler} />
             </div>
+            {userType === 'reviewer' && (
+              <div className="mb-6">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cvFile">
+                  CV (PDF) <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="file"
+                  id="cvFile"
+                  name="cvFile"
+                  accept=".pdf,application/pdf"
+                  onChange={handleCVFileChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-indigo-500"
+                  required={userType === 'reviewer'}
+                />
+                {cvFile && (
+                  <p className="text-sm text-gray-600 mt-1">Selected: {cvFile.name}</p>
+                )}
+                {cvFileError && <p style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.25rem' }}>{cvFileError}</p>}
+              </div>
+            )}
             <div className=" flex justify-start items-center mb-6">
               <Checkbox
                 checked={checkedFormdata.marketingCommunications}

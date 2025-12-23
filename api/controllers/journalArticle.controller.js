@@ -131,6 +131,7 @@ export const getAllArticlesToVerify = async (req, res, next) => {
                 articlePublishedDate: true,
                 journalId: true,
                 userId: true,
+                reviewerAcceptedById: true,
                 createdAt: true,
                 updatedAt:true,
                 
@@ -140,14 +141,26 @@ export const getAllArticlesToVerify = async (req, res, next) => {
                         id: true,
                         journalAbbreviation: true
                     }
+                },
+                // Include reviewer who accepted the article
+                reviewerAcceptedBy: {
+                    select: {
+                        id: true,
+                        email: true,
+                        surname: true,
+                        otherName: true,
+                        title: true
+                    }
                 }
             }
         });
         console.log(journalArticle);
+        await prisma.$disconnect();
         res.status(200).json(journalArticle);
     }
     catch (err) {
         console.log(err);
+        await prisma.$disconnect();
         return next(createError(400, 'An error occurred'));
         
     }
@@ -279,6 +292,29 @@ export const acceptManuscript = async (req, res, next) => {
         if(req.isAdmin === false) {
             return next(createError(401, 'Not authorized to accept article'));
         }
+        
+        // Get article to check current status
+        const article = await prisma.article.findUnique({
+            where: { id: req.body.articleId },
+            include: {
+                reviewerAcceptedBy: {
+                    select: {
+                        id: true,
+                        email: true,
+                        surname: true,
+                        otherName: true,
+                        title: true
+                    }
+                }
+            }
+        });
+        
+        if (!article) {
+            return next(createError(404, 'Article not found'));
+        }
+        
+        // Admins can publish directly, regardless of reviewer acceptance
+        // If reviewer accepted, we'll keep that info, but admin can still publish
         const journalArticle = await prisma.article.update({
             where: { id: req.body.articleId },
             data: {
@@ -286,13 +322,26 @@ export const acceptManuscript = async (req, res, next) => {
                 articleStatus: 'Published',
                 isReview: false,
                 rejectionFilesURL:[],
+            },
+            include: {
+                reviewerAcceptedBy: {
+                    select: {
+                        id: true,
+                        email: true,
+                        surname: true,
+                        otherName: true,
+                        title: true
+                    }
+                }
             }
         });
         console.log(journalArticle);
+        await prisma.$disconnect();
         res.status(200).json(journalArticle);
     }
     catch (err) {
         console.log(err);
+        await prisma.$disconnect();
         return next(createError(400, 'An error occurred'));
         
     }
@@ -683,5 +732,158 @@ export const getViewerSignedUrl = async (req, res, next) => {
     } catch (err) {
         console.error('Get Viewer Signed URL Error:', err);
         return next(createError(500, 'Failed to generate viewer URL'));
+    }
+};
+
+// Get articles for reviewer to review
+export const getArticlesForReviewer = async (req, res, next) => {
+    try {
+        // Verify user is a reviewer and approved
+        const user = await prisma.user.findUnique({
+            where: { id: req.userId }
+        });
+
+        if (!user) {
+            return next(createError(404, 'User not found'));
+        }
+
+        if (user.userType !== 'reviewer' || !user.reviewerApproved) {
+            return next(createError(403, 'Only approved reviewers can access this resource'));
+        }
+
+        const articles = await prisma.article.findMany({
+            where: {
+                isReview: true,
+                isPublished: false
+            },
+            select: {
+                id: true,
+                articleTitle: true,
+                articleAbstract: true,
+                articleKeywords: true,
+                articleAuthors: true,
+                filesURL: true,
+                articleIssue: true,
+                articleVolume: true,
+                paymentStatus: true,
+                publicPdfName: true,
+                awsId: true,
+                rejectionText: true,
+                specialReview: true,
+                isReview: true,
+                isPublished: true,
+                isAccepted: true,
+                articleStatus: true,
+                articleReceivedDate: true,
+                articleAcceptedDate: true,
+                journalId: true,
+                userId: true,
+                reviewerAcceptedById: true,
+                createdAt: true,
+                updatedAt: true,
+                articlePublishedJournal: {
+                    select: {
+                        id: true,
+                        journalAbbreviation: true,
+                        journalTitle: true
+                    }
+                },
+                reviewerAcceptedBy: {
+                    select: {
+                        id: true,
+                        email: true,
+                        surname: true,
+                        otherName: true,
+                        title: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        await prisma.$disconnect();
+        res.status(200).json(articles);
+    } catch (err) {
+        console.log(err);
+        await prisma.$disconnect();
+        return next(createError(400, 'An error occurred'));
+    }
+};
+
+// Reviewer accepts an article
+export const reviewerAcceptArticle = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+
+        // Verify user is a reviewer and approved
+        const user = await prisma.user.findUnique({
+            where: { id: req.userId }
+        });
+
+        if (!user) {
+            return next(createError(404, 'User not found'));
+        }
+
+        if (user.userType !== 'reviewer' || !user.reviewerApproved) {
+            return next(createError(403, 'Only approved reviewers can perform this action'));
+        }
+
+        // Check if article exists and is in review
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        if (article.isPublished) {
+            return next(createError(400, 'Article is already published'));
+        }
+
+        if (!article.isReview) {
+            return next(createError(400, 'Article is not in review'));
+        }
+
+        if (article.isAccepted) {
+            return next(createError(400, 'Article has already been accepted by a reviewer'));
+        }
+
+        // Update article to accepted
+        const updatedArticle = await prisma.article.update({
+            where: { id: articleId },
+            data: {
+                isAccepted: true,
+                reviewerAcceptedById: req.userId,
+                articleStatus: 'Accepted by Reviewer'
+            },
+            include: {
+                reviewerAcceptedBy: {
+                    select: {
+                        id: true,
+                        email: true,
+                        surname: true,
+                        otherName: true,
+                        title: true
+                    }
+                },
+                articlePublishedJournal: {
+                    select: {
+                        id: true,
+                        journalAbbreviation: true,
+                        journalTitle: true
+                    }
+                }
+            }
+        });
+
+        await prisma.$disconnect();
+        res.status(200).json({ message: 'Article accepted successfully', article: updatedArticle });
+    } catch (err) {
+        console.log(err);
+        await prisma.$disconnect();
+        return next(createError(400, 'An error occurred'));
     }
 };

@@ -252,3 +252,64 @@ export const fetchFullIssueFiles = async (req, res) => {
         res.status(500).json({ message: 'An error occoured', error: err })
     }
 }
+
+//---------------- CV upload and get URL Logic  -----------------
+
+// Uploading CV to AWS
+const uploadWithMulterCV = (userId) => multer({
+    storage: mutlerS3({
+        s3: s3,
+        bucket: BUCKET_NAME,
+        metadata: function (req, file, cb) {
+            const date = new Date().toISOString();
+            console.log(file, 'file in metadata');
+            cb(null, { fieldName: file.fieldname, uploadDate: date });
+        },
+        key: function (req, file, cb) {
+            const fileName = `cv/${userId}/${file.originalname}`
+            cb(null, fileName)
+        }
+    })
+}).single('cvFile');
+
+export const uploadCVToAWS = async (req, res) => {
+    const { userId } = req.params;
+    console.log(userId, 'userId in CV upload');
+    try {
+        // Upload new file
+        const upload = uploadWithMulterCV(userId);
+        upload(req, res, (err) => {
+            if (err) {
+                res.status(500).json({ message: 'An error occurred', error: err });
+            } else {
+                res.status(200).json({ message: 'CV uploaded successfully', file: req.file });
+            }
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ message: 'An error occurred', error: err });
+    }
+};
+
+// Get CV file URL to store in db
+export const fetchCVFile = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const data = await s3.listObjects({
+            Bucket: BUCKET_NAME
+        });
+        let baseUrl = `https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/`
+        let urlArr = []
+        console.log(data, 'data from s3');
+        const filteredData = data.Contents.filter((file) => file.Key.includes(`cv/${userId}/`))
+
+        filteredData.map((file) => {
+            urlArr.push(baseUrl + file.Key)
+        })
+
+        res.status(200).json({ message: 'CV file fetched successfully', files: urlArr })
+    }
+    catch (err) {
+        res.status(500).json({ message: 'An error occoured', error: err })
+    }
+}

@@ -1,7 +1,7 @@
 import express  from "express";
 import {verifyToken} from '../middleware/jwt.js'
 const router = express.Router()
-import {createJournalArticle,getAllJournalArticle,getAllArticlesToVerify,postRejectionText,getSingleArticle,updateJournalArticle,acceptManuscript,getPublsihedJournalArticle, getSinglePublishedArticle,deleteArticle,downloadCertificate,getAllPublsihedJournalArticle,getViewerSignedUrl} from '../controllers/journalArticle.controller.js'
+import {createJournalArticle,getAllJournalArticle,getAllArticlesToVerify,postRejectionText,getSingleArticle,updateJournalArticle,acceptManuscript,getPublsihedJournalArticle, getSinglePublishedArticle,deleteArticle,downloadCertificate,getAllPublsihedJournalArticle,getViewerSignedUrl,getArticlesForReviewer,reviewerAcceptArticle} from '../controllers/journalArticle.controller.js'
 
 router.post('/generate', downloadCertificate);
 router.get('/',getAllJournalArticle)
@@ -16,6 +16,8 @@ router.get('/verifyArticles/:profileId',verifyToken,getAllArticlesToVerify)
 router.post('/verifyArticles/sendRejectionText',verifyToken,postRejectionText)
 router.put('/verifyArticles/acceptManuscript',verifyToken,acceptManuscript)
 router.delete(`/delete-article/:articleId/:userId`,verifyToken,deleteArticle)
+router.get('/reviewer/articles',verifyToken,getArticlesForReviewer)
+router.post('/reviewer/accept/:articleId',verifyToken,reviewerAcceptArticle)
 
 
 export default router
