@@ -35,6 +35,7 @@ import ForgetPassword from './pages/ForgetPassword'
 import EditorialBoard from './pages/EditorialBoard'
 import FullIssueHome from './components/FullIssueHome'
 import FullIssueSearch from './components/FullIssueSearch'
+import ViewPdf from './pages/ViewPdf'
 
 
 
@@ -93,6 +94,10 @@ function App() {
       {
         path: '/journal/:catId/:articleId',
         element: <Article />,
+      },
+      {
+        path: '/view-pdf/:articleId',
+        element: <ViewPdf />,
       },
       {
         path: '/dashboard/:profileId',

@@ -619,3 +619,69 @@ export const getCertificate = async (req, res, next) => {
         return next(createError(500, 'Failed to retrieve certificate'));
     }
 };
+
+// Get signed URL for PDF viewer with subscription validation
+export const getViewerSignedUrl = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        const userId = req.userId;
+
+        // Get user to retrieve email
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return next(createError(404, 'User not found'));
+        }
+
+        // Get article from database
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        // Get user subscription
+        const subscription = await prisma.subscription.findFirst({
+            where: {
+                subscriptionEmail: user.email
+            }
+        });
+
+        if (!subscription) {
+            return next(createError(403, 'Subscription required'));
+        }
+
+        // Check if subscription is valid
+        const currentTimeUnix = Math.floor(Date.now() / 1000);
+        if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
+            return next(createError(403, 'Subscription expired'));
+        }
+
+        // Construct S3 key
+        const s3Key = `${article.userId}/${article.awsId}/${article.publicPdfName}`;
+
+        // Create GetObjectCommand with inline content disposition to prevent download
+        const command = new GetObjectCommand({
+            Bucket: BUCKET_NAME,
+            Key: s3Key,
+            ResponseContentDisposition: 'inline',
+            ResponseContentType: 'application/pdf'
+        });
+
+        // Generate signed URL with 30 minute expiration
+        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 1800 });
+
+        res.status(200).json({
+            signedUrl: signedUrl,
+            expiresIn: 1800,
+            articleTitle: article.articleTitle
+        });
+    } catch (err) {
+        console.error('Get Viewer Signed URL Error:', err);
+        return next(createError(500, 'Failed to generate viewer URL'));
+    }
+};

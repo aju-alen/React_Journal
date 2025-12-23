@@ -85,11 +85,24 @@ export default function Article() {
         }
     }, [])
 
-    const handleCheckSubscription = () => {
+    const handleCheckSubscription = async () => {
         if (userSubscriptionData) {
             let currentTimeUnix = Math.floor(Date.now() / 1000);
             if (userSubscriptionData.subscriptionPeriodEnd > currentTimeUnix) {
-                window.open(getPublicManuscriptUrl)
+                try {
+                    axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                    const response = await axios.get(`${httpRoute}/api/journalArticle/get-viewer-url/${articleId}`);
+                    if (response.data.signedUrl) {
+                        window.open(`/view-pdf/${articleId}`, '_blank');
+                    }
+                } catch (err) {
+                    console.error('Error getting viewer URL:', err);
+                    if (err.response?.status === 403) {
+                        navigate('/productDisplay');
+                    } else {
+                        alert('Failed to load PDF. Please try again.');
+                    }
+                }
             } else {
                 navigate('/productDisplay')
             }
