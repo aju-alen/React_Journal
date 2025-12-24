@@ -9,7 +9,7 @@ import createError from '../utils/createError.js'
 import dotenv from 'dotenv'
 import { emailVerifyBackendUrl, emailUrl } from '../utils/cors.dev.js'
 import { resendEmailBoiler } from '../utils/resend-email-boiler.js';
-import { emailVerificationTemplate, passwordResetTemplate, markettingEmailTemplate, welcomeEmailTemplate } from '../utils/emailTemplates.js';
+import { emailVerificationTemplate, passwordResetTemplate, markettingEmailTemplate, welcomeEmailTemplate, newUserRegistrationNotificationTemplate } from '../utils/emailTemplates.js';
 import { S3 } from '@aws-sdk/client-s3';
 dotenv.config()
 
@@ -124,6 +124,32 @@ export const register = async (req, res, next) => {
             'Verify your email',
             emailHtml
         )
+        
+        // Send admin notification email
+        const adminNotificationHtml = newUserRegistrationNotificationTemplate(
+            userType,
+            email,
+            req.body.title,
+            req.body.surname,
+            req.body.otherName,
+            req.body.affiliation,
+            req.body.label || req.body.value || 'N/A',
+            userType === 'reviewer',
+            cvUrl
+        );
+        
+        try {
+            await resendEmailBoiler(
+                process.env.GMAIL_AUTH_USER,
+                process.env.GMAIL_AUTH_USER,
+                `New ${userType === 'reviewer' ? 'Reviewer' : 'User'} Registration - Scientific Journals Portal`,
+                adminNotificationHtml
+            );
+        } catch (adminEmailErr) {
+            console.error('Error sending admin notification email:', adminEmailErr);
+            // Don't fail the registration if admin email fails
+        }
+        
         // sendVerificationEmail(req.body.email, emailVerificationToken, req.body.surname);
         const successMessage = userType === 'reviewer' 
             ? 'Registration successful! Your reviewer application is pending admin approval. You will receive an email notification once your application is reviewed.'

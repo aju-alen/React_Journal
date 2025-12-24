@@ -3153,3 +3153,284 @@ export const reviewerApprovalTemplate = (name, email) => {
     </html>
   `;
 };
+
+
+export const newUserRegistrationNotificationTemplate = (
+  userType,
+  email,
+  title,
+  surname,
+  otherName,
+  affiliation,
+  country,
+  isReviewer,
+  cvUrl
+) => {
+  const fullName = `${title || ''} ${surname || ''} ${otherName || ''}`.trim();
+  
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <title>New User Registration - Scientific Journals Portal</title>
+      <!--[if mso]>
+      <style type="text/css">
+        body, table, td {font-family: Arial, sans-serif !important;}
+      </style>
+      <![endif]-->
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+          line-height: 1.7;
+          color: #2d3748;
+          background-color: #f7fafc;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+        .email-wrapper {
+          background-color: #f7fafc;
+          padding: 40px 20px;
+        }
+        .email-container {
+          max-width: 600px;
+          margin: 0 auto;
+          background-color: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+          background: linear-gradient(135deg, #543a31 0%, #6b4f47 100%);
+          padding: 40px 30px;
+          text-align: center;
+        }
+        .logo-container {
+          margin-bottom: 15px;
+        }
+        .logo-container img {
+          max-width: 180px;
+          height: auto;
+          display: block;
+          margin: 0 auto;
+        }
+        .header-title {
+          color: #ffffff;
+          font-size: 24px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+          margin-top: 10px;
+        }
+        .content {
+          padding: 40px 30px;
+        }
+        .notification-icon {
+          text-align: center;
+          font-size: 64px;
+          margin-bottom: 20px;
+        }
+        .greeting {
+          font-size: 22px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 20px;
+        }
+        .message-text {
+          font-size: 16px;
+          color: #4a5568;
+          margin-bottom: 16px;
+          line-height: 1.8;
+        }
+        .info-box {
+          background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+          padding: 25px;
+          border-radius: 8px;
+          margin: 30px 0;
+          border: 1px solid #e2e8f0;
+        }
+        .info-title {
+          font-size: 18px;
+          font-weight: 700;
+          color: #1a202c;
+          margin-bottom: 15px;
+        }
+        .info-row {
+          display: flex;
+          justify-content: space-between;
+          padding: 10px 0;
+          border-bottom: 1px solid #e2e8f0;
+        }
+        .info-row:last-child {
+          border-bottom: none;
+        }
+        .info-label {
+          font-size: 15px;
+          font-weight: 600;
+          color: #4a5568;
+        }
+        .info-value {
+          font-size: 15px;
+          color: #1a202c;
+          text-align: right;
+        }
+        .reviewer-notice {
+          background: linear-gradient(135deg, #fff5f5 0%, #fef5e7 100%);
+          border-left: 4px solid #f59e0b;
+          padding: 20px;
+          margin: 30px 0;
+          border-radius: 6px;
+        }
+        .reviewer-title {
+          font-size: 16px;
+          font-weight: 700;
+          color: #92400e;
+          margin-bottom: 10px;
+        }
+        .reviewer-text {
+          font-size: 15px;
+          color: #78350f;
+          line-height: 1.7;
+        }
+        .cv-link {
+          color: #543a31;
+          text-decoration: underline;
+          font-weight: 600;
+        }
+        .footer {
+          background-color: #f7fafc;
+          padding: 30px;
+          text-align: center;
+          border-top: 1px solid #e2e8f0;
+        }
+        .footer-text {
+          font-size: 13px;
+          color: #718096;
+          line-height: 1.6;
+          margin-bottom: 10px;
+        }
+        .footer-brand {
+          font-size: 14px;
+          color: #543a31;
+          font-weight: 600;
+          margin-top: 15px;
+        }
+        @media only screen and (max-width: 600px) {
+          .email-wrapper {
+            padding: 20px 10px;
+          }
+          .header {
+            padding: 30px 20px;
+          }
+          .content {
+            padding: 30px 20px;
+          }
+          .header-title {
+            font-size: 20px;
+          }
+          .greeting {
+            font-size: 20px;
+          }
+          .info-row {
+            flex-direction: column;
+          }
+          .info-value {
+            text-align: left;
+            margin-top: 5px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="email-wrapper">
+        <div class="email-container">
+          <!-- Header -->
+          <div class="header">
+            <div class="logo-container">
+              <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" 
+                   alt="Scientific Journals Portal Logo" />
+            </div>
+            <h1 class="header-title">Scientific Journals Portal</h1>
+          </div>
+          
+          <!-- Content -->
+          <div class="content">
+            <div class="notification-icon">📧</div>
+            
+            <p class="greeting">New User Registration</p>
+            
+            <p class="message-text">
+              A new user has registered on the Scientific Journals Portal. Please find the registration details below:
+            </p>
+            
+            <div class="info-box">
+              <p class="info-title">User Registration Details</p>
+              
+              <div class="info-row">
+                <span class="info-label">User Type:</span>
+                <span class="info-value"><strong>${userType === 'reviewer' ? 'Reviewer' : 'User'}</strong></span>
+              </div>
+              
+              <div class="info-row">
+                <span class="info-label">Name:</span>
+                <span class="info-value">${fullName || 'N/A'}</span>
+              </div>
+              
+              <div class="info-row">
+                <span class="info-label">Email:</span>
+                <span class="info-value">${email}</span>
+              </div>
+              
+              <div class="info-row">
+                <span class="info-label">Affiliation:</span>
+                <span class="info-value">${affiliation || 'N/A'}</span>
+              </div>
+              
+              <div class="info-row">
+                <span class="info-label">Country:</span>
+                <span class="info-value">${country || 'N/A'}</span>
+              </div>
+              
+              <div class="info-row">
+                <span class="info-label">Registration Date:</span>
+                <span class="info-value">${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+              </div>
+            </div>
+            
+            ${isReviewer ? `
+            <div class="reviewer-notice">
+              <p class="reviewer-title">⚠️ Reviewer Application</p>
+              <p class="reviewer-text">
+                This user has registered as a <strong>Reviewer</strong> and requires admin approval before they can access the system.
+                ${cvUrl ? `<br /><br />CV: <a href="${cvUrl}" class="cv-link" target="_blank">View CV</a>` : ''}
+                <br /><br />
+                Please review their application in the Reviewer Management section of the admin dashboard.
+              </p>
+            </div>
+            ` : ''}
+            
+            <p class="message-text">
+              You can manage this user and their registration status through the admin dashboard.
+            </p>
+          </div>
+          
+          <!-- Footer -->
+          <div class="footer">
+            <p class="footer-text">
+              This is an automated notification from Scientific Journals Portal. 
+              Please do not reply to this email.
+            </p>
+            <p class="footer-brand">Scientific Journals Portal © ${new Date().getFullYear()}</p>
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
