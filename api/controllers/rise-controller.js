@@ -799,3 +799,82 @@ export const verifyOTP = async (req, res, next) => {
     });
   }
 };
+
+export const getProfileReports = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const profileReports = await prisma.profileReport.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        report: true,
+        isEmailVerified: true,
+        createdAt: true,
+        updatedAt: true
+      },
+      skip: skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    const total = await prisma.profileReport.count();
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).json({
+      data: profileReports,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching profile reports:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch profile reports',
+      error: error.message 
+    });
+  }
+};
+
+export const getRiseInvestors = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const riseInvestors = await prisma.riseInvestor.findMany({
+      skip: skip,
+      take: limit,
+      orderBy: {
+        createdAt: 'desc'
+      }
+    });
+
+    const total = await prisma.riseInvestor.count();
+    const totalPages = Math.ceil(total / limit);
+
+    res.status(200).json({
+      data: riseInvestors,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching rise investors:', error);
+    res.status(500).json({ 
+      message: 'Failed to fetch rise investors',
+      error: error.message 
+    });
+  }
+};
