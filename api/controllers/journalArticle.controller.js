@@ -155,7 +155,7 @@ export const getAllArticlesToVerify = async (req, res, next) => {
             }
         });
         console.log(journalArticle);
-        await prisma.$disconnect();
+
         res.status(200).json(journalArticle);
     }
     catch (err) {
