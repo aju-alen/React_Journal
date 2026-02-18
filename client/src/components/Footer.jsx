@@ -41,6 +41,7 @@ const Footer = () => {
           <Link
             key={link.to}
             to={link.to}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className="text-sm sm:text-base hover:text-yellow-300 transition-colors duration-200 py-1"
           >
             {link.text}
