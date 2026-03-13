@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 dotenv.config();    
 const resend = new Resend(process.env.RESEND_API_KEY);
 const resendRise = new Resend(process.env.RESEND_API_KEY_INVESTOR);
+const resendCorpInk = new Resend(process.env.RESEND_API_KEY_CORPINK);
 
 
 export const resendEmailBoiler = async (senderEmail, recipientEmail, subject, html) => {
@@ -23,6 +24,22 @@ export const resendEmailBoiler = async (senderEmail, recipientEmail, subject, ht
 export const resendEmailBoilerRise = async (senderEmail, recipientEmail, subject, html) => {
     try {
         const response = await resendRise.emails.send({
+            from: senderEmail,
+            to: recipientEmail,
+            subject: subject,
+            html: html,
+        });
+        return response;
+    }
+    catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+}
+
+export const resendEmailBoilerCorpInk = async (senderEmail, recipientEmail, subject, html) => {
+    try {
+        const response = await resendCorpInk.emails.send({
             from: senderEmail,
             to: recipientEmail,
             subject: subject,

@@ -22,6 +22,7 @@ import riseRoutes from './routes/rise-route.js'
 import { resendEmailBoiler } from './utils/resend-email-boiler.js'
 import { subscriptionPaymentSuccessfulEmailTemplate } from './utils/emailTemplates.js'
 import { handleRiseWebhook } from './controllers/rise-controller.js'
+import {corpInkRoutes} from './routes/corpink.route.js'
 const prisma = new PrismaClient()
 dotenv.config()
 
@@ -292,7 +293,7 @@ app.use('/api/subscription', subscriptionROute)
 app.use('/api/reviewer', reviewerRoute)
 
 app.use('/api/rise',riseRoutes)
-
+app.use('/api/corpink',corpInkRoutes)
 
 app.use(errorHandler)
 const PORT = process.env.PORT || 3001

@@ -164,3 +164,11 @@ model ProfileReport {
   updatedAt       DateTime @updatedAt
 }
 
+model CorpinkOtp {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  otp       String   @db.VarChar(6)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+

@@ -3434,3 +3434,158 @@ export const newUserRegistrationNotificationTemplate = (
     </html>
   `;
 };
+
+export const corpinkServiceRequestConfirmationTemplate = (name) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Service Request Received - CorpInk</title>
+      <style>
+        body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background-color: #1a1a2e; padding: 32px 40px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 1px; }
+        .body-content { padding: 40px; }
+        .body-content h2 { color: #1a1a2e; font-size: 20px; margin-top: 0; }
+        .body-content p { color: #4a4a4a; font-size: 15px; line-height: 1.6; }
+        .highlight-box { background-color: #f0f4ff; border-left: 4px solid #1a1a2e; padding: 16px 20px; margin: 24px 0; border-radius: 4px; }
+        .highlight-box p { margin: 0; color: #1a1a2e; font-weight: 500; }
+        .footer { background-color: #f4f4f7; padding: 24px 40px; text-align: center; }
+        .footer p { color: #999999; font-size: 12px; margin: 4px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>CorpInk</h1>
+        </div>
+        <div class="body-content">
+          <h2>Hello ${name},</h2>
+          <p>Thank you for reaching out to us. We have successfully received your service request.</p>
+          <div class="highlight-box">
+            <p>Our team will review your request and get back to you as soon as possible. You can expect a response within 1–2 business days.</p>
+          </div>
+          <p>If you have any urgent queries in the meantime, feel free to contact us at <a href="mailto:support@corpink.ae">support@corpink.ae</a>.</p>
+          <p>Best regards,<br>The CorpInk Team</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated email from CorpInk. Please do not reply directly to this message.</p>
+          <p>CorpInk &copy; ${new Date().getFullYear()}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+export const corpinkServiceRequestNotificationTemplate = (name, email, service) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>New Service Request - CorpInk</title>
+      <style>
+        body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background-color: #1a1a2e; padding: 32px 40px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 1px; }
+        .body-content { padding: 40px; }
+        .body-content h2 { color: #1a1a2e; font-size: 20px; margin-top: 0; }
+        .body-content p { color: #4a4a4a; font-size: 15px; line-height: 1.6; }
+        .info-table { width: 100%; border-collapse: collapse; margin: 24px 0; }
+        .info-table td { padding: 12px 16px; border-bottom: 1px solid #e8e8e8; font-size: 15px; color: #4a4a4a; }
+        .info-table td:first-child { font-weight: 600; color: #1a1a2e; width: 120px; }
+        .footer { background-color: #f4f4f7; padding: 24px 40px; text-align: center; }
+        .footer p { color: #999999; font-size: 12px; margin: 4px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>CorpInk</h1>
+        </div>
+        <div class="body-content">
+          <h2>New Service Request</h2>
+          <p>A new service request has been submitted with the following details:</p>
+          <table class="info-table">
+            <tr>
+              <td>Name</td>
+              <td>${name}</td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td><a href="mailto:${email}">${email}</a></td>
+            </tr>
+            <tr>
+              <td>Service</td>
+              <td>${service}</td>
+            </tr>
+          </table>
+          <p>Please follow up with the requester at your earliest convenience.</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated notification from CorpInk.</p>
+          <p>CorpInk &copy; ${new Date().getFullYear()}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
+
+export const corpinkOtpEmailTemplate = (otp) => {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>OTP Verification - CorpInk</title>
+      <style>
+        body { margin: 0; padding: 0; background-color: #f4f4f7; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background-color: #1a1a2e; padding: 32px 40px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 24px; letter-spacing: 1px; }
+        .body-content { padding: 40px; }
+        .body-content h2 { color: #1a1a2e; font-size: 20px; margin-top: 0; }
+        .body-content p { color: #4a4a4a; font-size: 15px; line-height: 1.6; }
+        .otp-box { background-color: #f0f4ff; border: 3px solid #1a1a2e; border-radius: 12px; padding: 24px; margin: 28px 0; text-align: center; }
+        .otp-label { font-size: 13px; color: #4a4a4a; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px 0; }
+        .otp-code { font-size: 44px; font-weight: 800; color: #1a1a2e; letter-spacing: 12px; margin: 0; }
+        .warning-box { background-color: #fff8e1; border-left: 4px solid #f5a623; padding: 14px 18px; margin: 24px 0; border-radius: 4px; }
+        .warning-box p { margin: 0; color: #5a4e00; font-size: 14px; }
+        .footer { background-color: #f4f4f7; padding: 24px 40px; text-align: center; }
+        .footer p { color: #999999; font-size: 12px; margin: 4px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>CorpInk</h1>
+        </div>
+        <div class="body-content">
+          <h2>Verify Your Email</h2>
+          <p>Please use the verification code below to complete your request.</p>
+          <div class="otp-box">
+            <p class="otp-label">Your Verification Code</p>
+            <p class="otp-code">${otp}</p>
+          </div>
+          <div class="warning-box">
+            <p>⚠️ This code is valid for 10 minutes. Do not share it with anyone.</p>
+          </div>
+          <p>If you did not request this code, you can safely ignore this email.</p>
+        </div>
+        <div class="footer">
+          <p>This is an automated email from CorpInk. Please do not reply directly.</p>
+          <p>CorpInk &copy; ${new Date().getFullYear()}</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+};
