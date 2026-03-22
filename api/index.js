@@ -23,12 +23,15 @@ import { resendEmailBoiler } from './utils/resend-email-boiler.js'
 import { subscriptionPaymentSuccessfulEmailTemplate } from './utils/emailTemplates.js'
 import { handleRiseWebhook } from './controllers/rise-controller.js'
 import {corpInkRoutes} from './routes/corpink.route.js'
+import helmet from 'helmet'
 const prisma = new PrismaClient()
 dotenv.config()
 
 
 const app = express()
 dotenv.config()
+
+app.use(helmet())
 
 // IMPORTANT: Webhook route MUST be defined before CORS and any body parsing middleware
 // This ensures the raw request body is preserved for Stripe signature verification
