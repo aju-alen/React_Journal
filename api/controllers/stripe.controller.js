@@ -15,12 +15,7 @@ export const createCheckoutSession = async (req, res, next) => {
   let {articleId,checkoutStatus,userId,emailId,stripeLookupId} = req.body;
   console.log(req.body, 'req.body in api');
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
-  if (checkoutStatus === "publisharticle" ){
-    price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID
-  }
-  else if (checkoutStatus === "fullIssue"){
-    console.log('inside fullissue apicall');
-    
+  if (checkoutStatus === "publisharticle" || checkoutStatus === "fullIssue"){
     const prices = await Stripe.prices.list({
       lookup_keys: [stripeLookupId],
     });
