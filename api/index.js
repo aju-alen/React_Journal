@@ -121,11 +121,41 @@ app.post('/webhook',
     case 'checkout.session.completed':
       const checkoutSession = event.data.object;
       try{
-        const {userId, articleId } = checkoutSession.metadata;
+        const {userId, articleId, checkoutStatus } = checkoutSession.metadata || {};
 
-        if(checkoutSession.status === 'complete'){
+        if(checkoutSession.status !== 'complete'){
+          console.log('checkout session is not complete');
+          break;
+        }
+
+        if(checkoutStatus === 'publisharticle'){
+          let invoiceUrl = null;
+          if(checkoutSession.invoice){
+            try {
+              const invoice = await stripe.invoices.retrieve(checkoutSession.invoice);
+              invoiceUrl = invoice.hosted_invoice_url || null;
+              console.log("Invoice hosted URL:", invoiceUrl);
+            } catch (invoiceErr) {
+              console.log(invoiceErr, 'error retrieving invoice for manuscript payment');
+            }
+          }
+
+          await prisma.article.update({
+            where: { id: articleId },
+            data: {
+              paymentStatus: true,
+              paymentIntent: checkoutSession.payment_intent || null,
+              paymentAmount: checkoutSession.amount_total ?? null,
+              paymentCurrency: checkoutSession.currency || null,
+              paymentDate: checkoutSession.created
+                ? new Date(checkoutSession.created * 1000)
+                : new Date(),
+              invoiceUrl,
+            }
+          });
+        } else if(checkoutStatus === 'fullIssue'){
           const invoice = await stripe.invoices.retrieve(checkoutSession.invoice);
-      
+
           console.log("Invoice hosted URL:", invoice.hosted_invoice_url);
           await prisma.userFullIssue.create({
             data:{
@@ -137,10 +167,9 @@ app.post('/webhook',
               invoice_url:invoice.hosted_invoice_url,
             }
           })
-      }
-      else{
-        console.log('checkout session is not complete');
-      }
+        } else {
+          console.log('Unhandled checkoutStatus in webhook:', checkoutStatus);
+        }
       }
       catch(err){
         console.log(err, 'error in webhook');

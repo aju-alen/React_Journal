@@ -17,6 +17,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { useNavigate } from 'react-router-dom';
 import { axiosTokenHeader } from '../helperFunctions';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 
 
 const MyManuscriptsDashboard = ({ user }) => {
@@ -301,17 +302,45 @@ const MyManuscriptsDashboard = ({ user }) => {
                       </Button>
                     </Link>
                   ) : (
-                    <span style={{ 
-                      padding: '6px 12px', 
-                      borderRadius: '16px', 
-                      backgroundColor: '#e8f5e9',
-                      color: '#2e7d32',
-                      fontWeight: 'bold',
-                      fontSize: '0.85rem',
-                      display: 'inline-block'
-                    }}>
-                      Paid
-                    </span>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                      <span style={{ 
+                        padding: '6px 12px', 
+                        borderRadius: '16px', 
+                        backgroundColor: '#e8f5e9',
+                        color: '#2e7d32',
+                        fontWeight: 'bold',
+                        fontSize: '0.85rem',
+                        display: 'inline-block'
+                      }}>
+                        Paid
+                      </span>
+                      {row.invoiceUrl && (
+                        <Button
+                          variant="outlined"
+                          color="success"
+                          size="small"
+                          href={row.invoiceUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          startIcon={<ReceiptLongIcon sx={{ fontSize: 16 }} />}
+                          sx={{
+                            borderRadius: '8px',
+                            textTransform: 'none',
+                            fontWeight: 600,
+                            px: 1.5,
+                            minHeight: 32,
+                            borderColor: '#2e7d32',
+                            color: '#1b5e20',
+                            '&:hover': {
+                              backgroundColor: '#e8f5e9',
+                              borderColor: '#1b5e20',
+                            },
+                          }}
+                        >
+                          Invoice
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </TableCell>
 

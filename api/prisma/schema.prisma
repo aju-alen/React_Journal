@@ -93,6 +93,11 @@ model Article {
   articleIssue             Int
   articleVolume            Int
   paymentStatus             Boolean @default(false)
+  paymentIntent             String? @unique
+  paymentAmount             Int?
+  paymentCurrency           String?
+  paymentDate               DateTime?
+  invoiceUrl                String? @db.VarChar(1000)
   rejectionFilesURL         Json
   publicPdfName             String
   awsId                     String

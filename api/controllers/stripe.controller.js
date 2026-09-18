@@ -15,14 +15,25 @@ export const createCheckoutSession = async (req, res, next) => {
   let {articleId,checkoutStatus,userId,emailId,stripeLookupId} = req.body;
   console.log(req.body, 'req.body in api');
   console.log(checkoutStatus,articleId, 'checkoutStatus in api');
+  try{
   if (checkoutStatus === "publisharticle" || checkoutStatus === "fullIssue"){
     const prices = await Stripe.prices.list({
       lookup_keys: [stripeLookupId],
     });
 
      price = prices.data[0]?.id;
+     if (!price && checkoutStatus === "publisharticle") {
+       price = process.env.STRIPE_PUBLISH_ARTICLE_PRICEID;
+     }
+     if (!price && checkoutStatus === "fullIssue") {
+       price = process.env.STRIPE_FULL_ISSUE_PRICEID;
+     }
   }
-  try{
+    if (!price) {
+      return res.status(400).send({
+        error: `No Stripe price found for lookup key ${stripeLookupId || '(missing)'}`
+      });
+    }
     console.log(price, 'price in stripe');
     const session = await Stripe.checkout.sessions.create({
       ui_mode: 'embedded',
