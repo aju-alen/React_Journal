@@ -5,112 +5,131 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import { httpRoute } from '../helperFunctions';
 import CircularProgress from '@mui/material/CircularProgress';
-import { useNavigate } from 'react-router-dom';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import FormSection from './dashboard/FormSection';
+
 const CreateNewJournal = () => {
-    const navigate = useNavigate();
     const [formJournalData, setFormJournalData] = useState({
-        journalTitle: "",
-        journalImageURL: "",
-        journalAbbreviation: "",
-        journalLanguage: "",
-        journalDescription: "",
-        journalISSN: "",
-        journalDOI: "",
-        journalStartYear: "",
-        journalStartMonth: "",
-        journalPublishedArticles: "",
-    })
+        journalTitle: '',
+        journalImageURL: '',
+        journalAbbreviation: '',
+        journalLanguage: '',
+        journalDescription: '',
+        journalISSN: '',
+        journalDOI: '',
+        journalStartYear: '',
+        journalStartMonth: '',
+        journalPublishedArticles: '',
+    });
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [alertStatus, setAlertStatus] = useState('success');
+    const [alertText, setAlertText] = useState('');
 
     const handleFormData = (e) => {
         const { name, value } = e.target;
         setFormJournalData({
             ...formJournalData,
-            [name]: value
-        })
-    }
+            [name]: value,
+        });
+    };
 
     const handleSubmitJournal = async () => {
         try {
             setLoading(true);
-            await axios.post(`${httpRoute}/api/journal/create`, formJournalData)
+            await axios.post(`${httpRoute}/api/journal/create`, formJournalData);
+            setAlertStatus('success');
+            setAlertText('Journal created successfully');
+            setOpen(true);
+            setFormJournalData({
+                journalTitle: '',
+                journalImageURL: '',
+                journalAbbreviation: '',
+                journalLanguage: '',
+                journalDescription: '',
+                journalISSN: '',
+                journalDOI: '',
+                journalStartYear: '',
+                journalStartMonth: '',
+                journalPublishedArticles: '',
+            });
+        } catch (err) {
+            console.error(err);
+            setAlertStatus('error');
+            setAlertText('Error creating journal. Please try again.');
+            setOpen(true);
+        } finally {
             setLoading(false);
-            alert('Journal created successfully!');
-            navigate('/journal/publications');
         }
-        catch (err) {
-            console.log(err);
-            setLoading(false);
-            alert('Error creating journal. Please try again.');
-        }
-    }
+    };
 
-    console.log(formJournalData, 'form data');
+    const fields = [
+        { name: 'journalTitle', label: 'Journal title', placeholder: 'Title' },
+        { name: 'journalAbbreviation', label: 'Abbreviation', placeholder: 'e.g. EIJER' },
+        { name: 'journalLanguage', label: 'Language' },
+        {
+            name: 'journalDescription',
+            label: 'Description',
+            multiline: true,
+            rows: 4,
+        },
+        { name: 'journalISSN', label: 'ISSN' },
+        { name: 'journalDOI', label: 'DOI' },
+        { name: 'journalStartYear', label: 'Start year', placeholder: 'e.g. 2024' },
+        {
+            name: 'journalStartMonth',
+            label: 'Start month',
+            placeholder: 'Month number, e.g. 1 for January',
+        },
+    ];
+
     return (
-        <Box
-            component="form"
-            className='flex flex-col justify-between p-4'
-            noValidate
-            autoComplete="off"
-
+        <FormSection
+            title="Create new journal"
+            subtitle="Add a journal category for submissions and publishing."
         >
-            <TextField id="outlined-basic" label="Journal Title" variant="outlined"
-                name='journalTitle'
-                value={formJournalData.journalTitle}
-                placeholder='Title'
-                onChange={handleFormData}
-            />
-
-            <TextField id="outlined-basic" label="Journal Abbreviation" variant="outlined"
-                name='journalAbbreviation'
-                value={formJournalData.journalAbbreviation}
-                placeholder='eg: EIJER'
-                onChange={handleFormData}
-            />
-
-            <TextField id="outlined-basic" label="Journal Language" variant="outlined"
-                name='journalLanguage'
-                value={formJournalData.journalLanguage}
-                onChange={handleFormData}
-            />
-
-            <TextField id="outlined-basic" label="Journal Description" variant="outlined"
-                name='journalDescription'
-                value={formJournalData.journalDescription}
-                onChange={handleFormData}
-                multiline
-                rows={4}
-            />
-
-            <TextField id="outlined-basic" label="Journal ISSN" variant="outlined"
-                name='journalISSN'
-                value={formJournalData.journalISSN}
-                onChange={handleFormData}
-            />
-
-            <TextField id="outlined-basic" label="Journal DOI" variant="outlined"
-                name='journalDOI'
-                value={formJournalData.journalDOI}
-                onChange={handleFormData}
-            />
-
-            <TextField id="outlined-basic" label="Journal Start Year" variant="outlined"
-                name='journalStartYear'
-                value={formJournalData.journalStartYear}
-                onChange={handleFormData}
-                placeholder='eg: 2024'
-            />
-
-            <TextField id="outlined-basic" label="Journal Start Month" variant="outlined"
-                name='journalStartMonth'
-                value={formJournalData.journalStartMonth}
-                onChange={handleFormData}
-                placeholder='Number of month eg: 1 for January'
-            />
-            <Button variant="contained" onClick={handleSubmitJournal} disabled={loading}>Create new Journal {loading && <CircularProgress size={20} />}</Button>
-        </Box>
-
+            <Box
+                component="form"
+                sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
+                noValidate
+                autoComplete="off"
+            >
+                {fields.map((field) => (
+                    <TextField
+                        key={field.name}
+                        fullWidth
+                        label={field.label}
+                        name={field.name}
+                        value={formJournalData[field.name]}
+                        placeholder={field.placeholder}
+                        onChange={handleFormData}
+                        multiline={field.multiline}
+                        rows={field.rows}
+                    />
+                ))}
+                <Button
+                    variant="contained"
+                    onClick={handleSubmitJournal}
+                    disabled={loading}
+                    sx={{ alignSelf: 'flex-start' }}
+                    startIcon={loading ? <CircularProgress size={18} color="inherit" /> : null}
+                >
+                    {loading ? 'Creating…' : 'Create journal'}
+                </Button>
+            </Box>
+            <Snackbar open={open} autoHideDuration={6000} onClose={() => setOpen(false)}>
+                <Alert
+                    onClose={() => setOpen(false)}
+                    severity={alertStatus}
+                    variant="filled"
+                    sx={{ width: '100%' }}
+                >
+                    {alertText}
+                </Alert>
+            </Snackbar>
+        </FormSection>
     );
-}
+};
 
-export default CreateNewJournal
+export default CreateNewJournal;

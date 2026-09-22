@@ -10,95 +10,104 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ReceiptIcon from '@mui/icons-material/Receipt';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { dashboardColors } from '../utils/theme';
 
 const StripeManageSubscription = () => {
-  const billingPortalUrl = 'https://billing.stripe.com/p/login/28E8wPgxx6UNcE38LX14400';
+  const billingPortalUrl =
+    'https://billing.stripe.com/p/login/28E8wPgxx6UNcE38LX14400';
+
+  const features = [
+    {
+      icon: <PaymentIcon sx={{ color: dashboardColors.ink, mr: 2, mt: 0.5 }} />,
+      title: 'Update payment methods',
+      body: 'Add, remove, or update your payment methods securely',
+    },
+    {
+      icon: <ReceiptIcon sx={{ color: dashboardColors.ink, mr: 2, mt: 0.5 }} />,
+      title: 'View billing history',
+      body: 'Access all your past invoices and payment receipts',
+    },
+    {
+      icon: <CancelIcon sx={{ color: dashboardColors.ink, mr: 2, mt: 0.5 }} />,
+      title: 'Cancel subscription',
+      body: 'Cancel at any time — access continues until the end of your billing period',
+    },
+    {
+      icon: (
+        <SubscriptionIcon sx={{ color: dashboardColors.ink, mr: 2, mt: 0.5 }} />
+      ),
+      title: 'Manage subscription',
+      body: 'Change your plan or update subscription settings',
+    },
+  ];
 
   return (
-    <Box sx={{ width: '100%', p: { xs: 2, md: 4 } }}>
-      {/* Subscription Management Section */}
-      <Card elevation={3} sx={{ mb: 4, background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
+    <Box sx={{ width: '100%', maxWidth: 640 }}>
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 2 }}
+      >
+        Manage subscription
+      </Typography>
+      <Card
+        elevation={0}
+        sx={{
+          border: `1px solid ${dashboardColors.peach}`,
+          backgroundColor: dashboardColors.paper,
+        }}
+      >
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-            <SubscriptionIcon sx={{ fontSize: 40, color: 'primary.main', mr: 2 }} />
-            <Typography variant="h4" component="h2" sx={{ fontWeight: 600, color: '#1a202c' }}>
-              Manage Your Subscription
-            </Typography>
-          </Box>
-          
-          <Typography variant="body1" sx={{ mb: 3, color: '#4a5568', lineHeight: 1.8 }}>
-            The Subscription Management portal allows you to take full control of your subscription. 
-            You can view your subscription details, manage payment methods, update billing information, 
-            and cancel your subscription if needed.
-          </Typography>
-
-          <Box sx={{ mb: 3 }}>
-            <Typography variant="h6" sx={{ fontWeight: 600, mb: 2, color: '#2d3748' }}>
-              What you can do:
-            </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                <PaymentIcon sx={{ color: 'primary.main', mr: 2, mt: 0.5 }} />
-                <Typography variant="body2" sx={{ color: '#4a5568' }}>
-                  <strong>Update Payment Methods:</strong> Add, remove, or update your payment methods securely
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                <ReceiptIcon sx={{ color: 'primary.main', mr: 2, mt: 0.5 }} />
-                <Typography variant="body2" sx={{ color: '#4a5568' }}>
-                  <strong>View Billing History:</strong> Access all your past invoices and payment receipts
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                <CancelIcon sx={{ color: 'primary.main', mr: 2, mt: 0.5 }} />
-                <Typography variant="body2" sx={{ color: '#4a5568' }}>
-                  <strong>Cancel Subscription:</strong> Cancel your subscription at any time (access continues until the end of your billing period)
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'flex-start' }}>
-                <SubscriptionIcon sx={{ color: 'primary.main', mr: 2, mt: 0.5 }} />
-                <Typography variant="body2" sx={{ color: '#4a5568' }}>
-                  <strong>Manage Subscription:</strong> Change your subscription plan or update subscription settings
-                </Typography>
-              </Box>
-            </Box>
-          </Box>
-
-          <CardActions sx={{ justifyContent: 'center', pt: 2 }}>
-            <Button
-              variant="contained"
-              size="large"
-              href={billingPortalUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              endIcon={<OpenInNewIcon />}
-              sx={{
-                px: 4,
-                py: 1.5,
-                fontSize: '1.1rem',
-                fontWeight: 600,
-                textTransform: 'none',
-                borderRadius: 2,
-                boxShadow: 3,
-                '&:hover': {
-                  boxShadow: 6,
-                  transform: 'translateY(-2px)',
-                  transition: 'all 0.3s ease'
-                }
-              }}
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <SubscriptionIcon
+              sx={{ fontSize: 36, color: dashboardColors.ink, mr: 1.5 }}
+            />
+            <Typography
+              variant="h6"
+              component="h3"
+              sx={{ fontWeight: 600, color: dashboardColors.ink }}
             >
-              Open Subscription Portal
-            </Button>
-          </CardActions>
+              Subscription portal
+            </Typography>
+          </Box>
 
-          <Typography variant="caption" sx={{ display: 'block', textAlign: 'center', mt: 2, color: '#718096' }}>
-            You will be redirected to Stripe's secure billing portal to manage your subscription
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
+            Take control of your subscription: payment methods, invoices, plan
+            changes, and cancellation — all in Stripe&apos;s secure billing portal.
           </Typography>
+
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
+            {features.map((f) => (
+              <Box key={f.title} sx={{ display: 'flex', alignItems: 'flex-start' }}>
+                {f.icon}
+                <Typography variant="body2" color="text.secondary">
+                  <strong style={{ color: dashboardColors.ink }}>{f.title}:</strong>{' '}
+                  {f.body}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
         </CardContent>
+        <CardActions sx={{ justifyContent: 'flex-start', px: 2, pb: 3 }}>
+          <Button
+            variant="contained"
+            href={billingPortalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            endIcon={<OpenInNewIcon />}
+          >
+            Open subscription portal
+          </Button>
+        </CardActions>
+        <Typography
+          variant="caption"
+          sx={{ display: 'block', px: 2, pb: 2, color: 'text.secondary' }}
+        >
+          You will be redirected to Stripe&apos;s secure billing portal.
+        </Typography>
       </Card>
     </Box>
   );
-}
+};
 
 export default StripeManageSubscription;
-

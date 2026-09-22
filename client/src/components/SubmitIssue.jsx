@@ -3,15 +3,23 @@ import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { InputLabel, MenuItem, Select } from '@mui/material'
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Snackbar,
+  Alert,
+} from '@mui/material';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import PublishIcon from '@mui/icons-material/Publish';
+import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import { httpRoute } from '../helperFunctions';
-
+import FormSection from './dashboard/FormSection';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -28,6 +36,10 @@ const VisuallyHiddenInput = styled('input')({
 export default function SubmitIssue() {
   const [files, setFiles] = useState([]);
   const [journalCategory, setJournalCategory] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [alertStatus, setAlertStatus] = useState('success');
+  const [alertText, setAlertText] = useState('');
   const [formData, setFormData] = useState({
     issueVolume: '',
     journalId: '',
@@ -38,160 +50,190 @@ export default function SubmitIssue() {
   });
 
   const handleChange = (event) => {
-    const { name, value } = event.target
-    console.log(name, value, 'name and value');
+    const { name, value } = event.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const handleChangeIssue = (event) => {
-    setFiles(prev => [...prev, event.target.files]);
-  }
+    setFiles((prev) => [...prev, event.target.files]);
+  };
 
   const handleFormChange = (event) => {
     setFormData({
       ...formData,
-      [event.target.name]: event.target.value
-    })
-  }
+      [event.target.name]: event.target.value,
+    });
+  };
 
   const handleSubmit = async () => {
-    console.log(files);
     try {
+      setLoading(true);
       const awsId = uuidv4();
       const fileData = new FormData();
-      console.log(files, 'finalfiles');
       for (const file of files) {
-        console.log(file[0], 'file in submit');
-        fileData.append('s3FullIssue', file[0])
-        console.log(fileData, 'file data inside');
+        fileData.append('s3FullIssue', file[0]);
       }
-      console.log(fileData, 'file data');
-      const fileResp = await axios.post(`${httpRoute}/api/s3/fullIssue/${awsId}`, fileData)
-      console.log(fileResp, 'file response');
-      const getUrlFromAWS = await axios.get(`${httpRoute}/api/s3/fullIssue/get/${awsId}`)
-      console.log(getUrlFromAWS, 'file get data');
-      const filesUrl = getUrlFromAWS.data.files
+      await axios.post(`${httpRoute}/api/s3/fullIssue/${awsId}`, fileData);
+      const getUrlFromAWS = await axios.get(
+        `${httpRoute}/api/s3/fullIssue/get/${awsId}`
+      );
+      const filesUrl = getUrlFromAWS.data.files;
 
       let issueDoccumentURL;
       let issueImageURL;
 
-      filesUrl.forEach(url => {
+      filesUrl.forEach((url) => {
         if (url.includes('.pdf')) {
           issueDoccumentURL = url;
         } else {
           issueImageURL = url;
         }
       });
-      const mergeForm = Object.assign({}, formData, { issueDoccumentURL, issueImageURL })
-      console.log(mergeForm, 'merge form');
-      const resp = await axios.post(`${httpRoute}/api/fullIssue/create`, mergeForm)
-      console.log(resp, 'response');
+      const mergeForm = Object.assign({}, formData, {
+        issueDoccumentURL,
+        issueImageURL,
+      });
+      await axios.post(`${httpRoute}/api/fullIssue/create`, mergeForm);
+      setAlertStatus('success');
+      setAlertText('Full issue uploaded successfully');
+      setOpen(true);
+      setFiles([]);
+    } catch (err) {
+      console.error(err);
+      setAlertStatus('error');
+      setAlertText('Failed to upload full issue. Please try again.');
+      setOpen(true);
+    } finally {
+      setLoading(false);
     }
-    catch (err) {
-      console.log(err);
-    }
-  }
+  };
 
   useEffect(() => {
     const getJournalCategory = async () => {
-      const resp = await axios.get(`${httpRoute}/api/journal/categories`)
-      setJournalCategory(resp.data)
-    }
+      const resp = await axios.get(`${httpRoute}/api/journal/categories`);
+      setJournalCategory(resp.data);
+    };
     getJournalCategory();
-  }, [])
-  console.log(formData, 'formdata');
+  }, []);
 
   return (
-    <div className="">
+    <FormSection
+      title="Submit issue"
+      subtitle="Upload and publish a full journal issue."
+      maxWidth={560}
+    >
       <Box
         component="form"
-        sx={{
-          '& > :not(style)': { m: 1, width: '25ch' },
-        }}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
         noValidate
         autoComplete="off"
       >
-        <InputLabel id="demo-simple-select-label">Select A Journal</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={formData.journalId}
-          name='journalId'
-          label="Select A Journal"
-          onChange={handleChange}
-        >
-          {journalCategory.map(data => (
-            <MenuItem key={data.id} value={data.id}>{data.journalTitle}</MenuItem>
-          ))}
-        </Select>
+        <FormControl fullWidth>
+          <InputLabel id="journal-select-label">Select a journal</InputLabel>
+          <Select
+            labelId="journal-select-label"
+            value={formData.journalId}
+            name="journalId"
+            label="Select a journal"
+            onChange={handleChange}
+          >
+            {journalCategory.map((data) => (
+              <MenuItem key={data.id} value={data.id}>
+                {data.journalTitle}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
         <TextField
-          id="outlined-basic"
-          type='number'
+          fullWidth
+          type="number"
           value={formData.issueVolume}
-          name='issueVolume'
-          label="Issue Volume"
-          variant="outlined"
-          onChange={handleFormChange} />
+          name="issueVolume"
+          label="Issue volume"
+          onChange={handleFormChange}
+        />
         <TextField
-          id="outlined-basic"
-          type='number'
+          fullWidth
+          type="number"
           value={formData.issueNumber}
-          name='issueNumber'
-          label="Issue Number"
-          variant="outlined"
-          onChange={handleFormChange} />
+          name="issueNumber"
+          label="Issue number"
+          onChange={handleFormChange}
+        />
         <TextField
-          id="outlined-basic"
-          type='number'
+          fullWidth
+          type="number"
           value={formData.issuePrice}
-          name='issuePrice'
-          label="Issue Price"
-          variant="outlined"
-          onChange={handleFormChange} />
-
+          name="issuePrice"
+          label="Issue price"
+          onChange={handleFormChange}
+        />
         <TextField
-          id="outlined-basic"
+          fullWidth
           value={formData.stripeName}
-          name='stripeName'
-          label="Product Name"
-          variant="outlined"
-          onChange={handleFormChange} />
-
+          name="stripeName"
+          label="Product name"
+          onChange={handleFormChange}
+        />
         <TextField
-          id="outlined-basic"
+          fullWidth
           value={formData.stripeDescription}
-          name='stripeDescription'
+          name="stripeDescription"
           label="Description"
-          variant="outlined"
-          onChange={handleFormChange} />
+          onChange={handleFormChange}
+        />
 
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+          <Button
+            component="label"
+            variant="outlined"
+            startIcon={<CloudUploadIcon />}
+          >
+            Upload document
+            <VisuallyHiddenInput type="file" onChange={handleChangeIssue} />
+          </Button>
+          <Button
+            component="label"
+            variant="outlined"
+            startIcon={<InsertPhotoIcon />}
+          >
+            Upload image
+            <VisuallyHiddenInput type="file" onChange={handleChangeIssue} />
+          </Button>
+        </Stack>
+        {files.length > 0 && (
+          <Box sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+            {files.length} file{files.length === 1 ? '' : 's'} selected
+          </Box>
+        )}
+
+        <Button
+          variant="contained"
+          startIcon={
+            loading ? (
+              <CircularProgress size={18} color="inherit" />
+            ) : (
+              <PublishIcon />
+            )
+          }
+          onClick={handleSubmit}
+          disabled={loading}
+          sx={{ alignSelf: 'flex-start' }}
+        >
+          {loading ? 'Uploading…' : 'Upload full issue'}
+        </Button>
       </Box>
-      <Button
-        component="label"
-        role={undefined}
-        variant="contained"
-        tabIndex={-1}
-        startIcon={<CloudUploadIcon />}
-        onChange={handleChangeIssue}
-      >
-        Upload Doccument
-        <VisuallyHiddenInput type="file" />
-      </Button>
-      <Button
-        component="label"
-        role={undefined}
-        variant="contained"
-        tabIndex={-1}
-        startIcon={<InsertPhotoIcon />}
-        onChange={handleChangeIssue}
-      >
-        Upload Image
-        <VisuallyHiddenInput type="file" />
-      </Button>
 
-      <Stack spacing={2} direction="row" className='p-10' >
-        <Button variant="contained" startIcon={<PublishIcon />} onClick={handleSubmit}>Upload Full Issue</Button>
-      </Stack>
-    </div>
+      <Snackbar open={open} autoHideDuration={6000} onClose={() => setOpen(false)}>
+        <Alert
+          onClose={() => setOpen(false)}
+          severity={alertStatus}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alertText}
+        </Alert>
+      </Snackbar>
+    </FormSection>
   );
 }

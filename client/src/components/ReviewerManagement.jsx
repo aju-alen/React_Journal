@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Button,
-  Chip,
   Snackbar,
   Alert,
-  CircularProgress,
   Box,
-  Typography
+  Typography,
 } from '@mui/material';
 import { axiosTokenHeader, httpRoute } from '../helperFunctions';
+import DashboardTable from './dashboard/DashboardTable';
+import StatusChip from './dashboard/StatusChip';
+import { dashboardColors } from '../utils/theme';
 
 const ReviewerManagement = () => {
   const [reviewers, setReviewers] = useState([]);
@@ -35,11 +33,11 @@ const ReviewerManagement = () => {
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
       const res = await axios.get(`${httpRoute}/api/reviewer/all`);
       setReviewers(res.data);
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching reviewers:', err);
-      setLoading(false);
       showAlert('Error fetching reviewers', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,146 +71,125 @@ const ReviewerManagement = () => {
     setAlertOpen(true);
   };
 
-  const handleCloseAlert = () => {
-    setAlertOpen(false);
-  };
-
-  const getStatusChip = (approved) => {
-    if (approved) {
-      return <Chip label="Approved" color="success" size="small" />;
-    } else {
-      return <Chip label="Pending" color="warning" size="small" />;
-    }
-  };
-
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    if (!dateString) return '—';
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (reviewers.length === 0) {
-    return (
-      <Box p={3}>
-        <Typography variant="h6" gutterBottom>
-          Reviewer Management
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          No reviewers found.
-        </Typography>
-      </Box>
-    );
-  }
-
   return (
     <Box>
-      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-        Reviewer Management
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 2 }}
+      >
+        Reviewer management
       </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="reviewer management table">
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>Name</strong></TableCell>
-              <TableCell><strong>Email</strong></TableCell>
-              <TableCell><strong>Title</strong></TableCell>
-              <TableCell><strong>Affiliation</strong></TableCell>
-              <TableCell align="center"><strong>Status</strong></TableCell>
-              <TableCell align="center"><strong>CV</strong></TableCell>
-              <TableCell align="center"><strong>Registration Date</strong></TableCell>
-              <TableCell align="center"><strong>Actions</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reviewers.map((reviewer) => (
-              <TableRow key={reviewer.id} hover>
-                <TableCell>
-                  {reviewer.title} {reviewer.surname} {reviewer.otherName}
-                </TableCell>
-                <TableCell>{reviewer.email}</TableCell>
-                <TableCell>{reviewer.title || 'N/A'}</TableCell>
-                <TableCell>{reviewer.affiliation || 'N/A'}</TableCell>
-                <TableCell align="center">
-                  {getStatusChip(reviewer.reviewerApproved)}
-                </TableCell>
-                <TableCell align="center">
-                  {reviewer.cvUrl ? (
+
+      <DashboardTable
+        loading={loading}
+        empty={!loading && reviewers.length === 0}
+        emptyTitle="No reviewers found"
+        emptyHint="Registered reviewer applications will appear here."
+        ariaLabel="reviewer management"
+        minWidth={800}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Title</TableCell>
+            <TableCell>Affiliation</TableCell>
+            <TableCell align="center">Status</TableCell>
+            <TableCell align="center">CV</TableCell>
+            <TableCell align="center">Registered</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {reviewers.map((reviewer) => (
+            <TableRow key={reviewer.id}>
+              <TableCell sx={{ fontWeight: 500 }}>
+                {reviewer.title} {reviewer.surname} {reviewer.otherName}
+              </TableCell>
+              <TableCell>{reviewer.email}</TableCell>
+              <TableCell>{reviewer.title || '—'}</TableCell>
+              <TableCell>{reviewer.affiliation || '—'}</TableCell>
+              <TableCell align="center">
+                {reviewer.reviewerApproved ? (
+                  <StatusChip status="accepted" label="Approved" />
+                ) : (
+                  <StatusChip status="pending" />
+                )}
+              </TableCell>
+              <TableCell align="center">
+                {reviewer.cvUrl ? (
+                  <Button
+                    variant="outlined"
+                    size="small"
+                    href={reviewer.cvUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View CV
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    No CV
+                  </Typography>
+                )}
+              </TableCell>
+              <TableCell align="center" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+                {formatDate(reviewer.createdAt)}
+              </TableCell>
+              <TableCell align="center">
+                {!reviewer.reviewerApproved ? (
+                  <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
                     <Button
-                      variant="outlined"
+                      variant="contained"
+                      color="success"
                       size="small"
-                      href={reviewer.cvUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      onClick={() => handleApprove(reviewer.id)}
                     >
-                      View CV
+                      Approve
                     </Button>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      No CV
-                    </Typography>
-                  )}
-                </TableCell>
-                <TableCell align="center">
-                  {formatDate(reviewer.createdAt)}
-                </TableCell>
-                <TableCell align="center">
-                  {!reviewer.reviewerApproved ? (
-                    <>
-                      <Button
-                        variant="contained"
-                        color="success"
-                        size="small"
-                        onClick={() => handleApprove(reviewer.id)}
-                        sx={{ mr: 1 }}
-                      >
-                        Approve
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        size="small"
-                        onClick={() => handleReject(reviewer.id)}
-                      >
-                        Reject
-                      </Button>
-                    </>
-                  ) : (
                     <Button
                       variant="outlined"
                       color="error"
                       size="small"
                       onClick={() => handleReject(reviewer.id)}
                     >
-                      Revoke
+                      Reject
                     </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  </Box>
+                ) : (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={() => handleReject(reviewer.id)}
+                  >
+                    Revoke
+                  </Button>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </DashboardTable>
 
       <Snackbar
         open={alertOpen}
         autoHideDuration={6000}
-        onClose={handleCloseAlert}
+        onClose={() => setAlertOpen(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Alert
-          onClose={handleCloseAlert}
+          onClose={() => setAlertOpen(false)}
           severity={alertSeverity}
           variant="filled"
           sx={{ width: '100%' }}
@@ -225,4 +202,3 @@ const ReviewerManagement = () => {
 };
 
 export default ReviewerManagement;
-

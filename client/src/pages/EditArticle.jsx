@@ -1,200 +1,331 @@
-import React, { useEffect, useState,useRef } from 'react'
-import { useParams } from 'react-router-dom'
-import ImageHeader from '../components/ImageHeader'
+import React, { useEffect, useState, useRef } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
 import TextField from '@mui/material/TextField'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
-import styled from '@mui/system/styled'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import { styled } from '@mui/material/styles'
 import Button from '@mui/material/Button'
-import { useNavigate } from 'react-router-dom'
 import Box from '@mui/material/Box'
-import FormControl from '@mui/material/FormControl'
-
-import { axiosTokenHeader } from '../helperFunctions'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+import CircularProgress from '@mui/material/CircularProgress'
+import Skeleton from '@mui/material/Skeleton'
+import Snackbar from '@mui/material/Snackbar'
+import Alert from '@mui/material/Alert'
+import Chip from '@mui/material/Chip'
+import { axiosTokenHeader, httpRoute } from '../helperFunctions'
 import axios from 'axios'
-import { httpRoute } from '../helperFunctions'
-const EditArticle = () => {
-    const navigate = useNavigate()
-    const { articleId, userId } = useParams()
-    const [articleData, setArticleData] = useState([])
-    const [files, setFiles] = useState([]);
-    const [formData, setFormData] = useState({
-        articleTitle: '',
-        articleAbstract: '',
-        articleKeywords: '',
-    })
-    const handleChange = (e) => {
-        setFormData((prev) => {
-            console.log(e.target.name, e.target.value);
-            return {
-                ...prev,
-                [e.target.name]: e.target.value,
-            }
-        })
-    }
-    const publicPdfName = useRef('');
-    const handleFileChange = (event,id) => {
-        console.log(event);
-      
-        const duplicate = files.filter(file => file.id !== id)
-        setFiles([...duplicate,{id,file:event.target.files[0]}])
-
-       
-        if(id === 1 ){
-            publicPdfName.current = event.target.files[0].name
-        }
-    };
-    useEffect(() => {
-        const fetchEditableArticle = async () => {
-            axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-            const res = await axios.get(`${httpRoute}/api/journalArticle/singleArticle/${articleId}`)
-
-            setArticleData(res.data)
-            console.log(res.data, 'res.data[0]');
-            setFormData({
-                articleTitle: res.data.articleTitle,
-                articleAbstract: res.data.articleAbstract,
-                articleKeywords: res.data.articleKeywords,
-            })
-
-        }
-        fetchEditableArticle()
-    }, [])
-    const handleSubmit = async () => {
-        if (files.length < 1) {
-            console.log('Please add minimum of one file to submit')
-            return
-        }
-        try {
-            const fileData = new FormData();
-            for (const file of files) {
-                console.log(file, 'file');
-                fileData.append('s3Files', file.file)
-                console.log(fileData, 'file data');
-            }
-            console.log(fileData, 'file data');
-
-            const fileResp = await axios.post(`${httpRoute}/api/s3/upload/${articleData.awsId}`, fileData)
-            console.log(fileResp, 'file response');
-
-            const fileGet = await axios.get(`${httpRoute}/api/s3/${articleData.awsId}`)
-            console.log(fileGet, 'file get data');
-
-            const filesUrl = fileGet.data.files
-
-            const mergeForm = Object.assign({}, formData, { filesUrl },{publicPdfName:publicPdfName.current})
-            console.log(mergeForm, 'final form data');
-            const resp = await axios.post(`${httpRoute}/api/journalArticle/updateArticle/${articleId}`, mergeForm)
-            console.log(userId, 'userId');
-            navigate(`/dashboard/${userId}?tab=0`)
-        }
-        catch (err) {
-            console.log(err);
-        }
-
-    }
-    console.log(formData, 'formData');
-    console.log(files, 'files');
-    console.log(articleData, 'articleData');
-    return (
-        <div className="h-auto w-auto bg-slate-200 ">
-            <ImageHeader />
-            <h2 className='h2-class' >EditArticle Your Article</h2 >
-            <div>
-                <Box sx={{ minWidth: 300 }}>
-                    <FormControl fullwidth>
-                        
-
-                            <TextField sx={{ mb: 4 }}
-                                id="outlined-basic"
-                                label="Edit Your Article Title"
-                                value={formData.articleTitle}
-                                name='articleTitle'
-                                onChange={handleChange}
-                            />
-                        <TextField sx={{ mb: 4 }}
-                            id="outlined-textarea"
-                            label="Edit Your Article Abstract"
-                            value={formData.articleAbstract}
-                            name='articleAbstract'
-                            onChange={handleChange}
-                            multiline
-                        />
-                        <TextField sx={{ mb: 4 }}
-                            id="outlined-controlled"
-                            label="Edit Your Article Keywords"
-                            value={formData.articleKeywords}
-                            name='articleKeywords'
-                            onChange={handleChange}
-                        />
-
-<div className=" flex flex-col md:flex-row md:justify-center md:items-center">
-<div className=" mx-2 ">
-                        <Button sx={{ mb: 4}} 
-                        fullwidth
-                            component="label"
-                            role={undefined}
-                            variant="contained"
-                            tabIndex={-1}
-                            accept=".pdf,.doc,.docx"
-                            onChange={(event)=>handleFileChange(event,0)}
-                            startIcon={<CloudUploadIcon />}
-                        >
-                            Cover Letter
-                            <VisuallyHiddenInput type="file" />
-                        </Button>
-                        </div>
-
-                        <div className=" mx-2 ">
-                        <Button sx={{ mb: 4 }}
-                        fullwidth
-                            component="label"
-                            role={undefined}
-                            variant="contained"
-                            tabIndex={-1}
-                            accept=".pdf,.doc,.docx"
-                            onChange={(event)=>handleFileChange(event,1)}
-                            startIcon={<CloudUploadIcon />}
-                        >
-                            Manuscript File
-                            <VisuallyHiddenInput type="file" />
-                        </Button>
-                        </div>
-                        <div className=" mx-2">
-                        <Button sx={{ mb: 4 }}
-                        fullwidth
-                            component="label"
-                            role={undefined}
-                            variant="contained"
-                            tabIndex={-1}
-                            accept=".pdf,.doc,.docx"
-                            onChange={(event)=>handleFileChange(event,2)}
-                            startIcon={<CloudUploadIcon />}
-                        >
-                            Supplementary File
-                            <VisuallyHiddenInput type="file" />
-                        </Button>
-                        </div>
-
-                        </div>
-                        <Button variant='contained' onClick={handleSubmit} sx={{m:3}}>Submit Manuscript For Verification</Button>
-                    </FormControl>
-                </Box>
-            </div>
-
-        </div>
-    )
-}
+import FormSection from '../components/dashboard/FormSection'
+import { dashboardColors } from '../utils/theme'
 
 const VisuallyHiddenInput = styled('input')({
-    clip: 'rect(0 0 0 0)',
-    clipPath: 'inset(50%)',
-    height: 1,
-    overflow: 'hidden',
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    whiteSpace: 'nowrap',
-    width: 1,
-});
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+})
 
-export default EditArticle 
+const FILE_SLOTS = [
+  { id: 0, label: 'Cover letter', required: false },
+  { id: 1, label: 'Manuscript file', required: true },
+  { id: 2, label: 'Supplementary file', required: false },
+]
+
+const MANUSCRIPT_SLOT_ID = 1
+
+const EditArticle = () => {
+  const navigate = useNavigate()
+  const { articleId, userId } = useParams()
+  const [articleData, setArticleData] = useState(null)
+  const [files, setFiles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [submitting, setSubmitting] = useState(false)
+  const [snackOpen, setSnackOpen] = useState(false)
+  const [alertStatus, setAlertStatus] = useState('success')
+  const [alertText, setAlertText] = useState('')
+  const [formData, setFormData] = useState({
+    articleTitle: '',
+    articleAbstract: '',
+    articleKeywords: '',
+  })
+  const publicPdfName = useRef('')
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleFileChange = (event, id) => {
+    const selected = event.target.files?.[0]
+    if (!selected) return
+    setFiles((prev) => {
+      const without = prev.filter((file) => file.id !== id)
+      return [...without, { id, file: selected }]
+    })
+    if (id === 1) {
+      publicPdfName.current = selected.name
+    }
+  }
+
+  const getFileName = (id) => files.find((f) => f.id === id)?.file?.name
+  const hasManuscript = Boolean(getFileName(MANUSCRIPT_SLOT_ID))
+
+  useEffect(() => {
+    const fetchEditableArticle = async () => {
+      try {
+        setLoading(true)
+        axios.defaults.headers.common['Authorization'] = axiosTokenHeader()
+        const res = await axios.get(
+          `${httpRoute}/api/journalArticle/singleArticle/${articleId}`
+        )
+        setArticleData(res.data)
+        setFormData({
+          articleTitle: res.data.articleTitle || '',
+          articleAbstract: res.data.articleAbstract || '',
+          articleKeywords: res.data.articleKeywords || '',
+        })
+      } catch (err) {
+        console.error(err)
+        setAlertStatus('error')
+        setAlertText('Could not load this article. Please try again.')
+        setSnackOpen(true)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchEditableArticle()
+  }, [articleId])
+
+  const showAlert = (status, text) => {
+    setAlertStatus(status)
+    setAlertText(text)
+    setSnackOpen(true)
+  }
+
+  const handleSubmit = async () => {
+    if (!hasManuscript) {
+      showAlert(
+        'error',
+        'A manuscript file is required before you can submit for verification.'
+      )
+      return
+    }
+    try {
+      setSubmitting(true)
+      const fileData = new FormData()
+      for (const file of files) {
+        fileData.append('s3Files', file.file)
+      }
+
+      await axios.post(`${httpRoute}/api/s3/upload/${articleData.awsId}`, fileData)
+      const fileGet = await axios.get(`${httpRoute}/api/s3/${articleData.awsId}`)
+      const filesUrl = fileGet.data.files
+
+      const mergeForm = Object.assign({}, formData, {
+        filesUrl,
+        publicPdfName: publicPdfName.current,
+      })
+      await axios.post(
+        `${httpRoute}/api/journalArticle/updateArticle/${articleId}`,
+        mergeForm
+      )
+      showAlert('success', 'Article updated. Returning to your manuscripts…')
+      setTimeout(() => {
+        navigate(`/dashboard/${userId}?section=manuscripts`)
+      }, 1500)
+    } catch (err) {
+      console.error(err)
+      showAlert('error', 'Update failed. Please try again or contact support.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const goBack = () => navigate(`/dashboard/${userId}?section=manuscripts`)
+
+  return (
+    <Box
+      sx={{
+        minHeight: 'calc(100vh - 112px)',
+        backgroundColor: dashboardColors.canvas,
+        pt: { xs: 12, sm: 14, md: 16 },
+        pb: 6,
+        px: { xs: 2, md: 3 },
+      }}
+    >
+      <Box sx={{ maxWidth: 720, mx: 'auto', mb: 2 }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          onClick={goBack}
+          sx={{ color: dashboardColors.ink }}
+        >
+          Back to manuscripts
+        </Button>
+      </Box>
+
+      {loading ? (
+        <Box sx={{ maxWidth: 720, mx: 'auto' }}>
+          <Skeleton variant="text" width={240} height={40} sx={{ mb: 1 }} />
+          <Skeleton variant="rounded" height={320} />
+        </Box>
+      ) : (
+        <FormSection
+          title="Edit your article"
+          subtitle="Update the title, abstract, keywords, and upload revised files for verification."
+        >
+          <Box
+            component="form"
+            sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}
+            noValidate
+          >
+            <TextField
+              fullWidth
+              label="Article title"
+              name="articleTitle"
+              value={formData.articleTitle}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              label="Abstract"
+              name="articleAbstract"
+              value={formData.articleAbstract}
+              onChange={handleChange}
+              multiline
+              minRows={5}
+            />
+            <TextField
+              fullWidth
+              label="Keywords"
+              name="articleKeywords"
+              value={formData.articleKeywords}
+              onChange={handleChange}
+              helperText="Separate keywords with commas"
+            />
+
+            <Box>
+              <Typography
+                variant="subtitle2"
+                sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 0.5 }}
+              >
+                Revised files
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ display: 'block', mb: 1.5 }}
+              >
+                The manuscript file is required. Cover letter and supplementary files are optional.
+              </Typography>
+              <Stack
+                direction={{ xs: 'column', sm: 'row' }}
+                spacing={1.5}
+                useFlexGap
+                flexWrap="wrap"
+              >
+                {FILE_SLOTS.map((slot) => {
+                  const fileName = getFileName(slot.id)
+                  const isManuscript = slot.id === MANUSCRIPT_SLOT_ID
+                  return (
+                    <Box key={slot.id} sx={{ flex: '1 1 160px' }}>
+                      <Button
+                        component="label"
+                        fullWidth
+                        variant={isManuscript ? 'contained' : 'outlined'}
+                        color={isManuscript && !fileName ? 'primary' : undefined}
+                        startIcon={<CloudUploadIcon />}
+                        sx={
+                          isManuscript && !fileName
+                            ? {
+                                border: `2px solid ${dashboardColors.ink}`,
+                              }
+                            : undefined
+                        }
+                      >
+                        {slot.label}
+                        {slot.required ? ' *' : ''}
+                        <VisuallyHiddenInput
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(event) => handleFileChange(event, slot.id)}
+                        />
+                      </Button>
+                      {fileName ? (
+                        <Chip
+                          label={fileName}
+                          size="small"
+                          sx={{
+                            mt: 1,
+                            maxWidth: '100%',
+                            backgroundColor: dashboardColors.peach,
+                            color: dashboardColors.ink,
+                          }}
+                        />
+                      ) : (
+                        slot.required && (
+                          <Typography
+                            variant="caption"
+                            color="error"
+                            sx={{ display: 'block', mt: 0.75 }}
+                          >
+                            Required to submit
+                          </Typography>
+                        )
+                      )}
+                    </Box>
+                  )
+                })}
+              </Stack>
+            </Box>
+
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 1 }}>
+              <Button variant="outlined" onClick={goBack} disabled={submitting}>
+                Cancel
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                disabled={submitting || !hasManuscript}
+                startIcon={
+                  submitting ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : null
+                }
+              >
+                {submitting ? 'Submitting…' : 'Submit for verification'}
+              </Button>
+            </Stack>
+            {!hasManuscript && (
+              <Typography variant="caption" color="error">
+                Upload a manuscript file to enable submission.
+              </Typography>
+            )}
+          </Box>
+        </FormSection>
+      )}
+
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackOpen(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+      >
+        <Alert
+          onClose={() => setSnackOpen(false)}
+          severity={alertStatus}
+          variant="filled"
+          sx={{ width: '100%' }}
+        >
+          {alertText}
+        </Alert>
+      </Snackbar>
+    </Box>
+  )
+}
+
+export default EditArticle

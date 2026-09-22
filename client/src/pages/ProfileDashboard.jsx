@@ -1,402 +1,282 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Typography from '@mui/material/Typography';
+import Skeleton from '@mui/material/Skeleton';
+import { httpRoute } from '../helperFunctions';
 import SubmitManuscript from '../components/SubmitManuscript';
 import MyManuscriptsDashboard from '../components/MyManuscriptsDashboard';
 import AdminMyManuscriptsDashboard from '../components/AdminMyManuscriptsDashboard';
-import ImageHeader from '../components/ImageHeader';
-import { DNA } from 'react-loader-spinner'
-import { httpRoute } from '../helperFunctions';
 import EditProfile from '../components/EditProfile';
 import SubmitIssue from '../components/SubmitIssue';
 import CreateNewJournal from '../components/CreateNewJournal';
 import CreateMarkettingEmail from '../components/CreateMarkettingEmail';
 import ReviewerManagement from '../components/ReviewerManagement';
 import ReviewerArticleDashboard from '../components/ReviewerArticleDashboard';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import Badge from '@mui/material/Badge';
 import ManagePurchase from '../components/ManagePurchase';
 import StripeManageSubscription from '../components/StripeManageSubscription';
-
-
-const shapeStyles = { bgcolor: 'primary.main', width: 40, height: 40 };
-const shapeCircleStyles = { borderRadius: '50%' };
-const rectangle = <Box component="span" sx={shapeStyles} />;
-const circle = (
-  <Box component="span" sx={{ ...shapeStyles, ...shapeCircleStyles }} />
-);
-
-function CustomTabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-
-
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography component={'span'}>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-CustomTabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.number.isRequired,
-  value: PropTypes.number.isRequired,
-};
-
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
-  };
-}
-
+import DashboardShell from '../components/dashboard/DashboardShell';
+import DashboardOverview from '../components/dashboard/DashboardOverview';
+import {
+  SECTIONS,
+  getNavGroups,
+  resolveSection,
+} from '../components/dashboard/dashboardSections';
+import { dashboardColors } from '../utils/theme';
 
 const ProfileDashboard = () => {
-  const { profileId } = useParams()
-  const [userDetails, setUserDetails] = useState({})
-  const [user, setUser] = useState({})
-  const [userCount, setUserCount] = useState(0)
-  const [userSpecialReview, setUserSpecialReview] = useState({})
-  const [userSpecialReviewCount, setUserSpecialReviewCount] = useState(0)
-  const [verificationArticle, setVerificationArticle] = useState({})
-  const [loading, setLoading] = useState(true)
-  let [searchParams, setSearchParams] = useSearchParams();
-  const value = Number(searchParams.get("tab") || 0);
+  const { profileId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const [userDetails, setUserDetails] = useState({});
+  const [user, setUser] = useState({});
+  const [verificationArticle, setVerificationArticle] = useState([]);
+  const [userSpecialReview, setUserSpecialReview] = useState([]);
+  const [userCount, setUserCount] = useState(0);
+  const [userSpecialReviewCount, setUserSpecialReviewCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [verifyFilter, setVerifyFilter] = useState('regular');
 
-  const [open, setOpen] = React.useState(false);
-  const [specialIssue, setSpecialIssue] = React.useState(false);
-  const [regularIssue, setRegularIssue] = React.useState(false);
+  const isAdmin = Boolean(userDetails?.user?.isAdmin);
+  const isReviewer =
+    userDetails?.user?.userType === 'reviewer' &&
+    Boolean(userDetails?.user?.reviewerApproved);
 
-  const handleSpecialIssue = async () => {
-    setOpen(false);
-    setSpecialIssue(true)
-    setRegularIssue(false)
-  }
+  const activeSection = useMemo(
+    () => resolveSection(searchParams, { isAdmin, isReviewer }),
+    [searchParams, isAdmin, isReviewer]
+  );
 
-  const handleRegularIssue = async () => {
-    setOpen(false);
-    setRegularIssue(true)
-    setSpecialIssue(false)
-  }
+  const navGroups = useMemo(
+    () =>
+      getNavGroups({
+        isAdmin,
+        isReviewer,
+        counts: {
+          regularVerify: userCount,
+          specialVerify: userSpecialReviewCount,
+        },
+      }),
+    [isAdmin, isReviewer, userCount, userSpecialReviewCount]
+  );
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
-  const handleChange = (event, newValue) => {
-    setSearchParams((params) => {
-      params.set("tab", newValue);
-      return params;
-    });
-  };
+  const navigateToSection = useCallback(
+    (sectionId) => {
+      setSearchParams((params) => {
+        const next = new URLSearchParams(params);
+        next.delete('tab');
+        next.set('section', sectionId);
+        return next;
+      });
+    },
+    [setSearchParams]
+  );
 
   const refreshVerificationArticles = () => {
     setRefreshKey((prev) => prev + 1);
-};
+  };
+
   useEffect(() => {
     const getUser = async () => {
-      const getUser = await JSON.parse(localStorage.getItem('currentUser'))
-      setUserDetails(getUser)
-      axios.defaults.headers.common['Authorization'] = `Bearer ${getUser.token}`
       try {
-
-          const resp = await axios.get(`${httpRoute}/api/users/${profileId}`)
-          setUser(resp.data)
-          setLoading(false)
-
-        if (resp.data.isAdmin || (resp.data.userType === 'reviewer' && resp.data.reviewerApproved)) {
-          const verifyResp = await axios.get(`${httpRoute}/api/journalArticle/verifyArticles/${profileId}`)
-          console.log(verifyResp.data, 'special review full log');
-          setVerificationArticle(verifyResp.data.filter((item) => item.specialReview === false))
-          setUserCount(verifyResp.data.filter((item) => item.specialReview === false).length)
-
-          setUserSpecialReview(verifyResp.data.filter((item) => item.specialReview === true))
-          setUserSpecialReviewCount(verifyResp.data.filter((item) => item.specialReview === true).length)
-
-          setLoading(false)
+        const stored = JSON.parse(localStorage.getItem('currentUser'));
+        setUserDetails(stored || {});
+        if (!stored?.token) {
+          setLoading(false);
+          return;
         }
-        
+        axios.defaults.headers.common['Authorization'] = `Bearer ${stored.token}`;
+
+        const resp = await axios.get(`${httpRoute}/api/users/${profileId}`);
+        setUser(resp.data);
+
+        if (
+          resp.data.isAdmin ||
+          (resp.data.userType === 'reviewer' && resp.data.reviewerApproved)
+        ) {
+          const verifyResp = await axios.get(
+            `${httpRoute}/api/journalArticle/verifyArticles/${profileId}`
+          );
+          const regular = verifyResp.data.filter((item) => item.specialReview === false);
+          const special = verifyResp.data.filter((item) => item.specialReview === true);
+          setVerificationArticle(regular);
+          setUserCount(regular.length);
+          setUserSpecialReview(special);
+          setUserSpecialReviewCount(special.length);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
-      catch (err) {
-        console.log(err)
-      }
+    };
+
+    getUser();
+  }, [profileId, refreshKey]);
+
+  // When landing via legacy ?tab=, rewrite URL to ?section=
+  useEffect(() => {
+    if (loading) return;
+    const tab = searchParams.get('tab');
+    const section = searchParams.get('section');
+    if (tab !== null && tab !== '' && !section) {
+      setSearchParams(
+        (params) => {
+          const next = new URLSearchParams(params);
+          next.delete('tab');
+          next.set('section', activeSection);
+          return next;
+        },
+        { replace: true }
+      );
     }
+  }, [loading, searchParams, activeSection, setSearchParams]);
 
-    getUser()
-  }, [value === 0, refreshKey])
-  console.log(userDetails, 'zzzzzz');
+  const manuscriptCount = Array.isArray(user?.articles) ? user.articles.length : undefined;
 
-  console.log(user, 'user not special review');
-  console.log(userSpecialReview, 'user yesss special review');
+  const renderSection = () => {
+    switch (activeSection) {
+      case SECTIONS.HOME:
+        return (
+          <DashboardOverview
+            isAdmin={isAdmin}
+            isReviewer={isReviewer}
+            counts={{
+              regularVerify: userCount,
+              specialVerify: userSpecialReviewCount,
+              manuscripts: manuscriptCount,
+            }}
+            onNavigate={navigateToSection}
+          />
+        );
 
-  const isAdmin = userDetails?.user?.isAdmin;
-  const isReviewer = userDetails?.user?.userType === 'reviewer' && userDetails?.user?.reviewerApproved;
+      case SECTIONS.MANUSCRIPTS:
+        return <MyManuscriptsDashboard user={user} onNavigate={navigateToSection} />;
+
+      case SECTIONS.SUBMIT:
+        return <SubmitManuscript user={user} />;
+
+      case SECTIONS.VERIFY:
+        return (
+          <Box>
+            <Typography
+              variant="h5"
+              component="h2"
+              sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 2 }}
+            >
+              Verification queue
+            </Typography>
+            <ToggleButtonGroup
+              value={verifyFilter}
+              exclusive
+              onChange={(_, next) => {
+                if (next) setVerifyFilter(next);
+              }}
+              size="small"
+              sx={{ mb: 2 }}
+              aria-label="Issue type filter"
+            >
+              <ToggleButton value="regular">
+                Regular ({userCount})
+              </ToggleButton>
+              <ToggleButton value="special">
+                Special ({userSpecialReviewCount})
+              </ToggleButton>
+            </ToggleButtonGroup>
+            {verifyFilter === 'regular' ? (
+              <AdminMyManuscriptsDashboard
+                user={verificationArticle}
+                onDelete={refreshVerificationArticles}
+              />
+            ) : (
+              <AdminMyManuscriptsDashboard
+                user={userSpecialReview}
+                onDelete={refreshVerificationArticles}
+              />
+            )}
+          </Box>
+        );
+
+      case SECTIONS.REVIEWS:
+        return <ReviewerArticleDashboard />;
+
+      case SECTIONS.BILLING:
+        return (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <ManagePurchase />
+            <StripeManageSubscription />
+          </Box>
+        );
+
+      case SECTIONS.PROFILE:
+        return <EditProfile userDetails={userDetails} />;
+
+      case SECTIONS.CREATE_JOURNAL:
+        return <CreateNewJournal />;
+
+      case SECTIONS.MAILING:
+        return <CreateMarkettingEmail />;
+
+      case SECTIONS.SUBMIT_ISSUE:
+        return <SubmitIssue />;
+
+      case SECTIONS.REVIEWER_MGMT:
+        return <ReviewerManagement />;
+
+      default:
+        return (
+          <DashboardOverview
+            isAdmin={isAdmin}
+            isReviewer={isReviewer}
+            counts={{
+              regularVerify: userCount,
+              specialVerify: userSpecialReviewCount,
+              manuscripts: manuscriptCount,
+            }}
+            onNavigate={navigateToSection}
+          />
+        );
+    }
+  };
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          p: 4,
+          pt: { xs: 12, sm: 14, md: 16 },
+          backgroundColor: dashboardColors.canvas,
+          minHeight: '60vh',
+        }}
+      >
+        <Skeleton variant="rounded" height={72} sx={{ mb: 2 }} />
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <Skeleton variant="rounded" width={260} height={320} sx={{ display: { xs: 'none', md: 'block' } }} />
+          <Box sx={{ flex: 1 }}>
+            <Skeleton variant="rounded" height={120} sx={{ mb: 2 }} />
+            <Skeleton variant="rounded" height={200} />
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
-    <div>
-      {!loading ? (<div>
-        <ImageHeader />
-        <h1 className=' text-3xl font-medium mb-6 text-center p-4'>Welcome {`${userDetails?.user?.title} ${userDetails?.user?.surname}`}</h1>
-        <Box sx={{ width: '100%' }} >
-          <Box sx={{ borderBottom: 1, borderColor: 'divider' }} >
-            <Tabs value={value} onChange={handleChange}  
-            variant="scrollable"
-            scrollButtons="auto"
-            aria-label="scrollable auto tabs example"
-            >
-              <Tab
-                label={
-                  (isAdmin || isReviewer) ? (
-                    <div>
-                      Verify Regular Issue
-                      <Badge color="primary" badgeContent={userCount} overlap='circular' max={5} sx={{ mb: 5 }} >
-                      </Badge>
-                    </div>
-                  ) : (
-                    "My Manuscripts"
-                  )
-                }
-                wrapped
-                {...a11yProps(0)}
-              />
-              {/* START ------------ This is a tab button to check if user wants special issue or regular issue */}
-              {!isReviewer && (
-                <Tab
-                wrapped
-                label={
-                  
-                  (
-                    <div>
-                      <Button variant="text" onClick={handleClickOpen}>
-                        Submit Manuscript
-                      </Button>
-                      <Dialog
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="alert-dialog-title"
-                        aria-describedby="alert-dialog-description"
-                      >
-                        <DialogTitle id="alert-dialog-title">
-                          {"Submit this manuscript as a special issue?"}
-                        </DialogTitle>
-                        <DialogContent>
-                          <DialogContentText id="alert-dialog-description">
-                            Special Issue - A special issue will be published at the current issue of the journal
-                          </DialogContentText>
-                          <DialogContentText id="alert-dialog-description">
-                            Regular Issue - A regular issue will be published at the next issue of the journal
-                          </DialogContentText>
-                        </DialogContent>
-                        <DialogActions>
-                          <Button onClick={handleRegularIssue}>Regular Issue</Button>
-                          <Button onClick={handleSpecialIssue} autoFocus>
-                            Special Issue
-                          </Button>
-                        </DialogActions>
-                      </Dialog>
-                    </div>
-                  )
+    <DashboardShell
+      userDetails={userDetails}
+      isAdmin={isAdmin}
+      isReviewer={isReviewer}
+      navGroups={navGroups}
+      activeSection={activeSection}
+      onNavigate={navigateToSection}
+    >
+      {renderSection()}
+    </DashboardShell>
+  );
+};
 
-                } {...a11yProps(1)} />
-              )}
-              {/* END ------------ This is a tab button to check if user wants special issue or regular issue */}
-
-              {/* {!userDetails?.user?.isAdmin &&<Tab label=" Submit Manuscript" {...a11yProps(1)} />} */}
-              <Tab wrapped label="Edit Profile" {...a11yProps(2)} />
-              {isReviewer && (
-                <Tab wrapped label="Review Articles" {...a11yProps(3)} />
-              )}
-              {!isReviewer && (
-                <Tab label="Manage Purchase" {...a11yProps(3)} />
-              )}
-              {isReviewer && (
-                <Tab label="Manage Purchase" {...a11yProps(4)} />
-              )}
-              {/* Admin-only tabs */}
-              {isAdmin && (
-                <Tab wrapped label="Create new journal" {...a11yProps(4)} />
-              )}
-              {isAdmin && (
-                <Tab wrapped label="Mailing" {...a11yProps(5)} />
-              )}
-              {(isAdmin || isReviewer) && (
-                <Tab wrapped
-                  label={
-                    <div>
-                      Verify Special Issue
-                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
-                      </Badge>
-                    </div>
-                  }
-                  {...a11yProps(6)}
-                />
-              )}
-              {isAdmin && (
-                <Tab
-                wrapped
-                  label={
-                    <div>
-                      Submit Issue
-                      <Badge color="primary" 
-                      // badgeContent={userSpecialReviewCount}
-                       overlap='circular' max={5} sx={{ mb: 5 }} >
-                      </Badge>
-                    </div>
-                  }
-                  {...a11yProps(7)}
-                />
-              )}
-              {isAdmin && (
-                <Tab
-                wrapped
-                  label={
-                    <div>
-                      My Manuscripts
-                      <Badge color="primary" badgeContent={userSpecialReviewCount} overlap='circular' max={5} sx={{ mb: 5 }} >
-                      </Badge>
-                    </div>
-                  }
-                  {...a11yProps(8)}
-                />
-              )}
-              {isAdmin && (
-                <Tab
-                  wrapped
-                  label="Reviewer Management"
-                  {...a11yProps(9)}
-                />
-              )}
-              {isReviewer && (
-                <Tab
-                  wrapped
-                  label="Manage Subscription"
-                  {...a11yProps(5)}
-                />
-              )}
-              {!isReviewer && (
-                <Tab
-                  wrapped
-                  label="Manage Subscription"
-                  {...a11yProps(isAdmin ? 10 : 4)}
-                />
-              )}
-            </Tabs>
-
-          </Box>
-          <CustomTabPanel value={value} index={0}>
-            {(isAdmin || isReviewer) && <AdminMyManuscriptsDashboard user={verificationArticle} onDelete={refreshVerificationArticles} />}
-            {!isAdmin && !isReviewer && <MyManuscriptsDashboard user={user} />}
-          </CustomTabPanel>
-          {!isReviewer && (
-            <CustomTabPanel value={value} index={1}>
-              {( regularIssue) && <SubmitManuscript user={user} checked={false} />}
-              {(specialIssue) && <SubmitManuscript user={user} checked={true} />}
-            </CustomTabPanel>
-          )}
-          <CustomTabPanel value={value} index={2}>
-            <EditProfile userDetails={userDetails} />
-          </CustomTabPanel>
-          {isReviewer && (
-            <CustomTabPanel value={value} index={3}>
-              <ReviewerArticleDashboard />
-            </CustomTabPanel>
-          )}
-          {!isReviewer && (
-            <CustomTabPanel value={value} index={3}>
-              <ManagePurchase />
-            </CustomTabPanel>
-          )}
-          {isReviewer && (
-            <CustomTabPanel value={value} index={4}>
-              <ManagePurchase />
-            </CustomTabPanel>
-          )}
-          {/* Admin-only panels */}
-          {isAdmin && (
-            <CustomTabPanel value={value} index={4}>
-              <CreateNewJournal />
-            </CustomTabPanel>
-          )}
-          {isAdmin && (
-            <CustomTabPanel value={value} index={5}>
-              <CreateMarkettingEmail />
-            </CustomTabPanel>
-          )}
-          {(isAdmin || isReviewer) && (
-            <CustomTabPanel value={value} index={6}>
-              <AdminMyManuscriptsDashboard user={userSpecialReview} />
-            </CustomTabPanel>
-          )}
-          {isAdmin && (
-            <CustomTabPanel value={value} index={7}>
-              <SubmitIssue user={user} />
-            </CustomTabPanel>
-          )}
-          {isAdmin && (
-            <CustomTabPanel value={value} index={8}>
-              <MyManuscriptsDashboard user={user} />
-            </CustomTabPanel>
-          )}
-          {isAdmin && (
-            <CustomTabPanel value={value} index={9}>
-              <ReviewerManagement />
-            </CustomTabPanel>
-          )}
-          {isReviewer && (
-            <CustomTabPanel value={value} index={5}>
-              <StripeManageSubscription />
-            </CustomTabPanel>
-          )}
-          {!isReviewer && (
-            <CustomTabPanel value={value} index={isAdmin ? 10 : 4}>
-              <StripeManageSubscription />
-            </CustomTabPanel>
-          )}
-        </Box>
-
-      </div>) :
-        (<div className='flex justify-center items-center h-96'>
-          <DNA
-            visible={true}
-            height="80"
-            width="80"
-            ariaLabel="dna-loading"
-            wrapperStyle={{}}
-            wrapperClass="dna-wrapper"
-          />
-        </div>)
-      }
-    </div>
-  )
-}
-
-export default ProfileDashboard
-
-
+export default ProfileDashboard;

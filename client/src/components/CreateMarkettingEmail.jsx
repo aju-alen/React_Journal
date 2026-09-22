@@ -96,34 +96,46 @@ const CreateMarketingEmail = () => {
   };
 
   return (
-    <Box className="md:p-20">
-      <Typography variant="h5" gutterBottom>
+    <Box>
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{ fontWeight: 600, color: 'primary.main', mb: 0.5 }}
+      >
         Mailing
       </Typography>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { md: '1fr 1fr' }, gap: 4 }}>
-        {/* Form Section */}
-        <Box 
-          component="form" 
-          noValidate 
-          onSubmit={handleSubmit} 
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+        Send or schedule marketing and individual emails.
+      </Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { md: '1fr 1fr' }, gap: 3 }}>
+        <Paper
+          elevation={0}
+          component="form"
+          noValidate
+          onSubmit={handleSubmit}
+          sx={{
+            p: 3,
+            border: '1px solid',
+            borderColor: 'secondary.main',
+          }}
         >
           <Stack spacing={2}>
             <FormControl>
-              <FormLabel>Email Type</FormLabel>
+              <FormLabel>Email type</FormLabel>
               <RadioGroup
                 row
                 value={emailType}
                 onChange={(e) => setEmailType(e.target.value)}
               >
-                <FormControlLabel 
-                  value="marketing" 
-                  control={<Radio />} 
-                  label="Marketing Email (All users who opted to receive marketing emails)" 
+                <FormControlLabel
+                  value="marketing"
+                  control={<Radio />}
+                  label="Marketing (opted-in users)"
                 />
-                <FormControlLabel 
-                  value="specific" 
-                  control={<Radio />} 
-                  label="Individual Email" 
+                <FormControlLabel
+                  value="specific"
+                  control={<Radio />}
+                  label="Individual"
                 />
               </RadioGroup>
             </FormControl>
@@ -131,7 +143,7 @@ const CreateMarketingEmail = () => {
             {emailType === 'specific' && (
               <TextField
                 fullWidth
-                label="Recipient Email"
+                label="Recipient email"
                 variant="outlined"
                 name="recipientEmail"
                 type="email"
@@ -145,81 +157,74 @@ const CreateMarketingEmail = () => {
                   onChange={(e) => setIsScheduled(e.target.checked)}
                 />
               }
-              label="Schedule Email"
+              label="Schedule email"
             />
 
             {isScheduled && (
               <TextField
                 fullWidth
-                label="Schedule Time"
+                label="Schedule time"
                 type="datetime-local"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                inputProps={{
-                  min: getCurrentDateTime()
-                }}
+                InputLabelProps={{ shrink: true }}
+                inputProps={{ min: getCurrentDateTime() }}
               />
             )}
 
             <TextField
               fullWidth
               multiline
-              rows={4}
+              rows={3}
               label="Subject"
               variant="outlined"
               name="subject"
               value={formData.subject}
               onChange={handleChange}
-              inputProps={{
-                style: { whiteSpace: 'pre-wrap' }
-              }}
             />
             <TextField
               fullWidth
               multiline
               rows={8}
-              label="Email Content"
+              label="Email content"
               variant="outlined"
               name="emailContent"
               value={formData.emailContent}
               onChange={handleChange}
-              inputProps={{
-                style: { whiteSpace: 'pre-wrap' }
-              }}
             />
-            <Button 
+            <Button
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2 }}
               disabled={isScheduled && !scheduledTime}
             >
-              {loading ? 'Processing...' : (isScheduled ? 'Schedule Email' : 'Send Email')}
+              {loading
+                ? 'Processing…'
+                : isScheduled
+                  ? 'Schedule email'
+                  : 'Send email'}
             </Button>
           </Stack>
-        </Box>
+        </Paper>
 
-        {/* Preview Section */}
         <Box>
-          <Typography variant="h6" gutterBottom>
-            Email Preview
+          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1.5 }}>
+            Email preview
           </Typography>
-          <Paper 
-            elevation={3} 
-            sx={{ 
-              p: 3, 
-              minHeight: '500px',
+          <Paper
+            elevation={0}
+            sx={{
+              p: 3,
+              minHeight: 400,
+              border: '1px solid',
+              borderColor: 'secondary.main',
               backgroundColor: '#fff',
-              fontFamily: 'Arial, sans-serif'
             }}
           >
             <Box sx={{ textAlign: 'center', mb: 3 }}>
-              <img 
-                src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg" 
-                alt="Scientific Journals" 
+              <img
+                src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg"
+                alt="Scientific Journals"
                 style={{ width: '50%', maxWidth: '200px' }}
               />
             </Box>
@@ -229,20 +234,16 @@ const CreateMarketingEmail = () => {
               </Typography>
               <Divider sx={{ my: 2 }} />
               <Typography paragraph>Hi there,</Typography>
-              <Typography 
-                component="div" 
-                sx={{ 
-                  whiteSpace: 'pre-line',
-                  mb: 2,
-                  minHeight: '100px'
-                }}
+              <Typography
+                component="div"
+                sx={{ whiteSpace: 'pre-line', mb: 2, minHeight: 100 }}
               >
                 {formatPreviewText(formData.emailContent)}
               </Typography>
               <Typography>
-                <a 
-                  href="https://scientificjournalsportal.com/" 
-                  style={{ color: '#1976d2', textDecoration: 'none' }}
+                <a
+                  href="https://scientificjournalsportal.com/"
+                  style={{ color: '#543a31', textDecoration: 'none' }}
                 >
                   Scientific Journals Team
                 </a>

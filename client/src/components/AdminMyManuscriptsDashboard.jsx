@@ -1,345 +1,28 @@
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { Button } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import { Button, Stack } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
-import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { axiosTokenHeader, getPdfName, httpRoute } from '../helperFunctions';
-
-
-const AdminMyManuscriptsDashboard = ({ user,onDelete }) => {
-  const [open, setOpen] = React.useState(false);
-  const [successOpen, setSuccessOpen] = useState(false);
-  const [articleId, setArticleId] = useState();
-  const [emailId, setEmailId] = useState('');
-  const [files, setFiles] = useState([]);
-  const [pdfName,setPdfname] = useState('')
-  const [loading, setLoading] = useState(false);
-  const [acceptError, setAcceptError] = useState('');
-
-
-  const handleClickOpen = (articleId,emailId) => {
-    setArticleId(articleId);
-    setEmailId(emailId);
-    setOpen(true);
-  };
-
-console.log(articleId, 'articleId state');
-console.log(emailId, 'emailId state');
-  const handleClose = (id) => {
-
-    setOpen(false);
-  };
-
-  const handleClicSuccessOpen = (articleId, emailId) => {
-    
-    setEmailId(emailId);
-    setArticleId(articleId);
-    setSuccessOpen(true);
-  
-  };
-
-  const handleSuccessClose = () => {
-    setSuccessOpen(false);
-  };
-  const handleFileChange = (event) => {
-    setFiles([...files, event.target.files[0]]);
-};
-console.log(pdfName,'pdffffffNameeeee');
-
-
-  const handleAcceptManuscript = async ( 
-    articleId,
-  ) => {
-    console.log(articleId, 'articleId inside handleAcceptManuscript state');
-    try {
-      setLoading(true);
-      setAcceptError('');
-      axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-      await axios.put(`${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`, { articleId });
-      setLoading(false);
-      onDelete();
-      handleSuccessClose();
-    }
-    catch (err) {
-      console.log(err);
-      setLoading(false);
-      setAcceptError(err.response?.data?.message || 'Error accepting manuscript');
-    }
-  }
-  
-  if (!Array.isArray(user) || user.length === 0) {
-    // Handle empty or non-array user prop
-    return (
-      <div>No Manuscripts To Verify</div>
-    );
-  }
-
-  console.log(user, 'user data in admin my manuscript dashboard');
-  
-  return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Manuscript Author</TableCell>
-            <TableCell>Last Update at</TableCell>
-            <TableCell align="center">Article Title</TableCell>
-            <TableCell align="center">Article Abstract</TableCell>
-            <TableCell align="center">Article Keywords</TableCell>
-            <TableCell align="center">Article Files</TableCell>
-            <TableCell align="center">Reviewer Status</TableCell>
-            <TableCell align="center">Verification</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {user?.map((row) => {
-            console.log(row, 'rowData');
-            return (
-              <TableRow
-                key={row.id}
-                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
-                  {row.articleAuthors[0] ?row.articleAuthors[0].authorEmail : ''}
-                </TableCell>
-                <TableCell align="center">{row.updatedAt}</TableCell>
-                <TableCell align="center">{row.articleTitle}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }} align="justify">{row.articleAbstract}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">{row.articleKeywords}</TableCell>
-                <TableCell sx={{ fontWeight: 'bold', color: 'blue', fontSize:10, display:'flex', flexDirection:"column",justifyContent:"center" }} align="center">
-                  <Link to={row.filesURL[0]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                  {row.filesURL[0] ? `📄${getPdfName(row.filesURL[0])} `:'' }
-                  </Link>
-                  <br />
-                  <Link to={row.filesURL[1]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                  {row.filesURL[1] ? `📄${getPdfName(row.filesURL[1])} `:'' }
-                  </Link>
-                  <br />
-                  <Link to={row.filesURL[2]} className='mx-2 bg-indigo-100 rounded-md' target="_blank" rel="noopener noreferrer">
-                    {row.filesURL[2] ? `📄${getPdfName(row.filesURL[2])} `:'' }
-                  </Link>
-                </TableCell>
-
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  {row.isAccepted ? (
-                    row.reviewerAcceptedBy ? (
-                      <div style={{ fontSize: '12px' }}>
-                        <div style={{ color: 'green', fontWeight: 'bold' }}>✓ Accepted</div>
-                        <div style={{ color: 'gray', marginTop: '4px' }}>
-                          by {row.reviewerAcceptedBy.title || ''} {row.reviewerAcceptedBy.surname || ''} {row.reviewerAcceptedBy.otherName || ''}
-                        </div>
-                        <div style={{ color: 'gray', fontSize: '10px' }}>
-                          {row.reviewerAcceptedBy.email}
-                        </div>
-                      </div>
-                    ) : (
-                      <div style={{ color: 'green', fontWeight: 'bold', fontSize: '12px' }}>✓ Accepted</div>
-                    )
-                  ) : (
-                    <div style={{ color: 'orange', fontWeight: 'bold', fontSize: '12px' }}>Pending Review</div>
-                  )}
-                </TableCell>
-
-                <TableCell sx={{ fontWeight: 'bold' }} align="center">
-                  <Button 
-                    variant='outlined' 
-                    onClick={
-                      ()=>handleClicSuccessOpen(
-                        row.id,
-                        row.articleAuthors[0].authorEmail,
-                        row.articleTitle,
-                        row.articleIssue,
-                        row.articleVolume,
-                        row.awsId,
-                        row.userId,
-                        row.articleAuthors[0].authorGivenName,
-                        row.articlePublishedJournal.journalAbbreviation,
-                        row.publicPdfName,
-                        row.articlePublishedDate,
-                        row.articleAuthors[0].authorLastName
-                      )
-                    }
-                    title="Accept and publish manuscript"
-                  >
-                    ✅
-                  </Button>
-
-                  <Dialog
-                    open={successOpen}
-                    onClose={handleSuccessClose}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">
-                      {"Accept This Manuscript ?"}
-                    </DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                        {(() => {
-                          const article = user?.find(a => a.id === articleId);
-                          if (article && article.isAccepted && article.reviewerAcceptedBy) {
-                            const reviewerName = `${article.reviewerAcceptedBy.title || ''} ${article.reviewerAcceptedBy.surname || ''} ${article.reviewerAcceptedBy.otherName || ''}`.trim();
-                            return (
-                              <>
-                                This manuscript has been accepted by reviewer: <strong>{reviewerName}</strong> ({article.reviewerAcceptedBy.email}).
-                                <br /><br />
-                                As an admin, you can publish this manuscript directly. Publishing will make it available for the public to view. This action cannot be undone.
-                              </>
-                            );
-                          }
-                          return 'As an admin, you can publish this manuscript directly. Publishing will make it available for the public to view. This action cannot be undone.';
-                        })()}
-                      </DialogContentText>
-                      {acceptError && (
-                        <DialogContentText sx={{ color: 'error.main', mt: 2 }}>
-                          {acceptError}
-                        </DialogContentText>
-                      )}
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={() => handleAcceptManuscript(
-                        articleId,
-                        )} disabled={loading}>{
-                        loading ? 'Loading...' : 'Accept Manuscript'
-                        }</Button>
-                      <Button onClick={handleSuccessClose} autoFocus disabled={loading}>
-                        Discard
-                      </Button>
-                    </DialogActions>
-                  </Dialog>
-
-
-
-                  <Button variant="outlined" onClick={() => handleClickOpen(row.id,row.articleAuthors[0].authorEmail)}>
-                    ❌
-                  </Button>
-                  <Dialog
-                    open={open}
-                    onClose={() => handleClose(articleId)}
-                    PaperProps={{
-                      component: 'form',
-                      onSubmit: async (event) => {
-                        event.preventDefault();
-                        console.log(event.target[0].value, articleId, 'rejection text and article Id');
-                        try {
-                          setLoading(true);
-                          const fileData = new FormData();
-                          for(const file of files){
-                              console.log(file, 'file in submit');
-                              fileData.append('s3Files', file)
-                          }
-                          console.log(fileData, 'file data');
-              
-                          const fileResp = await axios.post(`${httpRoute}/api/s3/rejection/upload/${row.awsId}/${row.userId}`, fileData)
-                          console.log(fileResp, 'file response');
-              
-                          const fileGet = await axios.get(`${httpRoute}/api/s3/rejection/${row.awsId}/${row.userId}`)
-                          console.log(fileGet, 'file get data');
-              
-                          const filesUrl = fileGet.data.files
-              
-                          axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-                          await axios.post(`${httpRoute}/api/journalArticle/verifyArticles/sendRejectionText`, { rejectionText: event.target[0].value, articleId,filesUrl, emailId})
-                          setLoading(false);
-                          onDelete();
-                        }
-                        catch (err) {
-                          console.log(err);
-                          setLoading(false);
-                        }
-                        handleClose(row.id);
-                      },
-                    }}
-                  >
-                    <DialogTitle>Rejection Message</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText>
-                        Write here a message to the user on why the article was rejected.
-                      </DialogContentText>
-                      <TextField
-                        autoFocus
-                        required
-                        margin="dense"
-                        id="text"
-                        name="text"
-                        label="Rejection Text Message Here"
-                        type="text"
-                        fullwidth
-                        variant="standard"
-                      />
-                      <Button fullwidth sx={{ mb: 3 }}
-
-                        component="label"
-                        role={undefined}
-                        variant="contained"
-                        tabIndex={-1}
-                        accept=".pdf,.doc,.docx"
-                        onChange={handleFileChange}
-                        startIcon={<CloudUploadIcon />}
-                      >
-                        Cover Letter
-                        <VisuallyHiddenInput type="file" />
-                      </Button>
-                      <Button fullwidth sx={{ mb: 3 }}
-
-                        component="label"
-                        role={undefined}
-                        variant="contained"
-                        tabIndex={-1}
-                        accept=".pdf,.doc,.docx"
-                        onChange={handleFileChange}
-                        startIcon={<CloudUploadIcon />}
-                      >
-                        Manuscript File
-                        <VisuallyHiddenInput type="file" />
-                      </Button>
-                      <Button fullwidth sx={{ mb: 3 }}
-
-                        component="label"
-                        role={undefined}
-                        variant="contained"
-                        tabIndex={-1}
-                        accept=".pdf,.doc,.docx"
-                        onChange={handleFileChange}
-                        startIcon={<CloudUploadIcon />}
-                      >
-                        Supplementary File
-                        <VisuallyHiddenInput type="file" />
-                      </Button>
-                    </DialogContent>
-                    <DialogActions>
-                      <Button onClick={() => handleClose(row.id)}>Cancel</Button>
-                      <Button type="submit">{
-                      loading?"Loading..." :"Send Rejection Message"
-                      }</Button>
-                    </DialogActions>
-                  </Dialog>
-
-                </TableCell>
-
-              </TableRow>
-
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
-  );
-}
+import DashboardTable from './dashboard/DashboardTable';
+import StatusChip from './dashboard/StatusChip';
+import { dashboardColors } from '../utils/theme';
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -352,4 +35,456 @@ const VisuallyHiddenInput = styled('input')({
   whiteSpace: 'nowrap',
   width: 1,
 });
-export default AdminMyManuscriptsDashboard
+
+const TITLE_MAX = 40;
+const ABSTRACT_MAX = 50;
+const KEYWORDS_MAX = 30;
+
+const truncate = (text, max) => {
+  if (!text) return '—';
+  if (text.length <= max) return text;
+  return `${text.substring(0, max)}…`;
+};
+
+const needsReadMore = (text, max) => Boolean(text && text.length > max);
+
+const formatDate = (dateString) => {
+  if (!dateString) return '—';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+
+const FileLink = ({ url }) => {
+  if (!url) return null;
+  return (
+    <Button
+      component={Link}
+      to={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      size="small"
+      startIcon={<DescriptionOutlinedIcon sx={{ fontSize: 14 }} />}
+      sx={{
+        justifyContent: 'flex-start',
+        color: dashboardColors.ink,
+        backgroundColor: dashboardColors.peach,
+        px: 1,
+        py: 0.25,
+        fontSize: '0.7rem',
+        fontWeight: 500,
+        mb: 0.5,
+        '&:hover': { backgroundColor: '#e8d5cc' },
+      }}
+    >
+      {getPdfName(url)}
+    </Button>
+  );
+};
+
+const AdminMyManuscriptsDashboard = ({ user, onDelete }) => {
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [acceptOpen, setAcceptOpen] = useState(false);
+  const [selected, setSelected] = useState(null);
+  const [emailId, setEmailId] = useState('');
+  const [files, setFiles] = useState([]);
+  const [rejectionText, setRejectionText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [acceptError, setAcceptError] = useState('');
+  const [detailDialog, setDetailDialog] = useState(null);
+
+  const handleOpenReject = (row) => {
+    setSelected(row);
+    setEmailId(row.articleAuthors?.[0]?.authorEmail || '');
+    setFiles([]);
+    setRejectionText('');
+    setRejectOpen(true);
+  };
+
+  const handleOpenAccept = (row) => {
+    setSelected(row);
+    setEmailId(row.articleAuthors?.[0]?.authorEmail || '');
+    setAcceptError('');
+    setAcceptOpen(true);
+  };
+
+  const handleCloseReject = () => {
+    setRejectOpen(false);
+    setSelected(null);
+    setFiles([]);
+  };
+
+  const handleCloseAccept = () => {
+    setAcceptOpen(false);
+    setSelected(null);
+    setAcceptError('');
+  };
+
+  const handleFileChange = (event) => {
+    if (event.target.files?.[0]) {
+      setFiles((prev) => [...prev, event.target.files[0]]);
+    }
+  };
+
+  const handleAcceptManuscript = async () => {
+    if (!selected) return;
+    try {
+      setLoading(true);
+      setAcceptError('');
+      axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+      await axios.put(
+        `${httpRoute}/api/journalArticle/verifyArticles/acceptManuscript`,
+        { articleId: selected.id }
+      );
+      onDelete?.();
+      handleCloseAccept();
+    } catch (err) {
+      console.error(err);
+      setAcceptError(err.response?.data?.message || 'Error accepting manuscript');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRejectSubmit = async (event) => {
+    event.preventDefault();
+    if (!selected) return;
+    try {
+      setLoading(true);
+      const fileData = new FormData();
+      for (const file of files) {
+        fileData.append('s3Files', file);
+      }
+
+      await axios.post(
+        `${httpRoute}/api/s3/rejection/upload/${selected.awsId}/${selected.userId}`,
+        fileData
+      );
+      const fileGet = await axios.get(
+        `${httpRoute}/api/s3/rejection/${selected.awsId}/${selected.userId}`
+      );
+      const filesUrl = fileGet.data.files;
+
+      axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+      await axios.post(
+        `${httpRoute}/api/journalArticle/verifyArticles/sendRejectionText`,
+        {
+          rejectionText,
+          articleId: selected.id,
+          filesUrl,
+          emailId,
+        }
+      );
+      onDelete?.();
+      handleCloseReject();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const isEmpty = !Array.isArray(user) || user.length === 0;
+
+  return (
+    <>
+      <DashboardTable
+        empty={isEmpty}
+        emptyTitle="No manuscripts to verify"
+        emptyHint="When new submissions arrive, they will appear in this queue."
+        ariaLabel="verification queue"
+        minWidth={1000}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Author</TableCell>
+            <TableCell>Updated</TableCell>
+            <TableCell>Title</TableCell>
+            <TableCell>Abstract</TableCell>
+            <TableCell>Keywords</TableCell>
+            <TableCell align="center">Files</TableCell>
+            <TableCell align="center">Payment</TableCell>
+            <TableCell align="center">Reviewer</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {user?.map((row) => (
+            <TableRow key={row.id}>
+              <TableCell sx={{ fontSize: '0.85rem' }}>
+                {row.articleAuthors?.[0]?.authorEmail || '—'}
+              </TableCell>
+              <TableCell sx={{ whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>
+                {formatDate(row.updatedAt)}
+              </TableCell>
+              <TableCell sx={{ fontWeight: 500, maxWidth: 160 }}>
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  {truncate(row.articleTitle, TITLE_MAX)}
+                </Typography>
+                {needsReadMore(row.articleTitle, TITLE_MAX) && (
+                  <Button
+                    size="small"
+                    onClick={() => setDetailDialog(row)}
+                    sx={{ mt: 0.25, p: 0, minWidth: 0, fontSize: '0.75rem' }}
+                  >
+                    Read more
+                  </Button>
+                )}
+              </TableCell>
+              <TableCell sx={{ maxWidth: 180 }}>
+                <Typography variant="body2" color="text.secondary">
+                  {truncate(row.articleAbstract, ABSTRACT_MAX)}
+                </Typography>
+                {needsReadMore(row.articleAbstract, ABSTRACT_MAX) && (
+                  <Button
+                    size="small"
+                    onClick={() => setDetailDialog(row)}
+                    sx={{ mt: 0.25, p: 0, minWidth: 0, fontSize: '0.75rem' }}
+                  >
+                    Read more
+                  </Button>
+                )}
+              </TableCell>
+              <TableCell sx={{ maxWidth: 120, fontSize: '0.8rem' }}>
+                <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                  {truncate(row.articleKeywords, KEYWORDS_MAX)}
+                </Typography>
+                {needsReadMore(row.articleKeywords, KEYWORDS_MAX) && (
+                  <Button
+                    size="small"
+                    onClick={() => setDetailDialog(row)}
+                    sx={{ mt: 0.25, p: 0, minWidth: 0, fontSize: '0.75rem' }}
+                  >
+                    Read more
+                  </Button>
+                )}
+              </TableCell>
+              <TableCell align="center">
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                  {(row.filesURL || []).filter(Boolean).map((url, i) => (
+                    <FileLink key={i} url={url} />
+                  ))}
+                </Box>
+              </TableCell>
+              <TableCell align="center">
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: 0.75,
+                  }}
+                >
+                  {row.paymentStatus ? (
+                    <StatusChip status="published" label="Paid" />
+                  ) : (
+                    <StatusChip status="pending" label="Unpaid" color="warning" />
+                  )}
+                  {row.paymentStatus && row.invoiceUrl && (
+                    <Button
+                      size="small"
+                      href={row.invoiceUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      sx={{ fontSize: '0.7rem', minWidth: 0, p: 0 }}
+                    >
+                      Invoice
+                    </Button>
+                  )}
+                </Box>
+              </TableCell>
+              <TableCell align="center">
+                {row.isAccepted ? (
+                  <Box>
+                    <StatusChip status="accepted" />
+                    {row.reviewerAcceptedBy && (
+                      <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 0.5 }}>
+                        {row.reviewerAcceptedBy.title} {row.reviewerAcceptedBy.surname}
+                      </Typography>
+                    )}
+                  </Box>
+                ) : (
+                  <StatusChip status="pending" label="Pending review" color="warning" />
+                )}
+              </TableCell>
+              <TableCell align="center">
+                <Stack direction="row" spacing={1} justifyContent="center">
+                  <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    startIcon={<CheckCircleOutlineIcon />}
+                    onClick={() => handleOpenAccept(row)}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    startIcon={<CancelOutlinedIcon />}
+                    onClick={() => handleOpenReject(row)}
+                  >
+                    Reject
+                  </Button>
+                </Stack>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </DashboardTable>
+
+      {/* Accept dialog — single instance */}
+      <Dialog open={acceptOpen} onClose={handleCloseAccept} aria-labelledby="accept-title">
+        <DialogTitle id="accept-title">Accept this manuscript?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {selected?.isAccepted && selected?.reviewerAcceptedBy ? (
+              <>
+                Accepted by reviewer:{' '}
+                <strong>
+                  {`${selected.reviewerAcceptedBy.title || ''} ${selected.reviewerAcceptedBy.surname || ''} ${selected.reviewerAcceptedBy.otherName || ''}`.trim()}
+                </strong>{' '}
+                ({selected.reviewerAcceptedBy.email}).
+                <br /><br />
+                Publishing will make it available to the public. This cannot be undone.
+              </>
+            ) : (
+              'Publishing will make this manuscript available to the public. This cannot be undone.'
+            )}
+          </DialogContentText>
+          {acceptError && (
+            <DialogContentText sx={{ color: 'error.main', mt: 2 }}>
+              {acceptError}
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCloseAccept} disabled={loading} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAcceptManuscript}
+            disabled={loading}
+            variant="contained"
+            color="success"
+          >
+            {loading ? 'Publishing…' : 'Accept manuscript'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Reject dialog — single instance */}
+      <Dialog
+        open={rejectOpen}
+        onClose={handleCloseReject}
+        PaperProps={{ component: 'form', onSubmit: handleRejectSubmit }}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Rejection message</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ mb: 2 }}>
+            Explain why this article was rejected. Optional correction files can be attached.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            required
+            margin="dense"
+            name="text"
+            label="Rejection message"
+            type="text"
+            fullWidth
+            multiline
+            minRows={3}
+            variant="outlined"
+            value={rejectionText}
+            onChange={(e) => setRejectionText(e.target.value)}
+          />
+          <Stack spacing={1} sx={{ mt: 2 }}>
+            {['Cover letter', 'Manuscript file', 'Supplementary file'].map((label) => (
+              <Button
+                key={label}
+                component="label"
+                variant="outlined"
+                startIcon={<CloudUploadIcon />}
+              >
+                {label}
+                <VisuallyHiddenInput
+                  type="file"
+                  accept=".pdf,.doc,.docx"
+                  onChange={handleFileChange}
+                />
+              </Button>
+            ))}
+            {files.length > 0 && (
+              <Typography variant="caption" color="text.secondary">
+                {files.length} file{files.length === 1 ? '' : 's'} selected
+              </Typography>
+            )}
+          </Stack>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleCloseReject} disabled={loading} variant="outlined">
+            Cancel
+          </Button>
+          <Button type="submit" disabled={loading} variant="contained" color="error">
+            {loading ? 'Sending…' : 'Send rejection'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Title / abstract / keywords expand */}
+      <Dialog
+        open={Boolean(detailDialog)}
+        onClose={() => setDetailDialog(null)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle sx={{ color: dashboardColors.ink, fontWeight: 600 }}>
+          Manuscript details
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography
+            variant="subtitle2"
+            sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 0.5 }}
+          >
+            Title
+          </Typography>
+          <DialogContentText sx={{ whiteSpace: 'pre-wrap', mb: 2.5, color: 'text.primary' }}>
+            {detailDialog?.articleTitle || '—'}
+          </DialogContentText>
+
+          <Typography
+            variant="subtitle2"
+            sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 0.5 }}
+          >
+            Abstract
+          </Typography>
+          <DialogContentText sx={{ whiteSpace: 'pre-wrap', mb: 2.5, color: 'text.primary' }}>
+            {detailDialog?.articleAbstract || '—'}
+          </DialogContentText>
+
+          <Typography
+            variant="subtitle2"
+            sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 0.5 }}
+          >
+            Keywords
+          </Typography>
+          <DialogContentText sx={{ whiteSpace: 'pre-wrap', color: 'text.primary' }}>
+            {detailDialog?.articleKeywords || '—'}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDetailDialog(null)} variant="contained">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
+  );
+};
+
+export default AdminMyManuscriptsDashboard;

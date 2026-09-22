@@ -19,7 +19,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateIssue, httpRoute } from '../helperFunctions.js';
 
-const SubmitManuscript = ({ user, checked }) => {
+const SubmitManuscript = ({ user, checked: checkedProp }) => {
     const [open, setOpen] = useState(false);
     const [alertStatus, setAlertStatus] = useState('success');
     const [alertText, setAlertText] = useState('');
@@ -28,15 +28,13 @@ const SubmitManuscript = ({ user, checked }) => {
     const navigate = useNavigate()
     const [authors, setAuthors] = useState([]) //collection of authors
     const [journalCategory, setJournalCategory] = useState([]);
-    // const [checked, setChecked] = useState(true);
+    const [issueType, setIssueType] = useState(
+        checkedProp === true ? 'special' : checkedProp === false ? 'regular' : null
+    );
+    const checked = issueType === 'special';
     const [userEmail, setUserEmail] = useState('')
     const [userAdmin, setUserAdmin] = useState()
     const [userId, setUserId] = useState('')
-    console.log(user, 'user in submit manuscript');
-    console.log(userId, 'userId in submit manuscript');
-
-
-    console.log(authors, 'total author data');
 
     const steps = [
         'Manuscript Details',
@@ -224,7 +222,7 @@ const SubmitManuscript = ({ user, checked }) => {
             setAlertStatus('success')
             setAlertText('Manuscript Submitted Successfully. Redirecting to your dashboard')
             setTimeout(() => {
-                navigate(`/dashboard/${userId}?tab=0`)
+                navigate(`/dashboard/${userId}?section=manuscripts`)
             }, 3000)
             setSubmitButtonDisabled(false)
         }
@@ -630,35 +628,143 @@ const SubmitManuscript = ({ user, checked }) => {
         }
     };
 
+    if (issueType === null) {
+        return (
+            <Box sx={{ maxWidth: 720, mx: 'auto' }}>
+                <Typography variant="h5" component="h2" sx={{ fontWeight: 600, mb: 1, color: 'primary.main' }}>
+                    Submit manuscript
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Choose how this manuscript should be published.
+                </Typography>
+                <Box
+                    sx={{
+                        display: 'grid',
+                        gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
+                        gap: 2,
+                    }}
+                >
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            border: '1px solid',
+                            borderColor: 'secondary.main',
+                            cursor: 'pointer',
+                            transition: 'border-color 180ms ease-out, box-shadow 180ms ease-out',
+                            '&:hover': {
+                                borderColor: 'primary.main',
+                                boxShadow: '0 4px 12px rgba(84, 58, 49, 0.1)',
+                            },
+                        }}
+                        onClick={() => setIssueType('regular')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') setIssueType('regular');
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: 'primary.main' }}>
+                            Regular issue
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Published in the next issue of the journal.
+                        </Typography>
+                        <Button variant="contained" fullWidth onClick={() => setIssueType('regular')}>
+                            Continue
+                        </Button>
+                    </Paper>
+                    <Paper
+                        elevation={0}
+                        sx={{
+                            p: 3,
+                            border: '1px solid',
+                            borderColor: 'secondary.main',
+                            cursor: 'pointer',
+                            transition: 'border-color 180ms ease-out, box-shadow 180ms ease-out',
+                            '&:hover': {
+                                borderColor: 'primary.main',
+                                boxShadow: '0 4px 12px rgba(84, 58, 49, 0.1)',
+                            },
+                        }}
+                        onClick={() => setIssueType('special')}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') setIssueType('special');
+                        }}
+                    >
+                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1, color: 'primary.main' }}>
+                            Special issue
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            Published in the current issue of the journal.
+                        </Typography>
+                        <Button variant="contained" fullWidth onClick={() => setIssueType('special')}>
+                            Continue
+                        </Button>
+                    </Paper>
+                </Box>
+            </Box>
+        );
+    }
+
     return (
-        <Box sx={{ 
-
-            margin: '0 auto', 
-            padding: 3,
-            minHeight: '100vh',
-        }}>
-            <Paper elevation={8} sx={{ borderRadius: 3, overflow: 'hidden' }}>
-                {/* Header */}
-                <Box sx={{ 
-                    background: 'primary.main', 
-
-                    p: 4, 
-                    textAlign: 'center' 
-                }}>
-                    <Typography variant="h4" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
-                        Submit Manuscript
-                    </Typography>
-                    <Typography variant="subtitle1" sx={{ opacity: 0.9 }}>
-
-                    </Typography>
+        <Box sx={{ margin: '0 auto', maxWidth: 960 }}>
+            <Paper
+                elevation={0}
+                sx={{
+                    borderRadius: 2,
+                    overflow: 'hidden',
+                    border: '1px solid',
+                    borderColor: 'secondary.main',
+                }}
+            >
+                <Box
+                    sx={{
+                        backgroundColor: 'primary.main',
+                        color: 'primary.contrastText',
+                        p: 3,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        flexWrap: 'wrap',
+                        gap: 1,
+                    }}
+                >
+                    <Box>
+                        <Typography variant="h5" component="h2" sx={{ fontWeight: 700 }}>
+                            Submit manuscript
+                        </Typography>
+                        <Typography variant="body2" sx={{ opacity: 0.9, mt: 0.5 }}>
+                            {checked ? 'Special issue' : 'Regular issue'}
+                        </Typography>
+                    </Box>
+                    <Button
+                        size="small"
+                        variant="outlined"
+                        onClick={() => {
+                            setIssueType(null);
+                            setActiveStep(0);
+                        }}
+                        sx={{
+                            color: 'primary.contrastText',
+                            borderColor: 'rgba(255,255,255,0.5)',
+                            '&:hover': {
+                                borderColor: 'primary.contrastText',
+                                backgroundColor: 'rgba(255,255,255,0.1)',
+                            },
+                        }}
+                    >
+                        Change issue type
+                    </Button>
                 </Box>
 
-                {/* Stepper */}
-                <Box sx={{ p: 3, bgcolor: 'white' }}>
+                <Box sx={{ p: 3, bgcolor: 'background.paper' }}>
                     <Stepper activeStep={activeStep} alternativeLabel>
                         {steps.map((label, index) => (
                             <Step key={label}>
-                                <StepLabel 
+                                <StepLabel
                                     onClick={() => handleStepClick(index)}
                                     sx={{ cursor: 'pointer' }}
                                 >
@@ -671,19 +777,19 @@ const SubmitManuscript = ({ user, checked }) => {
 
                 <Divider />
 
-                {/* Content */}
-                <Box sx={{ p: 3, bgcolor: 'white', minHeight: '500px' }}>
+                <Box sx={{ p: 3, bgcolor: 'background.paper' }}>
                     {renderStepContent(activeStep)}
                 </Box>
 
-                {/* Navigation */}
-                <Box sx={{ 
-                    p: 3, 
-                    bgcolor: 'grey.50', 
-                    display: 'flex', 
-                    justifyContent: 'space-between',
-                    alignItems: 'center'
-                }}>
+                <Box
+                    sx={{
+                        p: 3,
+                        bgcolor: 'background.default',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                    }}
+                >
                     <Button
                         disabled={activeStep === 0}
                         onClick={handleBack}
@@ -707,17 +813,9 @@ const SubmitManuscript = ({ user, checked }) => {
                                 size="large"
                                 onClick={handleSubmit}
                                 disabled={submitButtonDisabled}
-                                sx={{ 
-                                    minWidth: '250px',
-                                    height: '56px',
-                                    fontSize: '1.1rem',
-                                    background: 'primary.main',
-                                    '&:hover': {
-                                        background: 'primary.dark'
-                                    }
-                                }}
+                                sx={{ minWidth: 200 }}
                             >
-                                Submit Manuscript
+                                Submit manuscript
                             </Button>
                         )}
                     </Box>

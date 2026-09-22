@@ -48,7 +48,7 @@ const Navbar = () => {
           <div className="flex justify-around items-center space-x-3 sm:space-x-4 text-black font-medium">
             <NavLinksStatic />
             <Link 
-              to={currentUser ? `/dashboard/${currentUser?.user?.id}?tab=0`:`/login`} 
+              to={currentUser ? `/dashboard/${currentUser?.user?.id}?section=submit`:`/login`} 
               className="hover:text-[#543a31] transition-colors duration-200 text-sm sm:text-base"
             >
               Submit Manuscript
@@ -72,7 +72,7 @@ const Navbar = () => {
               (
                 <span className="p-2 space-x-2 flex items-center">
                   <Link 
-                    to={`/dashboard/${currentUser?.user?.id}`} 
+                    to={`/dashboard/${currentUser?.user?.id}?section=home`} 
                     className="hover:text-[#543a31] transition-colors duration-200 text-sm sm:text-base"
                   >
                     Dashboard
@@ -125,7 +125,7 @@ const Navbar = () => {
               <NavLinksStatic handleMobileNavBar={handleMobileNavBar} />
               {currentUser ? (
                 <Link 
-                  to={`/dashboard/${currentUser.user.id}?tab=1`} 
+                  to={`/dashboard/${currentUser.user.id}?section=submit`} 
                   onClick={handleMobileNavBar}
                   className="hover:text-[#543a31] transition-colors duration-200 font-medium"
                 >
@@ -162,7 +162,7 @@ const Navbar = () => {
                   (
                     <div className="flex flex-col gap-4 items-center w-full">
                       <Link 
-                        to={`/dashboard/${currentUser.user.id}`} 
+                        to={`/dashboard/${currentUser.user.id}?section=home`} 
                         onClick={handleMobileNavBar}
                         className="hover:text-[#543a31] transition-colors duration-200 font-medium text-base sm:text-lg"
                       >

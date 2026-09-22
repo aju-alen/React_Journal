@@ -117,6 +117,8 @@ export const getAllArticlesToVerify = async (req, res, next) => {
                 articleIssue: true,
                 articleVolume: true,
                 paymentStatus: true,
+                paymentIntent: true,
+                invoiceUrl: true,
                 rejectionFilesURL: true,
                 publicPdfName: true,
                 awsId: true,

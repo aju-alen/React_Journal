@@ -22,13 +22,13 @@ export const getOneUser = async (req, res, next) => {
             }
         })
         if (!user) {
-            res.status(404).send('User not found')
+            return res.status(404).send('User not found')
         }
-        res.status(200).json(user)
+        return res.status(200).json(user)
     }
     catch (err) {
         console.log(err);
-        res.status(400).send('An error occoured')
+        return res.status(400).send('An error occoured')
     }
 }
 export const getUserWithArticles = async (req, res, next) => {

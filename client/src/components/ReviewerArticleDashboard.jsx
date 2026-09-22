@@ -1,15 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import {
-  Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Paper,
   Button,
-  Chip,
   Snackbar,
   Alert,
   CircularProgress,
@@ -19,10 +15,14 @@ import {
   DialogActions,
   DialogContent,
   DialogContentText,
-  DialogTitle
+  DialogTitle,
 } from '@mui/material';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
 import { axiosTokenHeader, getPdfName, httpRoute } from '../helperFunctions';
 import { Link } from 'react-router-dom';
+import DashboardTable from './dashboard/DashboardTable';
+import StatusChip from './dashboard/StatusChip';
+import { dashboardColors } from '../utils/theme';
 
 const ReviewerArticleDashboard = () => {
   const [articles, setArticles] = useState([]);
@@ -44,11 +44,11 @@ const ReviewerArticleDashboard = () => {
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
       const res = await axios.get(`${httpRoute}/api/journalArticle/reviewer/articles`);
       setArticles(res.data);
-      setLoading(false);
     } catch (err) {
       console.error('Error fetching articles:', err);
-      setLoading(false);
       showAlert(err.response?.data?.message || 'Error fetching articles', 'error');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,11 +59,12 @@ const ReviewerArticleDashboard = () => {
 
   const handleAcceptConfirm = async () => {
     if (!selectedArticle) return;
-
     try {
       setAccepting(true);
       axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-      await axios.post(`${httpRoute}/api/journalArticle/reviewer/accept/${selectedArticle.id}`);
+      await axios.post(
+        `${httpRoute}/api/journalArticle/reviewer/accept/${selectedArticle.id}`
+      );
       setAcceptDialogOpen(false);
       setSelectedArticle(null);
       showAlert('Article accepted successfully', 'success');
@@ -87,171 +88,155 @@ const ReviewerArticleDashboard = () => {
     setAlertOpen(true);
   };
 
-  const handleCloseAlert = () => {
-    setAlertOpen(false);
-  };
-
-  const getStatusChip = (article) => {
-    if (article.isAccepted) {
-      if (article.reviewerAcceptedBy) {
-        const reviewerName = `${article.reviewerAcceptedBy.title || ''} ${article.reviewerAcceptedBy.surname || ''} ${article.reviewerAcceptedBy.otherName || ''}`.trim();
-        return (
-          <Chip 
-            label={`Accepted by ${reviewerName}`} 
-            color="success" 
-            size="small" 
-          />
-        );
-      }
-      return <Chip label="Accepted" color="success" size="small" />;
-    }
-    return <Chip label="In Review" color="warning" size="small" />;
-  };
-
   const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
+    if (!dateString) return '—';
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   const truncateText = (text, maxLength = 100) => {
-    if (!text) return 'N/A';
+    if (!text) return '—';
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return `${text.substring(0, maxLength)}…`;
   };
-
-  if (loading) {
-    return (
-      <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (articles.length === 0) {
-    return (
-      <Box p={3}>
-        <Typography variant="h6" gutterBottom>
-          Articles for Review
-        </Typography>
-        <Typography variant="body1" color="text.secondary">
-          No articles available for review at this time.
-        </Typography>
-      </Box>
-    );
-  }
 
   return (
     <Box>
-      <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
-        Articles for Review
+      <Typography
+        variant="h5"
+        component="h2"
+        sx={{ fontWeight: 600, color: dashboardColors.ink, mb: 2 }}
+      >
+        Articles for review
       </Typography>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 650 }} aria-label="reviewer articles table">
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>Article Title</strong></TableCell>
-              <TableCell><strong>Journal</strong></TableCell>
-              <TableCell align="center"><strong>Authors</strong></TableCell>
-              <TableCell align="center"><strong>Abstract</strong></TableCell>
-              <TableCell align="center"><strong>Status</strong></TableCell>
-              <TableCell align="center"><strong>Files</strong></TableCell>
-              <TableCell align="center"><strong>Received Date</strong></TableCell>
-              <TableCell align="center"><strong>Actions</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {articles.map((article) => (
-              <TableRow key={article.id} hover>
-                <TableCell component="th" scope="row">
-                  {article.articleTitle}
-                </TableCell>
-                <TableCell>
-                  {article.articlePublishedJournal?.journalAbbreviation || 'N/A'}
-                </TableCell>
-                <TableCell align="center">
-                  {Array.isArray(article.articleAuthors) && article.articleAuthors.length > 0
-                    ? article.articleAuthors.map((author, idx) => (
-                        <div key={idx}>
-                          {author.authorGivenName} {author.authorLastName}
-                        </div>
-                      ))
-                    : 'N/A'}
-                </TableCell>
-                <TableCell align="center" sx={{ maxWidth: 300 }}>
-                  {truncateText(article.articleAbstract, 150)}
-                </TableCell>
-                <TableCell align="center">
-                  {getStatusChip(article)}
-                </TableCell>
-                <TableCell sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} align="center">
-                  {Array.isArray(article.filesURL) && article.filesURL.map((url, idx) => (
-                    url && (
-                      <Link 
-                        key={idx} 
-                        to={url} 
-                        className='mx-2 bg-indigo-100 rounded-md' 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        style={{ fontSize: '10px', marginBottom: '4px' }}
-                      >
-                        📄{getPdfName(url)}
-                      </Link>
-                    )
-                  ))}
-                </TableCell>
-                <TableCell align="center">
-                  {formatDate(article.articleReceivedDate)}
-                </TableCell>
-                <TableCell align="center">
-                  {!article.isAccepted ? (
+
+      <DashboardTable
+        loading={loading}
+        empty={!loading && articles.length === 0}
+        emptyTitle="No articles available for review"
+        emptyHint="Assigned articles will appear here when they are ready."
+        ariaLabel="reviewer articles"
+        minWidth={800}
+      >
+        <TableHead>
+          <TableRow>
+            <TableCell>Title</TableCell>
+            <TableCell>Journal</TableCell>
+            <TableCell align="center">Authors</TableCell>
+            <TableCell>Abstract</TableCell>
+            <TableCell align="center">Status</TableCell>
+            <TableCell align="center">Files</TableCell>
+            <TableCell align="center">Received</TableCell>
+            <TableCell align="center">Actions</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {articles.map((article) => (
+            <TableRow key={article.id}>
+              <TableCell component="th" scope="row" sx={{ fontWeight: 500, maxWidth: 180 }}>
+                {article.articleTitle}
+              </TableCell>
+              <TableCell>
+                {article.articlePublishedJournal?.journalAbbreviation || '—'}
+              </TableCell>
+              <TableCell align="center" sx={{ fontSize: '0.85rem' }}>
+                {Array.isArray(article.articleAuthors) && article.articleAuthors.length > 0
+                  ? article.articleAuthors.map((author, idx) => (
+                      <div key={idx}>
+                        {author.authorGivenName} {author.authorLastName}
+                      </div>
+                    ))
+                  : '—'}
+              </TableCell>
+              <TableCell sx={{ maxWidth: 220, color: 'text.secondary', fontSize: '0.85rem' }}>
+                {truncateText(article.articleAbstract, 120)}
+              </TableCell>
+              <TableCell align="center">
+                {article.isAccepted ? (
+                  <StatusChip
+                    status="accepted"
+                    label={
+                      article.reviewerAcceptedBy
+                        ? `Accepted by ${article.reviewerAcceptedBy.surname || 'reviewer'}`
+                        : 'Accepted'
+                    }
+                  />
+                ) : (
+                  <StatusChip status="in review" />
+                )}
+              </TableCell>
+              <TableCell align="center">
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 0.5 }}>
+                  {(article.filesURL || []).filter(Boolean).map((url, idx) => (
                     <Button
-                      variant="contained"
-                      color="success"
+                      key={idx}
+                      component={Link}
+                      to={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       size="small"
-                      onClick={() => handleAcceptClick(article)}
+                      startIcon={<DescriptionOutlinedIcon sx={{ fontSize: 14 }} />}
+                      sx={{
+                        color: dashboardColors.ink,
+                        backgroundColor: dashboardColors.peach,
+                        fontSize: '0.7rem',
+                        px: 1,
+                        py: 0.25,
+                        '&:hover': { backgroundColor: '#e8d5cc' },
+                      }}
                     >
-                      Accept
+                      {getPdfName(url)}
                     </Button>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      Accepted
-                    </Typography>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                  ))}
+                </Box>
+              </TableCell>
+              <TableCell align="center" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+                {formatDate(article.articleReceivedDate)}
+              </TableCell>
+              <TableCell align="center">
+                {!article.isAccepted ? (
+                  <Button
+                    variant="contained"
+                    color="success"
+                    size="small"
+                    onClick={() => handleAcceptClick(article)}
+                  >
+                    Accept
+                  </Button>
+                ) : (
+                  <Typography variant="body2" color="text.secondary">
+                    Accepted
+                  </Typography>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </DashboardTable>
 
       <Dialog
         open={acceptDialogOpen}
         onClose={handleAcceptCancel}
         aria-labelledby="accept-dialog-title"
-        aria-describedby="accept-dialog-description"
       >
-        <DialogTitle id="accept-dialog-title">
-          Accept Article
-        </DialogTitle>
+        <DialogTitle id="accept-dialog-title">Accept article</DialogTitle>
         <DialogContent>
-          <DialogContentText id="accept-dialog-description">
-            Are you sure you want to accept this article? Once accepted, it will be marked for final admin approval before publication.
+          <DialogContentText>
+            Accepting marks this article for final admin approval before publication.
             <br /><br />
             <strong>Article:</strong> {selectedArticle?.articleTitle}
           </DialogContentText>
         </DialogContent>
-        <DialogActions>
-          <Button onClick={handleAcceptCancel} disabled={accepting}>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={handleAcceptCancel} disabled={accepting} variant="outlined">
             Cancel
           </Button>
-          <Button 
-            onClick={handleAcceptConfirm} 
-            variant="contained" 
+          <Button
+            onClick={handleAcceptConfirm}
+            variant="contained"
             color="success"
             disabled={accepting}
           >
@@ -263,11 +248,11 @@ const ReviewerArticleDashboard = () => {
       <Snackbar
         open={alertOpen}
         autoHideDuration={6000}
-        onClose={handleCloseAlert}
+        onClose={() => setAlertOpen(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
         <Alert
-          onClose={handleCloseAlert}
+          onClose={() => setAlertOpen(false)}
           severity={alertSeverity}
           variant="filled"
           sx={{ width: '100%' }}
@@ -280,4 +265,3 @@ const ReviewerArticleDashboard = () => {
 };
 
 export default ReviewerArticleDashboard;
-

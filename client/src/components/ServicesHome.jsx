@@ -12,7 +12,7 @@ const ServicesHome = () => {
                         <img src='./images/submit.png' alt='Submit' className='w-12 h-12 sm:w-16 sm:h-16 object-contain' />
                     </div>
                     <Link 
-                        to={currentUser ? `/dashboard/${currentUser?.user?.id}?tab=1`:`/login`} 
+                        to={currentUser ? `/dashboard/${currentUser?.user?.id}?section=submit`:`/login`} 
                         className='font-medium text-sm sm:text-base md:text-lg border-2 rounded-lg px-4 py-2 sm:px-6 sm:py-3 border-[#543a31] bg-white text-[#543a31] hover:bg-[#543a31] hover:text-white transition-all duration-300 block text-center shadow-sm hover:shadow-md'
                     >
                         <button>Submit Manuscript</button>
