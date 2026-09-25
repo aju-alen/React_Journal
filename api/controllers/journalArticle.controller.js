@@ -671,6 +671,14 @@ export const getCertificate = async (req, res, next) => {
     }
 };
 
+const contentTypeForManuscript = (publicPdfName) => {
+    const match = String(publicPdfName || '').toLowerCase().match(/\.(docx|pdf|doc)$/);
+    const ext = match?.[1];
+    if (ext === 'doc') return 'application/msword';
+    if (ext === 'docx') return 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+    return 'application/pdf';
+};
+
 // Get signed URL for PDF viewer with subscription validation
 export const getViewerSignedUrl = async (req, res, next) => {
     try {
@@ -720,7 +728,7 @@ export const getViewerSignedUrl = async (req, res, next) => {
             Bucket: BUCKET_NAME,
             Key: s3Key,
             ResponseContentDisposition: 'inline',
-            ResponseContentType: 'application/pdf'
+            ResponseContentType: contentTypeForManuscript(article.publicPdfName)
         });
 
         // Generate signed URL with 30 minute expiration

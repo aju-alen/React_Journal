@@ -17,6 +17,7 @@ import { axiosTokenHeader, httpRoute } from '../helperFunctions'
 import axios from 'axios'
 import FormSection from '../components/dashboard/FormSection'
 import { dashboardColors } from '../utils/theme'
+import { canonicalSlotName, slotFieldName } from '../utils/manuscriptFileName'
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -63,16 +64,26 @@ const EditArticle = () => {
   const handleFileChange = (event, id) => {
     const selected = event.target.files?.[0]
     if (!selected) return
+    const storedName = canonicalSlotName(selected, id, 'edit')
+    if (!storedName) {
+      event.target.value = ''
+      showAlert('error', 'Only PDF and Word files (.pdf, .doc, .docx) are allowed.')
+      return
+    }
     setFiles((prev) => {
       const without = prev.filter((file) => file.id !== id)
       return [...without, { id, file: selected }]
     })
     if (id === 1) {
-      publicPdfName.current = selected.name
+      publicPdfName.current = storedName
     }
   }
 
-  const getFileName = (id) => files.find((f) => f.id === id)?.file?.name
+  const getFileName = (id) => {
+    const selected = files.find((f) => f.id === id)?.file
+    if (!selected) return undefined
+    return canonicalSlotName(selected, id, 'edit')
+  }
   const hasManuscript = Boolean(getFileName(MANUSCRIPT_SLOT_ID))
 
   useEffect(() => {
@@ -119,16 +130,25 @@ const EditArticle = () => {
       setSubmitting(true)
       const fileData = new FormData()
       for (const file of files) {
-        fileData.append('s3Files', file.file)
+        const field = slotFieldName(file.id)
+        if (!field) continue
+        fileData.append(field, file.file)
       }
 
-      await axios.post(`${httpRoute}/api/s3/upload/${articleData.awsId}`, fileData)
+      const fileResp = await axios.post(
+        `${httpRoute}/api/s3/upload/${articleData.awsId}?stage=edit`,
+        fileData
+      )
+      const manuscriptName = fileResp.data?.manuscriptName
+      if (!manuscriptName) {
+        throw new Error('Upload did not return a manuscript name')
+      }
       const fileGet = await axios.get(`${httpRoute}/api/s3/${articleData.awsId}`)
       const filesUrl = fileGet.data.files
 
       const mergeForm = Object.assign({}, formData, {
         filesUrl,
-        publicPdfName: publicPdfName.current,
+        publicPdfName: manuscriptName,
       })
       await axios.post(
         `${httpRoute}/api/journalArticle/updateArticle/${articleId}`,

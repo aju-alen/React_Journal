@@ -19,9 +19,39 @@ const s3 = new S3({
     region: REGION
 });
 
+const ARTICLE_MIME_EXT = {
+    'application/pdf': 'pdf',
+    'application/msword': 'doc',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+};
+
+const ARTICLE_FIELD_BASE = {
+    coverLetter: 'cover_letter',
+    supplementary: 'supplementary',
+};
+
+const INVALID_ARTICLE_FILE = 'Only PDF and Word files are allowed';
+
+const articleFileExtension = (file) => {
+    if (file?.mimetype && ARTICLE_MIME_EXT[file.mimetype]) {
+        return ARTICLE_MIME_EXT[file.mimetype];
+    }
+    const match = String(file?.originalname || '').toLowerCase().match(/\.(docx|pdf|doc)$/);
+    return match ? match[1] : null;
+};
+
+const manuscriptBaseForStage = (stage) => (stage === 'edit' ? 'in_edit' : 'in_review');
+
 // Uploading ArticleFiles to AWS
 
- const uploadWithMulter = (awsId) => multer({
+ const uploadWithMulter = (awsId, stage) => multer({
+    fileFilter: (req, file, cb) => {
+        if (!articleFileExtension(file)) {
+            cb(new Error(INVALID_ARTICLE_FILE));
+            return;
+        }
+        cb(null, true);
+    },
     storage: mutlerS3({
         s3: s3,
         bucket: BUCKET_NAME,
@@ -32,51 +62,79 @@ const s3 = new S3({
         },
         key: function (req, file, cb) {
             const userId = req.userId;
-            const fileName = `${userId}/${awsId}/${file.originalname}`
-            cb(null, fileName)
+            const ext = articleFileExtension(file);
+            const base = file.fieldname === 'manuscript'
+                ? manuscriptBaseForStage(stage)
+                : ARTICLE_FIELD_BASE[file.fieldname];
+            if (!ext || !base) {
+                cb(new Error(INVALID_ARTICLE_FILE));
+                return;
+            }
+            cb(null, `${userId}/${awsId}/${base}.${ext}`);
         }
     })
-}).array('s3Files', 3);
+}).fields([
+    { name: 'manuscript', maxCount: 1 },
+    { name: 'coverLetter', maxCount: 1 },
+    { name: 'supplementary', maxCount: 1 },
+]);
+
+const removeReplacedArticleFiles = async (userId, awsId, keptKeys) => {
+    const existingObjects = await s3.listObjectsV2({
+        Bucket: BUCKET_NAME,
+        Prefix: `${userId}/${awsId}/`
+    });
+    const objects = (existingObjects.Contents || [])
+        .filter((obj) => !obj.Key.startsWith(`${userId}/${awsId}/RejectionFiles/`) && !keptKeys.has(obj.Key))
+        .map((obj) => ({ Key: obj.Key }));
+    if (objects.length === 0) return;
+    await s3.deleteObjects({
+        Bucket: BUCKET_NAME,
+        Delete: { Objects: objects }
+    });
+};
 
 export const uploadToAWS = async (req, res) => {
     const { awsId } = req.params;
     const userId = req.userId;
+    const stage = req.query.stage;
 console.log(awsId,userId,'awsId and userId');
-    try {
-        // Delete all objects in the existing folder
-        const listObjectsParams = {
-            Bucket: BUCKET_NAME,
-            Prefix: `${userId}/${awsId}/`
-        };
-        const existingObjects = await s3.listObjectsV2(listObjectsParams);
-        console.log(existingObjects, 'existing objects');
-       
-        if (  existingObjects.Contents?.length > 0 ) {
-            const deleteParams = {
-                Bucket: BUCKET_NAME,
-                Delete: {
-                    Objects: existingObjects.Contents.filter(obj => !obj.Key.startsWith(`${userId}/${awsId}/RejectionFiles/`))
-                    
-                }
-                
-            };
-           const resp = await s3.deleteObjects(deleteParams);
-            console.log(resp,'deleted files');
-        }
-
-        // Upload new files
-        const upload = uploadWithMulter(awsId);
-        upload(req, res, (err) => {
-            if (err) {
-                res.status(500).json({ message: 'An error occurred', error: err });
-            } else {
-                res.status(200).json({ message: 'Files uploaded successfully', files: req.files });
-            }
-        });
-    } catch (err) {
-        console.error('Error:', err);
-        res.status(500).json({ message: 'An error occurred', error: err });
+    if (stage !== 'review' && stage !== 'edit') {
+        return res.status(400).json({ message: 'Upload stage must be review or edit' });
     }
+
+    const upload = uploadWithMulter(awsId, stage);
+    upload(req, res, async (err) => {
+        if (err) {
+            const message = err.message || 'An error occurred';
+            const status = message === INVALID_ARTICLE_FILE ? 400 : 500;
+            res.status(status).json({ message, error: message });
+            return;
+        }
+        const manuscript = req.files?.manuscript?.[0];
+        if (!manuscript) {
+            res.status(400).json({ message: 'A manuscript file is required' });
+            return;
+        }
+        try {
+            const keptKeys = new Set();
+            const remember = (field, base) => {
+                const file = req.files?.[field]?.[0];
+                const ext = file ? articleFileExtension(file) : null;
+                if (ext) keptKeys.add(`${userId}/${awsId}/${base}.${ext}`);
+            };
+            remember('manuscript', manuscriptBaseForStage(stage));
+            remember('coverLetter', ARTICLE_FIELD_BASE.coverLetter);
+            remember('supplementary', ARTICLE_FIELD_BASE.supplementary);
+            await removeReplacedArticleFiles(userId, awsId, keptKeys);
+            const ext = articleFileExtension(manuscript);
+            const manuscriptName = `${manuscriptBaseForStage(stage)}.${ext}`;
+            res.status(200).json({ message: 'Files uploaded successfully', files: req.files, manuscriptName });
+        } catch (cleanupErr) {
+            console.error('Error:', cleanupErr);
+            res.status(500).json({ message: 'An error occurred', error: cleanupErr.message });
+        }
+    });
 };
 
 // Get all uploaded files URL to store in db

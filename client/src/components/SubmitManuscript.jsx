@@ -18,6 +18,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import { v4 as uuidv4 } from 'uuid';
 import { calculateIssue, httpRoute } from '../helperFunctions.js';
+import { canonicalSlotName, slotFieldName } from '../utils/manuscriptFileName.js';
 
 const SubmitManuscript = ({ user, checked: checkedProp }) => {
     const [open, setOpen] = useState(false);
@@ -86,6 +87,15 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
         const file = event.target.files[0];
         if (!file) return;
 
+        const storedName = canonicalSlotName(file, id, 'review');
+        if (!storedName) {
+            event.target.value = '';
+            setAlertStatus('error');
+            setAlertText('Only PDF and Word files (.pdf, .doc, .docx) are allowed.');
+            setOpen(true);
+            return;
+        }
+
         // Set initial progress and status
         setUploadProgress(prev => ({ ...prev, [id]: 0 }));
         setFileStatus(prev => ({ ...prev, [id]: 'uploading' }));
@@ -110,7 +120,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
         setFiles([...duplicate, { id, file: file }])
 
         if (id === 1) {
-            publicPdfName.current = file.name
+            publicPdfName.current = storedName
         }
     };
 
@@ -165,7 +175,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
     }
     const handleSubmit = async () => {
         console.log(files.length, 'files length in submit');
-        if (files.length === 0) {
+        if (!files.some((file) => file.id === 1)) {
             console.log('Please upload the Manuscript file. It is mandatory to proceed.')
             setAlertStatus('error')
             setAlertText('Please upload the Manuscript file. It is mandatory to proceed.')
@@ -187,11 +197,17 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
             const fileData = new FormData();
             for (const file of files) {
                 console.log(file, 'file in submit');
-                fileData.append('s3Files', file.file)
+                const field = slotFieldName(file.id);
+                if (!field) continue;
+                fileData.append(field, file.file)
             }
             console.log(fileData, 'file data');
 
-            const fileResp = await axios.post(`${httpRoute}/api/s3/upload/${awsId}`, fileData)
+            const fileResp = await axios.post(`${httpRoute}/api/s3/upload/${awsId}?stage=review`, fileData)
+            const manuscriptName = fileResp.data?.manuscriptName
+            if (!manuscriptName) {
+                throw new Error('Upload did not return a manuscript name')
+            }
             console.log(fileResp, 'file response');
             const fileGet = await axios.get(`${httpRoute}/api/s3/${awsId}`)
             console.log(fileGet, 'file get data');
@@ -211,7 +227,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
             const volume = articleYear - journalYear + 1;
 
 
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { filesUrl }, { awsId }, { publicPdfName: publicPdfName.current }, { articleIssue: issue }, { articleVolume: volume }, { userId: userId })
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { filesUrl }, { awsId }, { publicPdfName: manuscriptName }, { articleIssue: issue }, { articleVolume: volume }, { userId: userId })
             console.log(mergeForm, 'final form data');
 
             //create publicPdfurl deets
@@ -486,7 +502,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
                                         {currentFile && (
                                             <Box sx={{ mb: 2 }}>
                                                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                                                    Selected: {currentFile.file.name}
+                                                    Selected: {canonicalSlotName(currentFile.file, file.index, 'review')}
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     Size: {(currentFile.file.size / 1024 / 1024).toFixed(2)} MB
@@ -601,7 +617,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
                                             )}
                                             <Box sx={{ flexGrow: 1 }}>
                                                 <Typography variant="body1" sx={{ fontWeight: 600 }}>
-                                                    {file.file?.name || 'No file selected'}
+                                                    {canonicalSlotName(file.file, file.id, 'review') || 'No file selected'}
                                                 </Typography>
                                                 <Typography variant="caption" color="text.secondary">
                                                     {file.file ? `${(file.file.size / 1024 / 1024).toFixed(2)} MB` : 'No file selected'}
