@@ -2212,6 +2212,15 @@ export const articleAcceptedEmailTemplate = ({ articleTitle, authors, volume, is
               </tr>
               <tr>
                 <td style="padding: 28px 36px 36px; font-family: Georgia, 'Times New Roman', serif;">
+                  <p style="margin: 0 0 8px; font-size: 18px; line-height: 1.4; color: #2a211c;">
+                    Certificate of publication
+                  </p>
+                  <p style="margin: 0 0 12px; font-size: 16px; line-height: 1.7; color: #3d332e;">
+                    Your certificate is available from your account. To open it:
+                  </p>
+                  <p style="margin: 0 0 6px; font-size: 16px; line-height: 1.6; color: #3d332e;">1. Sign in at scientificjournalsportal.com.</p>
+                  <p style="margin: 0 0 6px; font-size: 16px; line-height: 1.6; color: #3d332e;">2. Open My manuscripts.</p>
+                  <p style="margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: #3d332e;">3. On this article, choose Certificate. The PDF opens in a new tab.</p>
                   <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.7; color: #3d332e;">
                     Thank you for publishing with us.
                   </p>
