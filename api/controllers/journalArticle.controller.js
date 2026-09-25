@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import { Buffer } from 'buffer';
 import QRCode from 'qrcode';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { articleSubmittedEmailTemplate, articleRejectionEmailTemplate } from "../utils/emailTemplates.js";
+import { articleSubmittedEmailTemplate, articleRejectionEmailTemplate, articleAcceptedEmailTemplate } from "../utils/emailTemplates.js";
 import { resendEmailBoiler } from "../utils/resend-email-boiler.js";
 dotenv.config();
 const prisma = new PrismaClient()
@@ -338,6 +338,16 @@ export const acceptManuscript = async (req, res, next) => {
             }
         });
         console.log(journalArticle);
+        const authors = Array.isArray(article.articleAuthors) ? article.articleAuthors : [];
+        const recipient = authors[0]?.authorEmail;
+        if (recipient) {
+            sendArticleAcceptedEmail(recipient, {
+                articleTitle: article.articleTitle,
+                authors: formatAuthorNames(authors),
+                volume: article.articleVolume,
+                issue: article.articleIssue,
+            });
+        }
         await prisma.$disconnect();
         res.status(200).json(journalArticle);
     }
@@ -346,6 +356,30 @@ export const acceptManuscript = async (req, res, next) => {
         await prisma.$disconnect();
         return next(createError(400, 'An error occurred'));
         
+    }
+}
+
+const formatAuthorNames = (authors) => {
+    const names = authors
+        .map((author) => [author?.authorGivenName, author?.authorLastName].filter(Boolean).join(' '))
+        .filter(Boolean);
+    if (names.length <= 1) return names[0] || '';
+    if (names.length === 2) return `${names[0]} and ${names[1]}`;
+    return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+};
+
+const sendArticleAcceptedEmail = async (email, details) => {
+    try {
+        const emailHtml = articleAcceptedEmailTemplate(details);
+        await resendEmailBoiler(
+            process.env.GMAIL_AUTH_USER,
+            email,
+            'Article Accepted for Publication',
+            emailHtml
+        );
+    }
+    catch (err) {
+        console.log("Err sending Article Accepted email", err);
     }
 }
 

@@ -2130,6 +2130,115 @@ export const articleRejectionEmailTemplate = (email) => {
   `;
 };
 
+const escapeEmailText = (value) => String(value || '')
+  .replace(/&/g, '&amp;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;');
+
+export const articleAcceptedEmailTemplate = ({ articleTitle, authors, volume, issue } = {}) => {
+  const safeTitle = escapeEmailText(articleTitle || 'your manuscript');
+  const safeAuthors = escapeEmailText(authors);
+  const safeVolume = escapeEmailText(volume);
+  const safeIssue = escapeEmailText(issue);
+
+  const metaCells = [
+    safeVolume ? `<td width="50%" valign="top" style="padding: 14px 16px; font-family: Georgia, 'Times New Roman', serif;"><p style="margin: 0 0 4px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7a655c;">Volume</p><p style="margin: 0; font-size: 18px; color: #2a211c;">${safeVolume}</p></td>` : '',
+    safeIssue ? `<td width="50%" valign="top" style="padding: 14px 16px; font-family: Georgia, 'Times New Roman', serif; ${safeVolume ? 'border-left: 1px solid #e7dfd6;' : ''}"><p style="margin: 0 0 4px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7a655c;">Issue</p><p style="margin: 0; font-size: 18px; color: #2a211c;">${safeIssue}</p></td>` : '',
+  ].filter(Boolean).join('');
+
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Article Accepted - Scientific Journals Portal</title>
+    </head>
+    <body style="margin: 0; padding: 0; background-color: #f3efe8;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3efe8;">
+        <tr>
+          <td align="center" style="padding: 32px 16px;">
+            <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width: 640px; width: 100%; background-color: #fffdf9; border: 1px solid #e4d9ce;">
+              <tr>
+                <td style="background-color: #543a31; height: 8px; font-size: 0; line-height: 0;">&nbsp;</td>
+              </tr>
+              <tr>
+                <td style="padding: 28px 36px 20px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td valign="middle">
+                        <img src="https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg"
+                             alt="Scientific Journals Portal"
+                             width="120"
+                             style="display: block; width: 120px; height: auto;" />
+                      </td>
+                      <td valign="middle" align="right" style="font-family: Georgia, 'Times New Roman', serif; font-size: 14px; color: #543a31;">
+                        Scientific Journals Portal
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 8px 36px 0;">
+                  <h1 style="margin: 0 0 16px; font-family: Georgia, 'Times New Roman', serif; font-size: 28px; line-height: 1.25; font-weight: normal; color: #2a211c;">
+                    Manuscript accepted
+                  </h1>
+                  <p style="margin: 0 0 24px; font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.7; color: #3d332e;">
+                    The editorial office has accepted the manuscript below for publication.
+                    It is now published on the Scientific Journals Portal.
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 0 36px 8px;">
+                  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #faf7f2; border-top: 1px solid #e7dfd6; border-bottom: 1px solid #e7dfd6;">
+                    <tr>
+                      <td style="padding: 18px 16px 8px; font-family: Georgia, 'Times New Roman', serif;">
+                        <p style="margin: 0 0 6px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7a655c;">Title</p>
+                        <p style="margin: 0; font-size: 18px; line-height: 1.45; color: #2a211c;">${safeTitle}</p>
+                      </td>
+                    </tr>
+                    ${safeAuthors ? `<tr>
+                      <td style="padding: 8px 16px 16px; font-family: Georgia, 'Times New Roman', serif;">
+                        <p style="margin: 0 0 6px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #7a655c;">Authors</p>
+                        <p style="margin: 0; font-size: 16px; line-height: 1.5; color: #2a211c;">${safeAuthors}</p>
+                      </td>
+                    </tr>` : ''}
+                    ${metaCells ? `<tr><td style="border-top: 1px solid #e7dfd6;"><table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>${metaCells}</tr></table></td></tr>` : ''}
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 28px 36px 36px; font-family: Georgia, 'Times New Roman', serif;">
+                  <p style="margin: 0 0 22px; font-size: 16px; line-height: 1.7; color: #3d332e;">
+                    Thank you for publishing with us.
+                  </p>
+                  <a href="https://scientificjournalsportal.com/"
+                     style="display: inline-block; padding: 12px 22px; background-color: #543a31; color: #fffdf9; font-family: Arial, Helvetica, sans-serif; font-size: 14px; text-decoration: none;">
+                    View on the portal
+                  </a>
+                  <p style="margin: 28px 0 0; font-size: 15px; line-height: 1.6; color: #3d332e;">
+                    Sincerely,<br />
+                    Scientific Journals Portal
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 16px 36px 22px; border-top: 1px solid #e7dfd6; font-family: Arial, Helvetica, sans-serif; font-size: 12px; line-height: 1.5; color: #7a655c;">
+                  This message was sent by Scientific Journals Portal. Please do not reply to this email.
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+};
+
 /**
  * Subscription payment successful email template
  * @param {string} userName - User's name or surname
