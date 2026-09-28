@@ -1,6 +1,6 @@
 import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import { FormControl, InputLabel, MenuItem, Select, Chip, Card, CardContent, Typography, Stepper, Step, StepLabel, Paper, Divider, IconButton, Tooltip, LinearProgress, CircularProgress } from '@mui/material';
+import { FormControl, FormControlLabel, FormLabel, InputLabel, MenuItem, Radio, RadioGroup, Select, Chip, Card, CardContent, Typography, Stepper, Step, StepLabel, Paper, Divider, IconButton, Tooltip, LinearProgress, CircularProgress } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -36,6 +36,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
     const [userEmail, setUserEmail] = useState('')
     const [userAdmin, setUserAdmin] = useState()
     const [userId, setUserId] = useState('')
+    const [accessModel, setAccessModel] = useState('subscription')
 
     const steps = [
         'Manuscript Details',
@@ -227,7 +228,7 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
             const volume = articleYear - journalYear + 1;
 
 
-            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { filesUrl }, { awsId }, { publicPdfName: manuscriptName }, { articleIssue: issue }, { articleVolume: volume }, { userId: userId })
+            const mergeForm = Object.assign({}, formData, { authors: authors }, { specialReview: checked }, { filesUrl }, { awsId }, { publicPdfName: manuscriptName }, { articleIssue: issue }, { articleVolume: volume }, { userId: userId }, { accessModel })
             console.log(mergeForm, 'final form data');
 
             //create publicPdfurl deets
@@ -583,6 +584,37 @@ const SubmitManuscript = ({ user, checked: checkedProp }) => {
                                 <Typography><strong>Title:</strong> {formData.articleTitle || 'Not provided'}</Typography>
                                 <Typography><strong>Keywords:</strong> {formData.articleKeywords || 'Not provided'}</Typography>
                                 <Typography><strong>Special Review:</strong> {checked ? 'Yes' : 'No'}</Typography>
+                                <Typography><strong>Access model:</strong> {accessModel === 'open_access' ? 'Open access' : 'Subscription-based'}</Typography>
+                            </Paper>
+
+                            <Paper elevation={1} sx={{ p: 3 }}>
+                                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>Access model</Typography>
+                                <FormControl component="fieldset">
+                                    <FormLabel component="legend" sx={{ mb: 1 }}>
+                                        How should this article be accessed after publishing?
+                                    </FormLabel>
+                                    <RadioGroup
+                                        value={accessModel}
+                                        onChange={(e) => setAccessModel(e.target.value)}
+                                    >
+                                        <FormControlLabel
+                                            value="open_access"
+                                            control={<Radio />}
+                                            label="Submit this article as open access"
+                                        />
+                                        <Typography variant="body2" color="text.secondary" sx={{ ml: 4, mb: 2 }}>
+                                            Article processing charges (APC) will apply. The article will be openly viewable and downloadable by all users immediately after approval once APC payment is completed.
+                                        </Typography>
+                                        <FormControlLabel
+                                            value="subscription"
+                                            control={<Radio />}
+                                            label="Subscription-based access"
+                                        />
+                                        <Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>
+                                            No APC. Users will need to subscribe to access the full article. The abstract will be available as soon as the article is accepted and approved for publishing.
+                                        </Typography>
+                                    </RadioGroup>
+                                </FormControl>
                             </Paper>
 
                             <Paper elevation={1} sx={{ p: 3 }}>

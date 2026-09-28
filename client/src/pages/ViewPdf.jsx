@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { httpRoute, axiosTokenHeader } from '../helperFunctions.js';
 import { DNA } from 'react-loader-spinner';
 
 export default function ViewPdf() {
     const { articleId } = useParams();
+    const [searchParams] = useSearchParams();
+    const isOpenAccess = searchParams.get('access') === 'open';
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [pdfUrl, setPdfUrl] = useState(null);
@@ -16,16 +18,23 @@ export default function ViewPdf() {
     useEffect(() => {
         const fetchSignedUrl = async () => {
             try {
-                axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
-                const response = await axios.get(`${httpRoute}/api/journalArticle/get-viewer-url/${articleId}`);
-                
+                let response;
+                if (isOpenAccess) {
+                    response = await axios.get(`${httpRoute}/api/journalArticle/open-access/viewer/${articleId}`);
+                } else {
+                    axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                    response = await axios.get(`${httpRoute}/api/journalArticle/get-viewer-url/${articleId}`);
+                }
+
                 setPdfUrl(response.data.signedUrl);
                 setArticleTitle(response.data.articleTitle);
                 setLoading(false);
             } catch (err) {
                 console.error('Error fetching PDF URL:', err);
                 if (err.response?.status === 403) {
-                    setError('Subscription required or expired. Please subscribe to view this article.');
+                    setError(isOpenAccess
+                        ? 'This article is not available as open access.'
+                        : 'Subscription required or expired. Please subscribe to view this article.');
                 } else if (err.response?.status === 404) {
                     setError('Article not found.');
                 } else {
@@ -36,10 +45,10 @@ export default function ViewPdf() {
         };
 
         fetchSignedUrl();
-    }, [articleId]);
+    }, [articleId, isOpenAccess]);
 
     useEffect(() => {
-        if (!pdfUrl) return;
+        if (!pdfUrl || isOpenAccess) return;
 
         // Disable right-click
         const disableRightClick = (e) => {
@@ -226,7 +235,7 @@ export default function ViewPdf() {
                 navigator.clipboard.writeText = originalWriteText;
             }
         };
-    }, [pdfUrl]);
+    }, [pdfUrl, isOpenAccess]);
 
     // Generate watermark text
     const getWatermarkText = () => {
@@ -239,7 +248,7 @@ export default function ViewPdf() {
 
     if (loading) {
         return (
-            <div className='flex justify-center items-center h-screen'>
+            <div className='flex justify-center items-center pt-[5.5rem] sm:pt-[6.5rem] md:pt-28 h-screen box-border'>
                 <DNA
                     visible={true}
                     height="80"
@@ -254,7 +263,7 @@ export default function ViewPdf() {
 
     if (error) {
         return (
-            <div className='flex flex-col justify-center items-center h-screen p-8'>
+            <div className='flex flex-col justify-center items-center pt-[5.5rem] sm:pt-[6.5rem] md:pt-28 h-screen box-border p-8'>
                 <div className='text-center max-w-md'>
                     <h2 className='text-2xl font-bold mb-4 text-red-600'>Error</h2>
                     <p className='text-lg mb-6'>{error}</p>
@@ -271,75 +280,78 @@ export default function ViewPdf() {
 
     return (
         <div 
+            className="pt-[5.5rem] sm:pt-[6.5rem] md:pt-28 h-screen box-border"
             style={{ 
                 position: 'relative', 
                 width: '100%', 
-                height: '100vh', 
                 overflow: 'hidden',
-                userSelect: 'none',
-                WebkitUserSelect: 'none',
-                MozUserSelect: 'none',
-                msUserSelect: 'none'
+                userSelect: isOpenAccess ? 'auto' : 'none',
+                WebkitUserSelect: isOpenAccess ? 'auto' : 'none',
+                MozUserSelect: isOpenAccess ? 'auto' : 'none',
+                msUserSelect: isOpenAccess ? 'auto' : 'none'
             }}
-            onContextMenu={(e) => e.preventDefault()}
-            onSelectStart={(e) => e.preventDefault()}
-            onDragStart={(e) => e.preventDefault()}
+            onContextMenu={isOpenAccess ? undefined : (e) => e.preventDefault()}
+            onSelectStart={isOpenAccess ? undefined : (e) => e.preventDefault()}
+            onDragStart={isOpenAccess ? undefined : (e) => e.preventDefault()}
         >
-            {/* Watermark Overlay */}
-            <div
-                style={{
-                    position: 'fixed',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    pointerEvents: 'none',
-                    zIndex: 9999,
-                    background: 'transparent',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    overflow: 'hidden'
-                }}
-            >
+            {/* Watermark Overlay — subscription content only */}
+            {!isOpenAccess && (
                 <div
                     style={{
-                        color: 'rgba(0, 0, 0, 0.15)',
-                        fontSize: '12px',
-                        fontWeight: 'bold',
-                        transform: 'rotate(-45deg)',
-                        whiteSpace: 'nowrap',
-                        userSelect: 'none',
-                        WebkitUserSelect: 'none',
-                        MozUserSelect: 'none',
-                        msUserSelect: 'none'
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        pointerEvents: 'none',
+                        zIndex: 9999,
+                        background: 'transparent',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        overflow: 'hidden'
                     }}
                 >
-                    {getWatermarkText()}
+                    <div
+                        style={{
+                            color: 'rgba(0, 0, 0, 0.15)',
+                            fontSize: '12px',
+                            fontWeight: 'bold',
+                            transform: 'rotate(-45deg)',
+                            whiteSpace: 'nowrap',
+                            userSelect: 'none',
+                            WebkitUserSelect: 'none',
+                            MozUserSelect: 'none',
+                            msUserSelect: 'none'
+                        }}
+                    >
+                        {getWatermarkText()}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* PDF Iframe with inline content disposition from backend */}
             <iframe
                 src={pdfUrl}
                 title={articleTitle}
                 type="application/pdf"
+                className="h-full"
                 style={{
                     width: '100%',
-                    height: '100vh',
                     border: 'none',
                     position: 'relative',
                     zIndex: 1,
-                    userSelect: 'none',
-                    WebkitUserSelect: 'none',
-                    MozUserSelect: 'none',
-                    msUserSelect: 'none',
+                    userSelect: isOpenAccess ? 'auto' : 'none',
+                    WebkitUserSelect: isOpenAccess ? 'auto' : 'none',
+                    MozUserSelect: isOpenAccess ? 'auto' : 'none',
+                    msUserSelect: isOpenAccess ? 'auto' : 'none',
                     pointerEvents: 'auto'
                 }}
-                onContextMenu={(e) => e.preventDefault()}
+                onContextMenu={isOpenAccess ? undefined : (e) => e.preventDefault()}
                 onLoad={() => {
                     console.log('PDF iframe loaded successfully');
                     // Try to disable selection in iframe (may not work due to cross-origin)
+                    if (isOpenAccess) return;
                     try {
                         const iframe = document.querySelector('iframe[title="' + articleTitle + '"]');
                         if (iframe && iframe.contentDocument) {
@@ -358,4 +370,3 @@ export default function ViewPdf() {
         </div>
     );
 }
-

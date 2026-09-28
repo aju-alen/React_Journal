@@ -98,6 +98,7 @@ model Article {
   paymentCurrency           String?
   paymentDate               DateTime?
   invoiceUrl                String? @db.VarChar(1000)
+  accessModel               String  @default("subscription")
   rejectionFilesURL         Json
   publicPdfName             String
   awsId                     String

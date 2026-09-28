@@ -113,6 +113,36 @@ export default function Article() {
         }
     }
 
+    const isOpenAccess = journal?.paymentStatus === true;
+
+    const handleOpenAccessView = () => {
+        window.open(`/view-pdf/${articleId}?access=open`, '_blank');
+    };
+
+    const handleOpenAccessDownload = async () => {
+        try {
+            const response = await axios.get(`${httpRoute}/api/journalArticle/open-access/download/${articleId}`);
+            if (response.data.signedUrl) {
+                window.open(response.data.signedUrl, '_blank');
+            }
+        } catch (err) {
+            console.error('Error downloading open access PDF:', err);
+            alert('Failed to download PDF. Please try again.');
+        }
+    };
+
+    const handleFullPdfClick = (event) => {
+        if (isOpenAccess) {
+            handleOpenAccessView();
+            return;
+        }
+        if (currentUser) {
+            handleCheckSubscription();
+            return;
+        }
+        handleClick({ vertical: 'top', horizontal: 'center' })(event);
+    };
+
     return (
         <div>
             {loading ? ((<div className='flex justify-center items-center h-96'>
@@ -136,6 +166,9 @@ export default function Article() {
       <h2 className="text-lg md:text-xl lg:text-2xl font-medium text-left mb-4">
         {journal.articleTitle}
       </h2>
+      {isOpenAccess && (
+        <p className="text-sm font-semibold text-green-700 mb-3 text-left">Open access</p>
+      )}
 
       {/* Authors */}
       <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-4">
@@ -188,12 +221,7 @@ export default function Article() {
                             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                 <TabList onChange={handleChange} aria-label="lab API tabs example">
                                     <Tab label="Abstract" value="1" />
-                                    {
-                                        currentUser ?
-                                            <Tab label="Full PDF" value="2" onClick={handleCheckSubscription} />
-                                            : <Tab label="Full PDF" value="2" onClick={handleClick({ vertical: 'top', horizontal: 'center' })} />
-                                    }
-
+                                    <Tab label="Full PDF" value="2" onClick={handleFullPdfClick} />
                                     {/* <Tab label="Item Three" value="3" /> */}
                                 </TabList>
                             </Box>
@@ -204,6 +232,24 @@ export default function Article() {
                                 </div>
                             </TabPanel>
                             <TabPanel value="2">
+                                {isOpenAccess ? (
+                                    <div className="flex flex-col sm:flex-row gap-3 py-4">
+                                        <button
+                                            type="button"
+                                            onClick={handleOpenAccessView}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                        >
+                                            View full PDF
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={handleOpenAccessDownload}
+                                            className="px-4 py-2 border border-blue-600 text-blue-700 rounded hover:bg-blue-50"
+                                        >
+                                            Download PDF
+                                        </button>
+                                    </div>
+                                ) : null}
                             </TabPanel>
                             <TabPanel value="3">Item Three</TabPanel>
                         </TabContext>

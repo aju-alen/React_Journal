@@ -13,10 +13,24 @@ dotenv.config();
 const prisma = new PrismaClient()
 
 
+const ALLOWED_ACCESS_MODELS = ['open_access', 'subscription'];
+
+const normalizeAccessModel = (value) => {
+    if (value === undefined || value === null || value === '') {
+        return 'subscription';
+    }
+    return value;
+};
+
 export const createJournalArticle = async (req, res, next) => {
     
     console.log(req.body.publicPdfName,"public pdf name");
     try {
+        const accessModel = normalizeAccessModel(req.body.accessModel);
+        if (!ALLOWED_ACCESS_MODELS.includes(accessModel)) {
+            return next(createError(400, 'Invalid accessModel. Must be open_access or subscription'));
+        }
+
         const journalArticle = await prisma.article.create({
           data: {
             articleTitle: req.body.articleTitle,
@@ -32,6 +46,7 @@ export const createJournalArticle = async (req, res, next) => {
             publicPdfName: req.body.publicPdfName,
             articleIssue: req.body.articleIssue,
             articleVolume: req.body.articleVolume,
+            accessModel,
           },
         });        
       
@@ -713,6 +728,59 @@ const contentTypeForManuscript = (publicPdfName) => {
     return 'application/pdf';
 };
 
+const isOpenAccess = (article) => article?.paymentStatus === true;
+
+const buildManuscriptS3Key = (article) =>
+    `${article.userId}/${article.awsId}/${article.publicPdfName}`;
+
+const createManuscriptSignedUrl = async (article, disposition) => {
+    const s3Key = buildManuscriptS3Key(article);
+    const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: s3Key,
+        ResponseContentDisposition: disposition,
+        ResponseContentType: contentTypeForManuscript(article.publicPdfName)
+    });
+    return getSignedUrl(s3, command, { expiresIn: 1800 });
+};
+
+export const updateArticleAccessModel = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        const accessModel = normalizeAccessModel(req.body.accessModel);
+
+        if (!ALLOWED_ACCESS_MODELS.includes(accessModel)) {
+            return next(createError(400, 'Invalid accessModel. Must be open_access or subscription'));
+        }
+
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        if (article.userId !== req.userId) {
+            return next(createError(401, 'Not authorized to update article access model'));
+        }
+
+        if (article.paymentStatus === true && accessModel === 'subscription') {
+            return next(createError(400, 'Paid open-access articles cannot be switched back to subscription'));
+        }
+
+        const updated = await prisma.article.update({
+            where: { id: articleId },
+            data: { accessModel }
+        });
+
+        res.status(200).json({ message: 'Access model updated', article: updated });
+    } catch (err) {
+        console.error('Update Article Access Model Error:', err);
+        return next(createError(500, 'Failed to update access model'));
+    }
+};
+
 // Get signed URL for PDF viewer with subscription validation
 export const getViewerSignedUrl = async (req, res, next) => {
     try {
@@ -737,45 +805,98 @@ export const getViewerSignedUrl = async (req, res, next) => {
             return next(createError(404, 'Article not found'));
         }
 
-        // Get user subscription
-        const subscription = await prisma.subscription.findFirst({
-            where: {
-                subscriptionEmail: user.email
+        if (!isOpenAccess(article)) {
+            // Get user subscription
+            const subscription = await prisma.subscription.findFirst({
+                where: {
+                    subscriptionEmail: user.email
+                }
+            });
+
+            if (!subscription) {
+                return next(createError(403, 'Subscription required'));
             }
-        });
 
-        if (!subscription) {
-            return next(createError(403, 'Subscription required'));
+            // Check if subscription is valid
+            const currentTimeUnix = Math.floor(Date.now() / 1000);
+            if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
+                return next(createError(403, 'Subscription expired'));
+            }
         }
 
-        // Check if subscription is valid
-        const currentTimeUnix = Math.floor(Date.now() / 1000);
-        if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
-            return next(createError(403, 'Subscription expired'));
-        }
-
-        // Construct S3 key
-        const s3Key = `${article.userId}/${article.awsId}/${article.publicPdfName}`;
-
-        // Create GetObjectCommand with inline content disposition to prevent download
-        const command = new GetObjectCommand({
-            Bucket: BUCKET_NAME,
-            Key: s3Key,
-            ResponseContentDisposition: 'inline',
-            ResponseContentType: contentTypeForManuscript(article.publicPdfName)
-        });
-
-        // Generate signed URL with 30 minute expiration
-        const signedUrl = await getSignedUrl(s3, command, { expiresIn: 1800 });
+        const signedUrl = await createManuscriptSignedUrl(article, 'inline');
 
         res.status(200).json({
             signedUrl: signedUrl,
             expiresIn: 1800,
-            articleTitle: article.articleTitle
+            articleTitle: article.articleTitle,
+            access: isOpenAccess(article) ? 'open_access' : 'subscription'
         });
     } catch (err) {
         console.error('Get Viewer Signed URL Error:', err);
         return next(createError(500, 'Failed to generate viewer URL'));
+    }
+};
+
+export const getOpenAccessViewerSignedUrl = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article || !article.isPublished) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        if (!isOpenAccess(article)) {
+            return next(createError(403, 'Subscription required'));
+        }
+
+        const signedUrl = await createManuscriptSignedUrl(article, 'inline');
+
+        res.status(200).json({
+            signedUrl,
+            expiresIn: 1800,
+            articleTitle: article.articleTitle,
+            access: 'open_access'
+        });
+    } catch (err) {
+        console.error('Get Open Access Viewer Signed URL Error:', err);
+        return next(createError(500, 'Failed to generate viewer URL'));
+    }
+};
+
+export const getOpenAccessDownloadSignedUrl = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article || !article.isPublished) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        if (!isOpenAccess(article)) {
+            return next(createError(403, 'Subscription required'));
+        }
+
+        const filename = String(article.publicPdfName || 'article.pdf').replace(/"/g, '');
+        const signedUrl = await createManuscriptSignedUrl(
+            article,
+            `attachment; filename="${filename}"`
+        );
+
+        res.status(200).json({
+            signedUrl,
+            expiresIn: 1800,
+            articleTitle: article.articleTitle,
+            access: 'open_access'
+        });
+    } catch (err) {
+        console.error('Get Open Access Download Signed URL Error:', err);
+        return next(createError(500, 'Failed to generate download URL'));
     }
 };
 

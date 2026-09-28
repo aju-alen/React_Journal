@@ -59,6 +59,7 @@ const MyManuscriptsDashboard = ({ user, onNavigate }) => {
   const [currentArticleId, setCurrentArticleId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [localArticles, setLocalArticles] = useState(user?.articles || []);
+  const [switchingArticleId, setSwitchingArticleId] = useState(null);
 
   useEffect(() => {
     setLocalArticles(user?.articles || []);
@@ -136,6 +137,27 @@ const MyManuscriptsDashboard = ({ user, onNavigate }) => {
       }
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSwitchToOpenAccess = async (id) => {
+    try {
+      setSwitchingArticleId(id);
+      await axios.put(
+        `${httpRoute}/api/journalArticle/access-model/${id}`,
+        { accessModel: 'open_access' },
+        { headers: { Authorization: axiosTokenHeader() } }
+      );
+      setLocalArticles((prev) =>
+        (prev || []).map((article) =>
+          article.id === id ? { ...article, accessModel: 'open_access' } : article
+        )
+      );
+      setTick((t) => t + 1);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSwitchingArticleId(null);
     }
   };
 
@@ -277,18 +299,10 @@ const MyManuscriptsDashboard = ({ user, onNavigate }) => {
                 </Button>
               </TableCell>
               <TableCell align="center">
-                {!row.paymentStatus ? (
-                  <Button
-                    component={Link}
-                    to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}/manuscript_payment_7875`}
-                    variant="contained"
-                    size="small"
-                  >
-                    Pay now
-                  </Button>
-                ) : (
+                {row.paymentStatus ? (
                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75 }}>
                     <StatusChip status="published" label="Paid" />
+                    <StatusChip status="published" label="Open access" />
                     {row.invoiceUrl && (
                       <Button
                         variant="outlined"
@@ -302,6 +316,34 @@ const MyManuscriptsDashboard = ({ user, onNavigate }) => {
                         Invoice
                       </Button>
                     )}
+                  </Box>
+                ) : row.accessModel === 'open_access' ? (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Open access — payment pending
+                    </Typography>
+                    <Button
+                      component={Link}
+                      to={`/checkout/${row.id}/publisharticle/${userId}/${emailId}/manuscript_payment_7875`}
+                      variant="contained"
+                      size="small"
+                    >
+                      Pay now
+                    </Button>
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.75 }}>
+                    <Typography variant="caption" color="text.secondary">
+                      Subscription-based
+                    </Typography>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      disabled={switchingArticleId === row.id}
+                      onClick={() => handleSwitchToOpenAccess(row.id)}
+                    >
+                      {switchingArticleId === row.id ? 'Switching…' : 'Switch to open access'}
+                    </Button>
                   </Box>
                 )}
               </TableCell>
