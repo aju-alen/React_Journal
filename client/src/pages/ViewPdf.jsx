@@ -1,8 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { httpRoute, axiosTokenHeader } from '../helperFunctions.js';
 import { DNA } from 'react-loader-spinner';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
+
+const isIosDevice = () => {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent || '';
+    const iOSUa = /iPad|iPhone|iPod/.test(ua);
+    const iPadOs = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+    return iOSUa || iPadOs;
+};
 
 export default function ViewPdf() {
     const { articleId } = useParams();
@@ -11,13 +23,44 @@ export default function ViewPdf() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [pdfUrl, setPdfUrl] = useState(null);
+    const [streamUrl, setStreamUrl] = useState(null);
     const [error, setError] = useState(null);
     const [articleTitle, setArticleTitle] = useState('');
+    const [iosRenderFailed, setIosRenderFailed] = useState(false);
+    const [isIos] = useState(() => isIosDevice());
+    const canvasContainerRef = useRef(null);
     const currentUser = JSON.parse(localStorage.getItem("currentUser"));
 
     useEffect(() => {
         const fetchSignedUrl = async () => {
             try {
+                if (isIos) {
+                    const filePath = isOpenAccess
+                        ? `${httpRoute}/api/journalArticle/open-access/file/${articleId}`
+                        : `${httpRoute}/api/journalArticle/get-viewer-file/${articleId}`;
+                    setStreamUrl(filePath);
+
+                    try {
+                        let signedResponse;
+                        if (isOpenAccess) {
+                            signedResponse = await axios.get(`${httpRoute}/api/journalArticle/open-access/viewer/${articleId}`);
+                        } else {
+                            axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+                            signedResponse = await axios.get(`${httpRoute}/api/journalArticle/get-viewer-url/${articleId}`);
+                        }
+                        setPdfUrl(signedResponse.data.signedUrl);
+                        setArticleTitle(signedResponse.data.articleTitle || '');
+                    } catch (signedErr) {
+                        // Stream render can still succeed; signed URL is only for Open PDF fallback
+                        console.error('Signed URL fallback unavailable:', signedErr);
+                        if (signedErr.response?.status === 403 || signedErr.response?.status === 404) {
+                            throw signedErr;
+                        }
+                    }
+                    setLoading(false);
+                    return;
+                }
+
                 let response;
                 if (isOpenAccess) {
                     response = await axios.get(`${httpRoute}/api/journalArticle/open-access/viewer/${articleId}`);
@@ -45,10 +88,79 @@ export default function ViewPdf() {
         };
 
         fetchSignedUrl();
-    }, [articleId, isOpenAccess]);
+    }, [articleId, isOpenAccess, isIos]);
 
     useEffect(() => {
-        if (!pdfUrl || isOpenAccess) return;
+        if (!isIos || !streamUrl || loading || error) return;
+
+        let cancelled = false;
+
+        const renderPdf = async () => {
+            try {
+                const headers = {};
+                if (!isOpenAccess) {
+                    headers.Authorization = axiosTokenHeader();
+                }
+
+                const response = await fetch(streamUrl, { headers });
+                if (!response.ok) {
+                    throw new Error(`Stream failed with status ${response.status}`);
+                }
+
+                const data = new Uint8Array(await response.arrayBuffer());
+                if (cancelled) return;
+
+                const pdf = await pdfjsLib.getDocument({ data }).promise;
+                if (cancelled) return;
+
+                const container = canvasContainerRef.current;
+                if (!container) return;
+                container.innerHTML = '';
+
+                const containerWidth = container.clientWidth || window.innerWidth;
+
+                for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
+                    const page = await pdf.getPage(pageNum);
+                    if (cancelled) return;
+
+                    const unscaled = page.getViewport({ scale: 1 });
+                    const scale = Math.min(2, containerWidth / unscaled.width);
+                    const viewport = page.getViewport({ scale });
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = viewport.width;
+                    canvas.height = viewport.height;
+                    canvas.style.width = '100%';
+                    canvas.style.height = 'auto';
+                    canvas.style.display = 'block';
+                    canvas.style.marginBottom = '8px';
+                    container.appendChild(canvas);
+
+                    await page.render({
+                        canvasContext: canvas.getContext('2d'),
+                        viewport
+                    }).promise;
+                }
+            } catch (err) {
+                console.error('iOS PDF.js render error:', err);
+                if (!cancelled) {
+                    setIosRenderFailed(true);
+                }
+            }
+        };
+
+        renderPdf();
+
+        return () => {
+            cancelled = true;
+            if (canvasContainerRef.current) {
+                canvasContainerRef.current.innerHTML = '';
+            }
+        };
+    }, [isIos, streamUrl, loading, error, isOpenAccess]);
+
+    useEffect(() => {
+        if (!pdfUrl || isIos || isOpenAccess) return;
 
         // Disable right-click
         const disableRightClick = (e) => {
@@ -57,50 +169,42 @@ export default function ViewPdf() {
             return false;
         };
 
-        // Comprehensive keyboard shortcuts blocking
         const disableKeyboardShortcuts = (e) => {
             const key = e.key.toLowerCase();
-            const ctrl = e.ctrlKey || e.metaKey; // Support both Ctrl and Cmd (Mac)
+            const ctrl = e.ctrlKey || e.metaKey;
             const shift = e.shiftKey;
 
-            // Copy shortcuts
             if (ctrl && key === 'c') {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Cut shortcut
             if (ctrl && key === 'x') {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Paste shortcut
             if (ctrl && key === 'v') {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Select All
             if (ctrl && key === 'a') {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Save
             if (ctrl && key === 's') {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Print
             if (ctrl && key === 'p') {
                 e.preventDefault();
                 e.stopPropagation();
                 alert('Printing is disabled for subscribed content');
                 return false;
             }
-            // View Source / Inspect Element
             if (ctrl && shift && key === 'i') {
                 e.preventDefault();
                 e.stopPropagation();
@@ -121,19 +225,16 @@ export default function ViewPdf() {
                 e.stopPropagation();
                 return false;
             }
-            // F12 (DevTools)
             if (e.key === 'F12' || e.keyCode === 123) {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Print Screen
             if (e.key === 'PrintScreen' || e.keyCode === 44) {
                 e.preventDefault();
                 e.stopPropagation();
                 return false;
             }
-            // Screenshot shortcuts (Windows: Win+Shift+S, Mac: Cmd+Shift+4)
             if ((e.metaKey || e.ctrlKey) && shift && (key === 's' || key === '4')) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -141,9 +242,8 @@ export default function ViewPdf() {
             }
         };
 
-        // Prevent text selection via mouse drag
         const preventSelection = (e) => {
-            if (e.button === 0) { // Left mouse button
+            if (e.button === 0) {
                 e.preventDefault();
                 return false;
             }
@@ -154,7 +254,6 @@ export default function ViewPdf() {
             return false;
         };
 
-        // Disable text selection on all elements
         const style = document.createElement('style');
         style.id = 'pdf-viewer-restrictions';
         style.textContent = `
@@ -175,7 +274,6 @@ export default function ViewPdf() {
         `;
         document.head.appendChild(style);
 
-        // Apply to body and html
         document.body.style.userSelect = 'none';
         document.body.style.webkitUserSelect = 'none';
         document.body.style.mozUserSelect = 'none';
@@ -183,13 +281,11 @@ export default function ViewPdf() {
         document.documentElement.style.userSelect = 'none';
         document.documentElement.style.webkitUserSelect = 'none';
 
-        // Override window.print
         const originalPrint = window.print;
         window.print = () => {
             alert('Printing is disabled for subscribed content');
         };
 
-        // Override clipboard API
         const originalWriteText = navigator.clipboard?.writeText;
         if (navigator.clipboard) {
             navigator.clipboard.writeText = () => {
@@ -197,7 +293,6 @@ export default function ViewPdf() {
             };
         }
 
-        // Add event listeners with capture phase to catch events early
         const options = { capture: true, passive: false };
         document.addEventListener('contextmenu', disableRightClick, options);
         document.addEventListener('keydown', disableKeyboardShortcuts, options);
@@ -206,7 +301,6 @@ export default function ViewPdf() {
         document.addEventListener('dragstart', preventDragStart, options);
         document.addEventListener('mousedown', preventSelection, options);
 
-        // Cleanup function
         return () => {
             document.removeEventListener('contextmenu', disableRightClick, options);
             document.removeEventListener('keydown', disableKeyboardShortcuts, options);
@@ -214,36 +308,43 @@ export default function ViewPdf() {
             document.removeEventListener('selectstart', preventSelection, options);
             document.removeEventListener('dragstart', preventDragStart, options);
             document.removeEventListener('mousedown', preventSelection, options);
-            
-            // Remove style tag
+
             const styleTag = document.getElementById('pdf-viewer-restrictions');
             if (styleTag) {
                 styleTag.remove();
             }
-            
-            // Restore styles
+
             document.body.style.userSelect = '';
             document.body.style.webkitUserSelect = '';
             document.body.style.mozUserSelect = '';
             document.body.style.msUserSelect = '';
             document.documentElement.style.userSelect = '';
             document.documentElement.style.webkitUserSelect = '';
-            
-            // Restore functions
+
             window.print = originalPrint;
             if (navigator.clipboard && originalWriteText) {
                 navigator.clipboard.writeText = originalWriteText;
             }
         };
-    }, [pdfUrl, isOpenAccess]);
+    }, [pdfUrl, isIos, isOpenAccess]);
 
-    // Generate watermark text
     const getWatermarkText = () => {
         if (currentUser?.user?.email) {
             const timestamp = new Date().toLocaleString();
             return `${currentUser.user.email} - ${timestamp}`;
         }
         return 'Restricted Content';
+    };
+
+    const handleOpenPdfFallback = () => {
+        if (pdfUrl) {
+            window.open(pdfUrl, '_blank', 'noopener,noreferrer');
+            return;
+        }
+        // OA stream is same-origin and needs no auth header in a new tab
+        if (isOpenAccess && streamUrl) {
+            window.open(streamUrl, '_blank', 'noopener,noreferrer');
+        }
     };
 
     if (loading) {
@@ -278,6 +379,43 @@ export default function ViewPdf() {
         );
     }
 
+    if (isIos) {
+        return (
+            <div className="pt-[5.5rem] sm:pt-[6.5rem] md:pt-28 h-screen box-border flex flex-col">
+                {iosRenderFailed && (
+                    <div className="p-4 text-center bg-amber-50 border-b border-amber-200">
+                        <p className="mb-3 text-sm text-amber-900">
+                            Unable to render the PDF in this browser. You can open it directly instead.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={handleOpenPdfFallback}
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        >
+                            Open PDF
+                        </button>
+                    </div>
+                )}
+                <div
+                    ref={canvasContainerRef}
+                    className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100 px-2 py-2"
+                    style={{ WebkitOverflowScrolling: 'touch' }}
+                />
+                {!iosRenderFailed && (
+                    <div className="p-3 border-t bg-white text-center">
+                        <button
+                            type="button"
+                            onClick={handleOpenPdfFallback}
+                            className="text-sm text-blue-700 underline"
+                        >
+                            Open PDF
+                        </button>
+                    </div>
+                )}
+            </div>
+        );
+    }
+
     return (
         <div 
             className="pt-[5.5rem] sm:pt-[6.5rem] md:pt-28 h-screen box-border"
@@ -294,7 +432,6 @@ export default function ViewPdf() {
             onSelectStart={isOpenAccess ? undefined : (e) => e.preventDefault()}
             onDragStart={isOpenAccess ? undefined : (e) => e.preventDefault()}
         >
-            {/* Watermark Overlay — subscription content only */}
             {!isOpenAccess && (
                 <div
                     style={{
@@ -330,7 +467,6 @@ export default function ViewPdf() {
                 </div>
             )}
 
-            {/* PDF Iframe with inline content disposition from backend */}
             <iframe
                 src={pdfUrl}
                 title={articleTitle}
@@ -350,7 +486,6 @@ export default function ViewPdf() {
                 onContextMenu={isOpenAccess ? undefined : (e) => e.preventDefault()}
                 onLoad={() => {
                     console.log('PDF iframe loaded successfully');
-                    // Try to disable selection in iframe (may not work due to cross-origin)
                     if (isOpenAccess) return;
                     try {
                         const iframe = document.querySelector('iframe[title="' + articleTitle + '"]');
@@ -358,7 +493,6 @@ export default function ViewPdf() {
                             iframe.contentDocument.body.style.userSelect = 'none';
                         }
                     } catch (e) {
-                        // Cross-origin restriction - expected
                         console.log('Cannot access iframe content due to cross-origin policy');
                     }
                 }}

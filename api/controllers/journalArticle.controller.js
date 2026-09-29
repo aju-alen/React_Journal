@@ -744,6 +744,46 @@ const createManuscriptSignedUrl = async (article, disposition) => {
     return getSignedUrl(s3, command, { expiresIn: 1800 });
 };
 
+const streamManuscriptToResponse = async (article, res) => {
+    const s3Key = buildManuscriptS3Key(article);
+    const command = new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: s3Key
+    });
+    const data = await s3.send(command);
+    const contentType = contentTypeForManuscript(article.publicPdfName);
+    res.setHeader('Content-Type', contentType);
+    res.setHeader('Content-Disposition', 'inline');
+    res.setHeader('Cache-Control', 'private, max-age=60');
+    if (data.ContentLength != null) {
+        res.setHeader('Content-Length', String(data.ContentLength));
+    }
+
+    const body = data.Body;
+    if (!body) {
+        throw new Error('Empty S3 object body');
+    }
+
+    // AWS SDK v3 Body is async-iterable in Node
+    if (typeof body.pipe === 'function') {
+        await new Promise((resolve, reject) => {
+            body.on('error', reject);
+            res.on('error', reject);
+            res.on('finish', resolve);
+            body.pipe(res);
+        });
+        return;
+    }
+
+    if (typeof body.transformToByteArray === 'function') {
+        const bytes = await body.transformToByteArray();
+        res.end(Buffer.from(bytes));
+        return;
+    }
+
+    throw new Error('Unsupported S3 body stream type');
+};
+
 export const updateArticleAccessModel = async (req, res, next) => {
     try {
         const { articleId } = req.params;
@@ -897,6 +937,79 @@ export const getOpenAccessDownloadSignedUrl = async (req, res, next) => {
     } catch (err) {
         console.error('Get Open Access Download Signed URL Error:', err);
         return next(createError(500, 'Failed to generate download URL'));
+    }
+};
+
+export const getOpenAccessFileStream = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article || !article.isPublished) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        if (!isOpenAccess(article)) {
+            return next(createError(403, 'Subscription required'));
+        }
+
+        await streamManuscriptToResponse(article, res);
+    } catch (err) {
+        console.error('Get Open Access File Stream Error:', err);
+        if (!res.headersSent) {
+            return next(createError(500, 'Failed to stream file'));
+        }
+        res.end();
+    }
+};
+
+export const getViewerFileStream = async (req, res, next) => {
+    try {
+        const { articleId } = req.params;
+        const userId = req.userId;
+
+        const user = await prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!user) {
+            return next(createError(404, 'User not found'));
+        }
+
+        const article = await prisma.article.findUnique({
+            where: { id: articleId }
+        });
+
+        if (!article) {
+            return next(createError(404, 'Article not found'));
+        }
+
+        if (!isOpenAccess(article)) {
+            const subscription = await prisma.subscription.findFirst({
+                where: {
+                    subscriptionEmail: user.email
+                }
+            });
+
+            if (!subscription) {
+                return next(createError(403, 'Subscription required'));
+            }
+
+            const currentTimeUnix = Math.floor(Date.now() / 1000);
+            if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
+                return next(createError(403, 'Subscription expired'));
+            }
+        }
+
+        await streamManuscriptToResponse(article, res);
+    } catch (err) {
+        console.error('Get Viewer File Stream Error:', err);
+        if (!res.headersSent) {
+            return next(createError(500, 'Failed to stream file'));
+        }
+        res.end();
     }
 };
 
