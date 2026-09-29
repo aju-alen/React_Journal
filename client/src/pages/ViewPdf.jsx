@@ -118,26 +118,31 @@ export default function ViewPdf() {
                 container.innerHTML = '';
 
                 const containerWidth = container.clientWidth || window.innerWidth;
+                const dpr = Math.max(1, window.devicePixelRatio || 1);
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
                     const page = await pdf.getPage(pageNum);
                     if (cancelled) return;
 
                     const unscaled = page.getViewport({ scale: 1 });
-                    const scale = Math.min(2, containerWidth / unscaled.width);
-                    const viewport = page.getViewport({ scale });
+                    // Fit to container CSS width; floor at 1.5 so phone text stays readable
+                    const cssScale = Math.max(1.5, Math.min(2, containerWidth / unscaled.width));
+                    const viewport = page.getViewport({ scale: cssScale });
 
                     const canvas = document.createElement('canvas');
-                    canvas.width = viewport.width;
-                    canvas.height = viewport.height;
+                    canvas.width = Math.floor(viewport.width * dpr);
+                    canvas.height = Math.floor(viewport.height * dpr);
                     canvas.style.width = '100%';
                     canvas.style.height = 'auto';
                     canvas.style.display = 'block';
                     canvas.style.marginBottom = '8px';
                     container.appendChild(canvas);
 
+                    const context = canvas.getContext('2d');
+                    context.setTransform(dpr, 0, 0, dpr, 0, 0);
+
                     await page.render({
-                        canvasContext: canvas.getContext('2d'),
+                        canvasContext: context,
                         viewport
                     }).promise;
                 }
