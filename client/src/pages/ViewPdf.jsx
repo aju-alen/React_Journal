@@ -94,6 +94,12 @@ export default function ViewPdf() {
         if (!isIos || !streamUrl || loading || error) return;
 
         let cancelled = false;
+        const previousHtmlOverflow = document.documentElement.style.overflow;
+        const previousBodyOverflow = document.body.style.overflow;
+        const previousBodyOverscroll = document.body.style.overscrollBehavior;
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+        document.body.style.overscrollBehavior = 'none';
 
         const renderPdf = async () => {
             try {
@@ -118,20 +124,32 @@ export default function ViewPdf() {
                 container.innerHTML = '';
 
                 const containerWidth = container.clientWidth || window.innerWidth;
-                const dpr = Math.max(1, window.devicePixelRatio || 1);
+                const dpr = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+                const maxCanvasEdge = 2560;
 
                 for (let pageNum = 1; pageNum <= pdf.numPages; pageNum += 1) {
                     const page = await pdf.getPage(pageNum);
                     if (cancelled) return;
 
                     const unscaled = page.getViewport({ scale: 1 });
-                    // Fit to container CSS width; floor at 1.5 so phone text stays readable
-                    const cssScale = Math.max(1.5, Math.min(2, containerWidth / unscaled.width));
-                    const viewport = page.getViewport({ scale: cssScale });
+                    // Fit to container width only (no forced upscale — avoids Safari OOM)
+                    let cssScale = containerWidth / unscaled.width;
+                    let viewport = page.getViewport({ scale: cssScale });
+
+                    let canvasWidth = Math.floor(viewport.width * dpr);
+                    let canvasHeight = Math.floor(viewport.height * dpr);
+                    const longestEdge = Math.max(canvasWidth, canvasHeight);
+                    if (longestEdge > maxCanvasEdge) {
+                        const shrink = maxCanvasEdge / longestEdge;
+                        cssScale *= shrink;
+                        viewport = page.getViewport({ scale: cssScale });
+                        canvasWidth = Math.floor(viewport.width * dpr);
+                        canvasHeight = Math.floor(viewport.height * dpr);
+                    }
 
                     const canvas = document.createElement('canvas');
-                    canvas.width = Math.floor(viewport.width * dpr);
-                    canvas.height = Math.floor(viewport.height * dpr);
+                    canvas.width = canvasWidth;
+                    canvas.height = canvasHeight;
                     canvas.style.width = '100%';
                     canvas.style.height = 'auto';
                     canvas.style.display = 'block';
@@ -158,6 +176,9 @@ export default function ViewPdf() {
 
         return () => {
             cancelled = true;
+            document.documentElement.style.overflow = previousHtmlOverflow;
+            document.body.style.overflow = previousBodyOverflow;
+            document.body.style.overscrollBehavior = previousBodyOverscroll;
             if (canvasContainerRef.current) {
                 canvasContainerRef.current.innerHTML = '';
             }
@@ -404,7 +425,11 @@ export default function ViewPdf() {
                 <div
                     ref={canvasContainerRef}
                     className="flex-1 overflow-y-auto overflow-x-hidden bg-gray-100 px-2 py-2"
-                    style={{ WebkitOverflowScrolling: 'touch' }}
+                    style={{
+                        WebkitOverflowScrolling: 'touch',
+                        overscrollBehavior: 'contain',
+                        touchAction: 'pan-y',
+                    }}
                 />
                 {!iosRenderFailed && (
                     <div className="p-3 border-t bg-white text-center">
