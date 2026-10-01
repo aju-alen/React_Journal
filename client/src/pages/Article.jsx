@@ -114,6 +114,22 @@ export default function Article() {
     }
 
     const isOpenAccess = journal?.paymentStatus === true;
+    const isArticleOwner = Boolean(
+        currentUser?.user?.id && journal?.userId && currentUser.user.id === journal.userId
+    );
+
+    const handleOwnerView = async () => {
+        try {
+            axios.defaults.headers.common['Authorization'] = axiosTokenHeader();
+            const response = await axios.get(`${httpRoute}/api/journalArticle/get-viewer-url/${articleId}`);
+            if (response.data.signedUrl) {
+                window.open(`/view-pdf/${articleId}`, '_blank');
+            }
+        } catch (err) {
+            console.error('Error getting owner viewer URL:', err);
+            alert('Failed to load PDF. Please try again.');
+        }
+    };
 
     const handleOpenAccessView = () => {
         window.open(`/view-pdf/${articleId}?access=open`, '_blank');
@@ -134,6 +150,10 @@ export default function Article() {
     const handleFullPdfClick = (event) => {
         if (isOpenAccess) {
             handleOpenAccessView();
+            return;
+        }
+        if (isArticleOwner) {
+            handleOwnerView();
             return;
         }
         if (currentUser) {
@@ -232,6 +252,17 @@ export default function Article() {
                                 </div>
                             </TabPanel>
                             <TabPanel value="2">
+                                {isArticleOwner && !isOpenAccess ? (
+                                    <div className="py-4">
+                                        <button
+                                            type="button"
+                                            onClick={handleOwnerView}
+                                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                                        >
+                                            View full PDF
+                                        </button>
+                                    </div>
+                                ) : null}
                                 {isOpenAccess ? (
                                     <div className="flex flex-col sm:flex-row gap-3 py-4">
                                         <button

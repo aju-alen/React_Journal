@@ -260,8 +260,8 @@ const MyManuscriptsDashboard = ({ user, onNavigate }) => {
                 </Box>
               </TableCell>
               <TableCell align="center">
-                {row.isPublished && row.filesURL?.[0] ? (
-                  <FileLink url={row.filesURL[0]} />
+                {row.isPublished ? (
+                  <FileLink url={`/view-pdf/${row.id}`} />
                 ) : (
                   '—'
                 )}

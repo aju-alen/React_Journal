@@ -101,6 +101,7 @@ model Article {
   accessModel               String  @default("subscription")
   rejectionFilesURL         Json
   publicPdfName             String
+  publishedPdfName          String?
   awsId                     String
   rejectionText             String @default("")
   specialReview             Boolean
@@ -109,8 +110,8 @@ model Article {
   isAccepted                Boolean @default(false)
   articleStatus             String @default("In Review")
   articleReceivedDate       DateTime @default(now())
-  articleAcceptedDate       DateTime @updatedAt
-  articlePublishedDate      DateTime @updatedAt
+  articleAcceptedDate       DateTime @default(now())
+  articlePublishedDate      DateTime @default(now())
   journalId                 String
   articlePublishedJournal   Journal @relation(fields: [journalId], references: [id])
   userId                    String

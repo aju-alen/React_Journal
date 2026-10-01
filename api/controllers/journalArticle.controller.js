@@ -9,11 +9,16 @@ import QRCode from 'qrcode';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { articleSubmittedEmailTemplate, articleRejectionEmailTemplate, articleAcceptedEmailTemplate } from "../utils/emailTemplates.js";
 import { resendEmailBoiler } from "../utils/resend-email-boiler.js";
+import { buildPublishedPdf } from "../utils/buildPublishedPdf.js";
 dotenv.config();
 const prisma = new PrismaClient()
 
 
 const ALLOWED_ACCESS_MODELS = ['open_access', 'subscription'];
+const PUBLISHED_PDF_NAME = 'published.pdf';
+
+const isPdfManuscript = (publicPdfName) =>
+    String(publicPdfName || '').toLowerCase().endsWith('.pdf');
 
 const normalizeAccessModel = (value) => {
     if (value === undefined || value === null || value === '') {
@@ -322,12 +327,46 @@ export const acceptManuscript = async (req, res, next) => {
                         otherName: true,
                         title: true
                     }
+                },
+                articlePublishedJournal: {
+                    select: {
+                        journalTitle: true,
+                        journalAbbreviation: true,
+                        journalISSN: true,
+                    }
                 }
             }
         });
         
         if (!article) {
             return next(createError(404, 'Article not found'));
+        }
+
+        const articlePublishedDate = new Date();
+        let publishedPdfName = null;
+
+        if (isPdfManuscript(article.publicPdfName)) {
+            const originalKey = `${article.userId}/${article.awsId}/${article.publicPdfName}`;
+            const originalPdfBuffer = await readS3ObjectBuffer(originalKey);
+            const pdfBuffer = await buildPublishedPdf({
+                article: {
+                    articleTitle: article.articleTitle,
+                    articleAbstract: article.articleAbstract,
+                    articleKeywords: article.articleKeywords,
+                    articleAuthors: article.articleAuthors,
+                    articleReceivedDate: article.articleReceivedDate,
+                    articleAcceptedDate: article.articleAcceptedDate,
+                    articlePublishedDate,
+                    articleVolume: article.articleVolume,
+                    articleIssue: article.articleIssue,
+                    specialReview: article.specialReview,
+                    journalTitle: article.articlePublishedJournal?.journalTitle,
+                    journalAbbreviation: article.articlePublishedJournal?.journalAbbreviation,
+                    journalISSN: article.articlePublishedJournal?.journalISSN,
+                },
+                originalPdfBuffer,
+            });
+            publishedPdfName = await uploadPublishedPdf(article, pdfBuffer);
         }
         
         // Admins can publish directly, regardless of reviewer acceptance
@@ -339,6 +378,8 @@ export const acceptManuscript = async (req, res, next) => {
                 articleStatus: 'Published',
                 isReview: false,
                 rejectionFilesURL:[],
+                articlePublishedDate,
+                ...(publishedPdfName ? { publishedPdfName } : {}),
             },
             include: {
                 reviewerAcceptedBy: {
@@ -730,8 +771,78 @@ const contentTypeForManuscript = (publicPdfName) => {
 
 const isOpenAccess = (article) => article?.paymentStatus === true;
 
+const isPublishedArticleOwner = (article, userId) =>
+    Boolean(userId && article?.isPublished && article.userId === userId);
+
+const resolveViewerAccess = async (article, userId) => {
+    if (isOpenAccess(article)) return { access: 'open_access' };
+    if (isPublishedArticleOwner(article, userId)) return { access: 'author' };
+
+    const user = await prisma.user.findUnique({
+        where: { id: userId }
+    });
+
+    if (!user) {
+        return { error: createError(404, 'User not found') };
+    }
+
+    const subscription = await prisma.subscription.findFirst({
+        where: {
+            subscriptionEmail: user.email
+        }
+    });
+
+    if (!subscription) {
+        return { error: createError(403, 'Subscription required') };
+    }
+
+    const currentTimeUnix = Math.floor(Date.now() / 1000);
+    if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
+        return { error: createError(403, 'Subscription expired') };
+    }
+
+    return { access: 'subscription' };
+};
+
+const manuscriptObjectName = (article) => {
+    if (article?.isPublished && article.publishedPdfName) {
+        return article.publishedPdfName;
+    }
+    return article.publicPdfName;
+};
+
 const buildManuscriptS3Key = (article) =>
-    `${article.userId}/${article.awsId}/${article.publicPdfName}`;
+    `${article.userId}/${article.awsId}/${manuscriptObjectName(article)}`;
+
+const readS3ObjectBuffer = async (key) => {
+    const data = await s3.send(new GetObjectCommand({
+        Bucket: BUCKET_NAME,
+        Key: key,
+    }));
+    const body = data.Body;
+    if (!body) {
+        throw new Error('Empty S3 object body');
+    }
+    if (typeof body.transformToByteArray === 'function') {
+        return Buffer.from(await body.transformToByteArray());
+    }
+    const chunks = [];
+    for await (const chunk of body) {
+        chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+    }
+    return Buffer.concat(chunks);
+};
+
+const uploadPublishedPdf = async (article, pdfBuffer) => {
+    const key = `${article.userId}/${article.awsId}/${PUBLISHED_PDF_NAME}`;
+    await s3.putObject({
+        Bucket: BUCKET_NAME,
+        Key: key,
+        Body: pdfBuffer,
+        ContentType: 'application/pdf',
+    });
+    return PUBLISHED_PDF_NAME;
+};
 
 const createManuscriptSignedUrl = async (article, disposition) => {
     const s3Key = buildManuscriptS3Key(article);
@@ -739,7 +850,7 @@ const createManuscriptSignedUrl = async (article, disposition) => {
         Bucket: BUCKET_NAME,
         Key: s3Key,
         ResponseContentDisposition: disposition,
-        ResponseContentType: contentTypeForManuscript(article.publicPdfName)
+        ResponseContentType: contentTypeForManuscript(manuscriptObjectName(article))
     });
     return getSignedUrl(s3, command, { expiresIn: 1800 });
 };
@@ -751,7 +862,7 @@ const streamManuscriptToResponse = async (article, res) => {
         Key: s3Key
     });
     const data = await s3.send(command);
-    const contentType = contentTypeForManuscript(article.publicPdfName);
+    const contentType = contentTypeForManuscript(manuscriptObjectName(article));
     res.setHeader('Content-Type', contentType);
     res.setHeader('Content-Disposition', 'inline');
     res.setHeader('Cache-Control', 'private, max-age=60');
@@ -827,16 +938,6 @@ export const getViewerSignedUrl = async (req, res, next) => {
         const { articleId } = req.params;
         const userId = req.userId;
 
-        // Get user to retrieve email
-        const user = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-
-        if (!user) {
-            return next(createError(404, 'User not found'));
-        }
-
-        // Get article from database
         const article = await prisma.article.findUnique({
             where: { id: articleId }
         });
@@ -845,23 +946,9 @@ export const getViewerSignedUrl = async (req, res, next) => {
             return next(createError(404, 'Article not found'));
         }
 
-        if (!isOpenAccess(article)) {
-            // Get user subscription
-            const subscription = await prisma.subscription.findFirst({
-                where: {
-                    subscriptionEmail: user.email
-                }
-            });
-
-            if (!subscription) {
-                return next(createError(403, 'Subscription required'));
-            }
-
-            // Check if subscription is valid
-            const currentTimeUnix = Math.floor(Date.now() / 1000);
-            if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
-                return next(createError(403, 'Subscription expired'));
-            }
+        const access = await resolveViewerAccess(article, userId);
+        if (access.error) {
+            return next(access.error);
         }
 
         const signedUrl = await createManuscriptSignedUrl(article, 'inline');
@@ -870,7 +957,7 @@ export const getViewerSignedUrl = async (req, res, next) => {
             signedUrl: signedUrl,
             expiresIn: 1800,
             articleTitle: article.articleTitle,
-            access: isOpenAccess(article) ? 'open_access' : 'subscription'
+            access: access.access
         });
     } catch (err) {
         console.error('Get Viewer Signed URL Error:', err);
@@ -922,7 +1009,7 @@ export const getOpenAccessDownloadSignedUrl = async (req, res, next) => {
             return next(createError(403, 'Subscription required'));
         }
 
-        const filename = String(article.publicPdfName || 'article.pdf').replace(/"/g, '');
+        const filename = String(manuscriptObjectName(article) || 'article.pdf').replace(/"/g, '');
         const signedUrl = await createManuscriptSignedUrl(
             article,
             `attachment; filename="${filename}"`
@@ -970,14 +1057,6 @@ export const getViewerFileStream = async (req, res, next) => {
         const { articleId } = req.params;
         const userId = req.userId;
 
-        const user = await prisma.user.findUnique({
-            where: { id: userId }
-        });
-
-        if (!user) {
-            return next(createError(404, 'User not found'));
-        }
-
         const article = await prisma.article.findUnique({
             where: { id: articleId }
         });
@@ -986,21 +1065,9 @@ export const getViewerFileStream = async (req, res, next) => {
             return next(createError(404, 'Article not found'));
         }
 
-        if (!isOpenAccess(article)) {
-            const subscription = await prisma.subscription.findFirst({
-                where: {
-                    subscriptionEmail: user.email
-                }
-            });
-
-            if (!subscription) {
-                return next(createError(403, 'Subscription required'));
-            }
-
-            const currentTimeUnix = Math.floor(Date.now() / 1000);
-            if (subscription.subscriptionPeriodEnd <= currentTimeUnix) {
-                return next(createError(403, 'Subscription expired'));
-            }
+        const access = await resolveViewerAccess(article, userId);
+        if (access.error) {
+            return next(access.error);
         }
 
         await streamManuscriptToResponse(article, res);
@@ -1135,7 +1202,8 @@ export const reviewerAcceptArticle = async (req, res, next) => {
             data: {
                 isAccepted: true,
                 reviewerAcceptedById: req.userId,
-                articleStatus: 'Accepted by Reviewer'
+                articleStatus: 'Accepted by Reviewer',
+                articleAcceptedDate: new Date(),
             },
             include: {
                 reviewerAcceptedBy: {
