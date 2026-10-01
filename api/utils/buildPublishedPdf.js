@@ -103,62 +103,28 @@ const renderFrontMatter = (article, logoBuffer) => new Promise((resolve, reject)
     });
     doc.moveDown(0.7);
 
-    const authors = Array.isArray(article.articleAuthors) ? article.articleAuthors : [];
-    const affiliationOrder = [];
-    const affiliationNumber = new Map();
-    authors.forEach((author) => {
-        const affiliation = String(author?.authorAffiliation || '').trim();
-        if (!affiliation || affiliationNumber.has(affiliation)) return;
-        affiliationNumber.set(affiliation, affiliationOrder.length + 1);
-        affiliationOrder.push(affiliation);
-    });
+    const authors = (Array.isArray(article.articleAuthors) ? article.articleAuthors : [])
+        .map(authorName)
+        .filter(Boolean);
 
     let cursorX = LEFT;
     let cursorY = doc.y;
-    authors.forEach((author, index) => {
-        const name = authorName(author);
-        if (!name) return;
-        const affiliation = String(author?.authorAffiliation || '').trim();
-        const marker = affiliation ? String(affiliationNumber.get(affiliation)) : '';
+    authors.forEach((name, index) => {
         const separator = index < authors.length - 1 ? ',  ' : '';
-
         doc.font('Times-Roman').fontSize(11);
-        const nameWidth = doc.widthOfString(name);
-        doc.fontSize(7);
-        const markerWidth = marker ? doc.widthOfString(marker) : 0;
-        doc.font('Times-Roman').fontSize(11);
-        const separatorWidth = doc.widthOfString(separator);
-        const runWidth = nameWidth + markerWidth + separatorWidth + 2;
+        const runWidth = doc.widthOfString(name + separator);
 
         if (cursorX > LEFT && cursorX + runWidth > LEFT + contentWidth) {
             cursorX = LEFT;
             cursorY += 16;
         }
 
-        doc.font('Times-Roman').fontSize(11).fillColor(TEXT);
-        doc.text(name, cursorX, cursorY, { lineBreak: false });
-        if (marker) {
-            doc.font('Times-Roman').fontSize(7).fillColor(INK);
-            doc.text(marker, cursorX + nameWidth + 1, cursorY - 4, { lineBreak: false });
-        }
-        if (separator) {
-            doc.font('Times-Roman').fontSize(11).fillColor(TEXT);
-            doc.text(separator, cursorX + nameWidth + markerWidth + 2, cursorY, { lineBreak: false });
-        }
+        doc.fillColor(TEXT).text(name + separator, cursorX, cursorY, { lineBreak: false });
         cursorX += runWidth;
     });
 
     doc.x = LEFT;
     doc.y = cursorY + (authors.length ? 18 : 0);
-
-    affiliationOrder.forEach((affiliation, index) => {
-        ensureSpace(16);
-        doc.font('Times-Italic').fontSize(9).fillColor(MUTED);
-        doc.text(`${index + 1}   ${affiliation}`, LEFT, doc.y, { width: contentWidth });
-        doc.moveDown(0.12);
-    });
-
-    if (affiliationOrder.length) doc.moveDown(0.45);
 
     const abstractText = article.articleAbstract || '';
     doc.font('Times-Roman').fontSize(10.5);
