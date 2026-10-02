@@ -1,5 +1,5 @@
 import PDFDocument from 'pdfkit';
-import { PDFDocument as PDFLibDocument } from 'pdf-lib';
+import { PDFDocument as PDFLibDocument, StandardFonts, rgb } from 'pdf-lib';
 import fetch from 'node-fetch';
 
 const LOGO_URL = 'https://s3-scientific-journal.s3.ap-south-1.amazonaws.com/Images/logo-removebg-preview.jpg';
@@ -29,6 +29,12 @@ const issueLabel = (article) => (
         ? `Special Issue ${article.articleIssue}`
         : `Issue ${article.articleIssue}`
 );
+
+const footerText = (article) => [
+    article.journalTitle || 'Scientific Journals Portal',
+    `Volume ${article.articleVolume}`,
+    issueLabel(article),
+].join('  ·  ');
 
 const renderFrontMatter = (article, logoBuffer) => new Promise((resolve, reject) => {
     const doc = new PDFDocument({
@@ -76,10 +82,10 @@ const renderFrontMatter = (article, logoBuffer) => new Promise((resolve, reject)
     const titleWidth = contentWidth - 128;
     doc.font('Times-Bold').fontSize(13).fillColor(INK);
     doc.text(journalTitle, titleX, 36, { width: titleWidth, align: 'right' });
-    const headerBits = ['Scientific Journals Portal'];
-    if (article.journalISSN) headerBits.push(`ISSN ${article.journalISSN}`);
-    doc.font('Times-Roman').fontSize(8).fillColor(MUTED);
-    doc.text(headerBits.join('   ·   '), titleX, doc.y + 2, { width: titleWidth, align: 'right' });
+    if (article.journalISSN) {
+        doc.font('Times-Roman').fontSize(8).fillColor(MUTED);
+        doc.text(`ISSN ${article.journalISSN}`, titleX, doc.y + 2, { width: titleWidth, align: 'right' });
+    }
 
     const ruleY = Math.max(88, doc.y + 10);
     doc.moveTo(LEFT, ruleY).lineTo(LEFT + contentWidth, ruleY).lineWidth(1.6).stroke(INK);
@@ -215,21 +221,13 @@ const renderFrontMatter = (article, logoBuffer) => new Promise((resolve, reject)
         }
 
         const footerY = doc.page.height - 40;
-        const citation = [
-            journalTitle,
-            article.journalAbbreviation || null,
-            `Volume ${article.articleVolume}`,
-            issueLabel(article),
-        ].filter(Boolean).join('  ·  ');
         doc.moveTo(LEFT, footerY).lineTo(LEFT + contentWidth, footerY).lineWidth(0.45).stroke(RULE);
         doc.font('Times-Italic').fontSize(8).fillColor(MUTED);
-        doc.text(citation, LEFT, footerY + 8, {
-            width: contentWidth - 36,
+        doc.text(footerText(article), LEFT, footerY + 8, {
+            width: contentWidth,
             height: 18,
             ellipsis: true,
         });
-        doc.font('Times-Roman').fontSize(8).fillColor(INK);
-        doc.text(String(i + 1), LEFT, footerY + 8, { width: contentWidth, align: 'right', height: 12 });
     }
 
     doc.end();
@@ -254,8 +252,30 @@ export const buildPublishedPdf = async ({ article, originalPdfBuffer }) => {
     const frontPages = await merged.copyPages(frontDoc, frontDoc.getPageIndices());
     frontPages.forEach((page) => merged.addPage(page));
 
-    const originalPages = await merged.copyPages(originalDoc, originalDoc.getPageIndices());
-    originalPages.forEach((page) => merged.addPage(page));
+    const originalIndices = originalDoc.getPageIndices();
+    const keptIndices = originalIndices.length > 1 ? originalIndices.slice(1) : originalIndices;
+    const originalPages = await merged.copyPages(originalDoc, keptIndices);
+
+    const footerFont = await merged.embedFont(StandardFonts.TimesRomanItalic);
+    const fontSize = 8;
+    const fullFooter = footerText(article);
+    originalPages.forEach((page) => {
+        merged.addPage(page);
+        const { width } = page.getSize();
+        const margin = Math.min(LEFT, width * 0.08);
+        const maxWidth = width - margin * 2;
+        let text = fullFooter;
+        while (text.length > 1 && footerFont.widthOfTextAtSize(text, fontSize) > maxWidth) {
+            text = `${text.slice(0, -2).trimEnd()}…`;
+        }
+        page.drawText(text, {
+            x: margin,
+            y: 18,
+            size: fontSize,
+            font: footerFont,
+            color: rgb(0x6b / 255, 0x5a / 255, 0x52 / 255),
+        });
+    });
 
     return Buffer.from(await merged.save());
 };
