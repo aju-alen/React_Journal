@@ -85,8 +85,6 @@ export const createJournalArticle = async (req, res, next) => {
 }
 
 const sendArticleSubmittedEmail = async (email) => {
-    console.log('Article submission email paused', email);
-    return;
     const emailHtml = articleSubmittedEmailTemplate(email);
    
 
@@ -344,10 +342,7 @@ export const acceptManuscript = async (req, res, next) => {
             return next(createError(404, 'Article not found'));
         }
 
-        // TEMP: fixed dates for this publish — revert after
-        const articleReceivedDate = new Date('2026-08-20T12:00:00.000Z');
-        const articleAcceptedDate = new Date('2026-09-25T12:00:00.000Z');
-        const articlePublishedDate = new Date('2026-09-25T12:00:00.000Z');
+        const articlePublishedDate = new Date();
         let publishedPdfName = null;
 
         if (isPdfManuscript(article.publicPdfName)) {
@@ -359,8 +354,8 @@ export const acceptManuscript = async (req, res, next) => {
                     articleAbstract: article.articleAbstract,
                     articleKeywords: article.articleKeywords,
                     articleAuthors: article.articleAuthors,
-                    articleReceivedDate,
-                    articleAcceptedDate,
+                    articleReceivedDate: article.articleReceivedDate,
+                    articleAcceptedDate: article.articleAcceptedDate,
                     articlePublishedDate,
                     articleVolume: article.articleVolume,
                     articleIssue: article.articleIssue,
@@ -383,8 +378,6 @@ export const acceptManuscript = async (req, res, next) => {
                 articleStatus: 'Published',
                 isReview: false,
                 rejectionFilesURL:[],
-                articleReceivedDate,
-                articleAcceptedDate,
                 articlePublishedDate,
                 ...(publishedPdfName ? { publishedPdfName } : {}),
             },
@@ -432,8 +425,6 @@ const formatAuthorNames = (authors) => {
 };
 
 const sendArticleAcceptedEmail = async (email, details) => {
-    console.log('Article accepted email paused', email);
-    return;
     try {
         const emailHtml = articleAcceptedEmailTemplate(details);
         await resendEmailBoiler(
